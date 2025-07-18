@@ -49,6 +49,7 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
+    implementation(libs.work.runtime.ktx)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -62,4 +63,7 @@ dependencies {
     implementation(libs.koin.androidx.compose.navigation)
     implementation(libs.koin.ktor)
     testImplementation(libs.koin.test.junit4)
+
+    // WorkManager
+    implementation(libs.androidx.work.runtime.ktx)
 }
