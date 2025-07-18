@@ -10,12 +10,12 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.ui.Modifier
 import androidx.core.content.ContextCompat
 import apc.appcradle.kotlinjc_friendsactivity_app.sensors.StepCounterService
+import apc.appcradle.kotlinjc_friendsactivity_app.ui.screens.main.MainUserScreen
 import apc.appcradle.kotlinjc_friendsactivity_app.ui.theme.KotlinJC_FriendsActivity_appTheme
 
 class MainActivity : ComponentActivity() {
@@ -31,26 +31,23 @@ class MainActivity : ComponentActivity() {
     private val permissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestMultiplePermissions()
     ) { permissions ->
-        val allGranted = permissions.entries.all { it.value }
-        requiredPermissionsGranted = allGranted
-        
-        if (allGranted) {
-            startStepCounterService()
-        } else {
+        requiredPermissionsGranted = permissions.entries.all { it.value }
+
+        if (!requiredPermissionsGranted) {
             Toast.makeText(
                 this,
                 "Для работы шагомера требуются все разрешения",
                 Toast.LENGTH_SHORT
             ).show()
         }
-        updateUI()
+        setUI()
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         checkAndRequestPermissions()
-        updateUI()
+        setUI()
     }
 
     private fun checkAndRequestPermissions() {
@@ -61,8 +58,9 @@ class MainActivity : ComponentActivity() {
         when {
             permissionsToRequest.isEmpty() -> {
                 requiredPermissionsGranted = true
-                startStepCounterService()
+//                startStepCounterService()
             }
+
             else -> permissionLauncher.launch(permissionsToRequest.toTypedArray())
         }
     }
@@ -76,14 +74,15 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-    private fun updateUI() {
+    private fun setUI() {
         setContent {
             KotlinJC_FriendsActivity_appTheme {
                 Scaffold { paddingValues ->
-                    MainAppComposable(
+                    MainUserScreen(
                         modifier = Modifier.padding(paddingValues),
                         isPermissionsGranted = requiredPermissionsGranted,
-                        onStopClick = { stopService(Intent(this, StepCounterService::class.java)) }
+                        onStopClick = { stopService(Intent(this, StepCounterService::class.java)) },
+                        onStartClick = { startStepCounterService() }
                     )
                 }
             }

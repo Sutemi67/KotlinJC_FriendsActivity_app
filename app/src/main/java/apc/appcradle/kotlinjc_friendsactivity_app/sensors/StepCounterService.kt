@@ -4,11 +4,11 @@ import android.app.ForegroundServiceStartNotAllowedException
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.Service
-import android.content.Context
 import android.content.Intent
 import android.content.pm.ServiceInfo
 import android.os.Build
 import android.os.IBinder
+import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
 import org.koin.android.ext.android.inject
@@ -37,6 +37,7 @@ class StepCounterService : Service() {
             }
         } catch (e: ForegroundServiceStartNotAllowedException) {
             stopSelf()
+            Log.i("sensors", "${e.message}")
         }
     }
 
@@ -56,7 +57,7 @@ class StepCounterService : Service() {
                 description = descriptionText
             }
             val notificationManager =
-                getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+                getSystemService(NOTIFICATION_SERVICE) as NotificationManager
             notificationManager.createNotificationChannel(channel)
         }
     }
@@ -64,7 +65,7 @@ class StepCounterService : Service() {
     private fun createNotification() = NotificationCompat.Builder(this, CHANNEL_ID)
         .setContentTitle("Подсчет шагов")
         .setContentText("Приложение считает ваши шаги")
-        .setSmallIcon(android.R.drawable.ic_dialog_info)
+        .setSmallIcon(apc.appcradle.kotlinjc_friendsactivity_app.R.drawable.sleep)
         .setPriority(NotificationCompat.PRIORITY_LOW)
         .setOngoing(true)
         .build()
