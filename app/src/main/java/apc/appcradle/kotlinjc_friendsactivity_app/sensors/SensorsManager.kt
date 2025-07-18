@@ -10,7 +10,7 @@ import android.util.Log
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 
-internal class AppSensorsManager(context: Context) : SensorEventListener {
+class AppSensorsManager(context: Context) : SensorEventListener {
 
     private val sensorManager = context.getSystemService(SENSOR_SERVICE) as SensorManager
     private val stepCounterSensor: Sensor? =

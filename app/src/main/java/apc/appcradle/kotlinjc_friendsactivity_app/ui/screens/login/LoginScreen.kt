@@ -17,7 +17,9 @@ import apc.appcradle.kotlinjc_friendsactivity_app.ThemePreviews
 import apc.appcradle.kotlinjc_friendsactivity_app.ui.theme.KotlinJC_FriendsActivity_appTheme
 
 @Composable
-fun LoginScreen() {
+fun LoginScreen(
+    toMainScreen: () -> Unit
+) {
     Scaffold { paddingValues ->
         Box(modifier = Modifier.padding(paddingValues)) {
             Column(
@@ -31,6 +33,9 @@ fun LoginScreen() {
                 )
                 ElevatedButton(modifier = Modifier.width(200.dp), onClick = {}) { Text("Login") }
                 ElevatedButton(modifier = Modifier.width(200.dp), onClick = {}) { Text("Register") }
+                ElevatedButton(
+                    modifier = Modifier.width(200.dp),
+                    onClick = { toMainScreen() }) { Text("Go to main screen") }
             }
         }
     }
@@ -40,6 +45,6 @@ fun LoginScreen() {
 @Composable
 private fun Preview() {
     KotlinJC_FriendsActivity_appTheme {
-        LoginScreen()
+        LoginScreen(toMainScreen = {})
     }
 }
