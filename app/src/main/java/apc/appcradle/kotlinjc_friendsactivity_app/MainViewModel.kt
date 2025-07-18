@@ -11,41 +11,23 @@ import apc.appcradle.kotlinjc_friendsactivity_app.domain.model.AppActions
 import apc.appcradle.kotlinjc_friendsactivity_app.domain.model.AppState
 import apc.appcradle.kotlinjc_friendsactivity_app.permissions.PermissionManager
 import apc.appcradle.kotlinjc_friendsactivity_app.sensors.StepCounterService
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 
 class MainViewModel(
     private val permissionManager: PermissionManager,
-    private val context: Context
+    private val context: Context,
 ) : ViewModel() {
 
-    private val _state = MutableStateFlow(AppState())
-    val state: StateFlow<AppState> = _state.asStateFlow()
+    val state = permissionManager.permissionsGranted.map { isGranted ->
+        AppState(isPermissionsGet = isGranted)
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), AppState())
 
-    init {
-        viewModelScope.launch {
-            permissionManager.permissionsGranted.collect { isGranted ->
-                _state.update { it.copy(isPermissionsGet = isGranted) }
-            }
-        }
-        // Проверяем разрешения при инициализации
-        _state.update { it.copy(isPermissionsGet = permissionManager.arePermissionsGranted()) }
-    }
 
     fun startService() {
-        if (permissionManager.arePermissionsGranted()) {
-            val serviceIntent = Intent(context, StepCounterService::class.java)
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                startForegroundService(context, serviceIntent)
-            } else {
-                context.startService(serviceIntent)
-            }
-        } else {
-            getPermission()
-        }
+        val serviceIntent = Intent(context, StepCounterService::class.java)
+        context.startService(serviceIntent)
     }
 
     fun stopService() {
@@ -53,20 +35,10 @@ class MainViewModel(
         context.stopService(serviceIntent)
     }
 
-    fun getPermission() {
-        if (context is ComponentActivity) {
-            permissionManager.registerPermissionHandler(context) { isGranted ->
-                if (isGranted) {
-                    startService()
-                }
-            }
-        }
-    }
-
-    fun processAction(appAction: AppActions) {
-        when (appAction) {
+    fun onAction(action: AppActions) {
+        when (action) {
             is AppActions.ChangeState -> {
-                _state.update { it.copy(isPermissionsGet = appAction.state) }
+                // This is now handled by the permission flow
             }
         }
     }

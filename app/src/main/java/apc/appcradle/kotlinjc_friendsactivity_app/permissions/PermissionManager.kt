@@ -19,7 +19,7 @@ class PermissionManager(private val context: Context) {
     private val _permissionsGranted = MutableStateFlow(false)
     val permissionsGranted: StateFlow<Boolean> = _permissionsGranted.asStateFlow()
 
-    private val requiredPermissions = mutableListOf(
+    val requiredPermissions = mutableListOf(
         Manifest.permission.ACTIVITY_RECOGNITION
     ).apply {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
@@ -32,52 +32,17 @@ class PermissionManager(private val context: Context) {
     }
 
     private fun checkInitialPermissions() {
-        val allGranted = requiredPermissions.all { permission ->
-            ContextCompat.checkSelfPermission(
-                context,
-                permission
-            ) == PackageManager.PERMISSION_GRANTED
-        }
-        _permissionsGranted.value = allGranted
+        _permissionsGranted.value = arePermissionsGranted()
     }
 
-    fun registerPermissionHandler(
-        activity: ComponentActivity,
-        onPermissionResult: (Boolean) -> Unit
-    ) {
-        val permissionLauncher = activity.registerForActivityResult(
-            ActivityResultContracts.RequestMultiplePermissions()
-        ) { permissions ->
-            val allGranted = permissions.entries.all { it.value }
-            _permissionsGranted.value = allGranted
-            onPermissionResult(allGranted)
-
-            if (!allGranted) {
-                Toast.makeText(
-                    context,
-                    "Для работы шагомера требуются все разрешения",
-                    Toast.LENGTH_SHORT
-                ).show()
-            }
-        }
-        checkAndRequestPermissions(permissionLauncher)
-    }
-
-    fun checkAndRequestPermissions(
-        permissionLauncher: ActivityResultLauncher<Array<String>>
-    ) {
-        val permissionsToRequest = requiredPermissions.filter { permission ->
-            ContextCompat.checkSelfPermission(
+    fun onPermissionResult(isGranted: Boolean) {
+        _permissionsGranted.value = isGranted
+        if (!isGranted) {
+            Toast.makeText(
                 context,
-                permission
-            ) != PackageManager.PERMISSION_GRANTED
-        }
-
-        when {
-            permissionsToRequest.isEmpty() -> {
-                _permissionsGranted.value = true
-            }
-            else -> permissionLauncher.launch(permissionsToRequest.toTypedArray())
+                "Для работы шагомера требуются все разрешения",
+                Toast.LENGTH_SHORT
+            ).show()
         }
     }
 
