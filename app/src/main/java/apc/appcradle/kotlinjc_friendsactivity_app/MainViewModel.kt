@@ -16,8 +16,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 
 class MainViewModel(
-    private val permissionManager: PermissionManager,
-    private val context: Context,
+    permissionManager: PermissionManager,
 ) : ViewModel() {
 
     val state = permissionManager.permissionsGranted.map { isGranted ->
@@ -25,12 +24,12 @@ class MainViewModel(
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), AppState())
 
 
-    fun startService() {
+    fun startService(context: Context) {
         val serviceIntent = Intent(context, StepCounterService::class.java)
         context.startService(serviceIntent)
     }
 
-    fun stopService() {
+    fun stopService(context: Context) {
         val serviceIntent = Intent(context, StepCounterService::class.java)
         context.stopService(serviceIntent)
     }

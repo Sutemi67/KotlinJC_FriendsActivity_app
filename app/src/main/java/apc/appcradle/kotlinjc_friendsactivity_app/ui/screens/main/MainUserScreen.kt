@@ -11,6 +11,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import apc.appcradle.kotlinjc_friendsactivity_app.MainViewModel
 import apc.appcradle.kotlinjc_friendsactivity_app.permissions.PermissionManager
 import apc.appcradle.kotlinjc_friendsactivity_app.sensors.AppSensorsManager
@@ -26,6 +27,8 @@ fun MainUserScreen(
     val stepCount by sensorManager.stepsData.collectAsState()
     val state by viewModel.state.collectAsState()
 
+    val context = LocalContext.current
+
     val permissionLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestMultiplePermissions()
     ) { permissions ->
@@ -35,7 +38,7 @@ fun MainUserScreen(
 
     LaunchedEffect(state.isPermissionsGet) {
         if (state.isPermissionsGet) {
-            viewModel.startService()
+            viewModel.startService(context)
         }
     }
 

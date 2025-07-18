@@ -10,6 +10,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import apc.appcradle.kotlinjc_friendsactivity_app.MainViewModel
 import apc.appcradle.kotlinjc_friendsactivity_app.ThemePreviews
@@ -24,6 +25,7 @@ fun PermittedUi(
     stepCount: Int,
     sensorManager: AppSensorsManager,
 ) {
+    val context = LocalContext.current
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -38,7 +40,7 @@ fun PermittedUi(
         )
         Button(
             onClick = {
-                viewModel.startService()
+                viewModel.startService(context)
             }
         ) {
             Text("Начать забег")
@@ -46,7 +48,7 @@ fun PermittedUi(
         Button(
             onClick = {
                 sensorManager.stopCounting()
-                viewModel.stopService()
+                viewModel.stopService(context)
             }
         ) {
             Text("Выйти из гонки")
