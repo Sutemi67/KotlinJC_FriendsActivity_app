@@ -16,7 +16,6 @@ import apc.appcradle.kotlinjc_friendsactivity_app.MainViewModel
 import apc.appcradle.kotlinjc_friendsactivity_app.ThemePreviews
 import apc.appcradle.kotlinjc_friendsactivity_app.sensors.AppSensorsManager
 import apc.appcradle.kotlinjc_friendsactivity_app.ui.theme.KotlinJC_FriendsActivity_appTheme
-import org.koin.androidx.compose.koinViewModel
 import org.koin.compose.koinInject
 
 @Composable
@@ -63,7 +62,7 @@ private fun Preview() {
         PermittedUi(
             stepCount = 34,
             sensorManager = koinInject<AppSensorsManager>(),
-            viewModel = koinViewModel()
+            viewModel = koinInject<MainViewModel>()
         )
     }
 }
