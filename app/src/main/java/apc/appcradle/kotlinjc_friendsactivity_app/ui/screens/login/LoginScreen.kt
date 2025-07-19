@@ -31,11 +31,8 @@ fun LoginScreen(
                     modifier = Modifier.padding(15.dp),
                     text = "Hello, user!"
                 )
-                ElevatedButton(modifier = Modifier.width(200.dp), onClick = {}) { Text("Login") }
+                ElevatedButton(modifier = Modifier.width(200.dp), onClick = { toMainScreen() }) { Text("Login") }
                 ElevatedButton(modifier = Modifier.width(200.dp), onClick = {}) { Text("Register") }
-                ElevatedButton(
-                    modifier = Modifier.width(200.dp),
-                    onClick = { toMainScreen() }) { Text("Go to main screen") }
             }
         }
     }

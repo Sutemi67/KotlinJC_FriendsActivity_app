@@ -4,20 +4,18 @@ import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import apc.appcradle.kotlinjc_friendsactivity_app.MainViewModel
+import apc.appcradle.kotlinjc_friendsactivity_app.ui.screens.Destinations
 import apc.appcradle.kotlinjc_friendsactivity_app.ui.screens.main.MainUserScreen
 import kotlinx.serialization.Serializable
 
-@Serializable
-object MainUserScreenRoute
-
 fun NavController.toMainScreen() {
-    navigate(route = MainUserScreenRoute)
+    navigate(route = Destinations.MAIN.route)
 }
 
 fun NavGraphBuilder.mainScreen(
     viewModel: MainViewModel
 ) {
-    composable<MainUserScreenRoute> {
+    composable(Destinations.MAIN.route) {
         MainUserScreen(
             viewModel = viewModel
         )
