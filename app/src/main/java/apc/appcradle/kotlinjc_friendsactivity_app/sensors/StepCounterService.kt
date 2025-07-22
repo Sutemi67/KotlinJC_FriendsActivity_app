@@ -13,7 +13,7 @@ import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
 import org.koin.android.ext.android.inject
 
-class StepCounterService : Service() {
+class StepCounterService() : Service() {
     companion object {
         const val NOTIFICATION_ID = 1
         const val CHANNEL_ID = "StepCounterChannel"
@@ -69,7 +69,7 @@ class StepCounterService : Service() {
 
     private fun createNotification() = NotificationCompat.Builder(this, CHANNEL_ID)
         .setContentTitle("Подсчет шагов")
-        .setContentText("Приложение считает ваши шаги")
+        .setContentText("Пройдено: ${sensorManager.stepsData.value}")
         .setSmallIcon(apc.appcradle.kotlinjc_friendsactivity_app.R.drawable.sleep)
         .setPriority(NotificationCompat.PRIORITY_LOW)
         .setOngoing(true)

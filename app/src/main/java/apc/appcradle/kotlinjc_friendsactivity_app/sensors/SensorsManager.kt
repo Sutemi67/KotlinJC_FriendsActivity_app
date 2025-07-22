@@ -18,7 +18,7 @@ class AppSensorsManager(context: Context) : SensorEventListener {
 
     private var stepsInitial = -1
     private var currentSteps = 0
-    private var rememberedSteps = 0
+//    private var rememberedSteps = 0
 
     private var _stepsData = MutableStateFlow(0)
     val stepsData = _stepsData.asStateFlow()
@@ -38,7 +38,7 @@ class AppSensorsManager(context: Context) : SensorEventListener {
         stepCounterSensor?.let { sensor ->
             sensorManager.unregisterListener(this, sensor)
         }
-        rememberedSteps = currentSteps
+//        rememberedSteps = currentSteps
     }
 
     fun resetSteps() {
@@ -52,21 +52,22 @@ class AppSensorsManager(context: Context) : SensorEventListener {
         event?.let { sensorEvent ->
             when (sensorEvent.sensor.type) {
                 Sensor.TYPE_STEP_COUNTER -> {
-                    val totalSteps = sensorEvent.values[0].toInt()
-                    stepsInitial = when (stepsInitial) {
-                        -1 -> {
-                            totalSteps
-                        }
-
-                        else -> {
-                            rememberedSteps
-                        }
-                    }
-                    currentSteps = totalSteps - stepsInitial
-                    _stepsData.value = currentSteps
-                    Log.i("sensors", "Steps detected: Total=$totalSteps, Current=$currentSteps")
+                    val totalSensorSteps = sensorEvent.values[0].toInt()
+                    stepsCounter(totalSensorSteps)
                 }
             }
         }
+    }
+
+    private fun stepsCounter(totalSensorSteps: Int) {
+        if (stepsInitial == -1) {
+            stepsInitial = totalSensorSteps
+        }
+        currentSteps = totalSensorSteps - stepsInitial
+        _stepsData.value = currentSteps
+        Log.i(
+            "sensors",
+            "Steps detected: Total=$totalSensorSteps, Current=$currentSteps"
+        )
     }
 }

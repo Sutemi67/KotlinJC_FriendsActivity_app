@@ -1,4 +1,4 @@
-package apc.appcradle.kotlinjc_friendsactivity_app.ui.screens.login
+package apc.appcradle.kotlinjc_friendsactivity_app.ui.screens.auth.login
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -18,7 +18,8 @@ import apc.appcradle.kotlinjc_friendsactivity_app.ui.theme.KotlinJC_FriendsActiv
 
 @Composable
 fun LoginScreen(
-    toMainScreen: () -> Unit
+    toMainScreen: () -> Unit,
+    onRegisterClick: () -> Unit
 ) {
     Scaffold { paddingValues ->
         Box(modifier = Modifier.padding(paddingValues)) {
@@ -31,8 +32,14 @@ fun LoginScreen(
                     modifier = Modifier.padding(15.dp),
                     text = "Hello, user!"
                 )
-                ElevatedButton(modifier = Modifier.width(200.dp), onClick = { toMainScreen() }) { Text("Login") }
-                ElevatedButton(modifier = Modifier.width(200.dp), onClick = {}) { Text("Register") }
+                ElevatedButton(
+                    modifier = Modifier.width(200.dp),
+                    onClick = toMainScreen
+                ) { Text("Login") }
+                ElevatedButton(
+                    modifier = Modifier.width(200.dp),
+                    onClick = onRegisterClick
+                ) { Text("Register") }
             }
         }
     }
@@ -42,6 +49,6 @@ fun LoginScreen(
 @Composable
 private fun Preview() {
     KotlinJC_FriendsActivity_appTheme {
-        LoginScreen(toMainScreen = {})
+        LoginScreen(toMainScreen = {}, onRegisterClick = {})
     }
 }

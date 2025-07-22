@@ -1,4 +1,4 @@
-package apc.appcradle.kotlinjc_friendsactivity_app.ui
+package apc.appcradle.kotlinjc_friendsactivity_app.ui.screens
 
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Icon
@@ -13,8 +13,9 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import apc.appcradle.kotlinjc_friendsactivity_app.MainViewModel
-import apc.appcradle.kotlinjc_friendsactivity_app.ui.screens.Destinations
-import apc.appcradle.kotlinjc_friendsactivity_app.ui.screens.login.nav.loginScreen
+import apc.appcradle.kotlinjc_friendsactivity_app.ui.screens.auth.login.nav.loginScreen
+import apc.appcradle.kotlinjc_friendsactivity_app.ui.screens.auth.registration.nav.registerScreen
+import apc.appcradle.kotlinjc_friendsactivity_app.ui.screens.auth.registration.nav.toRegisterScreen
 import apc.appcradle.kotlinjc_friendsactivity_app.ui.screens.main.nav.mainScreen
 import apc.appcradle.kotlinjc_friendsactivity_app.ui.screens.main.nav.toMainScreen
 import apc.appcradle.kotlinjc_friendsactivity_app.ui.screens.ratings.nav.ratingsScreen
@@ -31,7 +32,9 @@ fun NavigationHost(
 
     Scaffold(
         bottomBar = {
-            if (navBackStackEntry?.destination?.route != Destinations.LOGIN.route)
+            if (navBackStackEntry?.destination?.route != Destinations.LOGIN.route &&
+                navBackStackEntry?.destination?.route != Destinations.REGISTER.route
+            )
                 NavigationBar {
                     noLoginDestinations.forEachIndexed { index, item ->
                         NavigationBarItem(
@@ -55,11 +58,11 @@ fun NavigationHost(
             startDestination = Destinations.LOGIN.route
         ) {
             loginScreen(
-                toMainScreen = { navController.toMainScreen() }
+                toMainScreen = { navController.toMainScreen() },
+                onRegisterClick = { navController.toRegisterScreen() }
             )
-            mainScreen(
-                viewModel = viewModel
-            )
+            registerScreen(viewModel)
+            mainScreen(viewModel)
             ratingsScreen(viewModel)
             settingsScreen()
         }

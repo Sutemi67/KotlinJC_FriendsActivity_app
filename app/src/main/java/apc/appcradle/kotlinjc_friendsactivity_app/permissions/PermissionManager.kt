@@ -19,9 +19,10 @@ class PermissionManager(private val context: Context) {
     private val _permissionsGranted = MutableStateFlow(false)
     val permissionsGranted: StateFlow<Boolean> = _permissionsGranted.asStateFlow()
 
-    val requiredPermissions = mutableListOf(
-        Manifest.permission.ACTIVITY_RECOGNITION
-    ).apply {
+    val requiredPermissions = mutableListOf<String>().apply {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            add(Manifest.permission.ACTIVITY_RECOGNITION)
+        }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             add(Manifest.permission.POST_NOTIFICATIONS)
         }

@@ -6,7 +6,8 @@ import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.navigation.NavController
-import apc.appcradle.kotlinjc_friendsactivity_app.ui.screens.login.nav.toLoginScreen
+import apc.appcradle.kotlinjc_friendsactivity_app.ui.screens.auth.login.nav.toLoginScreen
+import apc.appcradle.kotlinjc_friendsactivity_app.ui.screens.auth.registration.nav.toRegisterScreen
 import apc.appcradle.kotlinjc_friendsactivity_app.ui.screens.main.nav.toMainScreen
 import apc.appcradle.kotlinjc_friendsactivity_app.ui.screens.ratings.nav.toRatingsScreen
 import apc.appcradle.kotlinjc_friendsactivity_app.ui.screens.settings.nav.toSettingsScreen
@@ -24,6 +25,12 @@ enum class Destinations(
         Icons.Filled.Home,
         "LoginScreenRoute",
         { it.toLoginScreen() }),
+    REGISTER(
+        "register",
+        Icons.Filled.Lock,
+        Icons.Filled.Home,
+        "RegisterScreenRoute",
+        { it.toRegisterScreen() }),
     MAIN(
         "main",
         Icons.Filled.Home,

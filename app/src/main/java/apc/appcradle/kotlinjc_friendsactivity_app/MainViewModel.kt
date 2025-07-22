@@ -2,8 +2,10 @@ package apc.appcradle.kotlinjc_friendsactivity_app
 
 import android.content.Context
 import android.content.Intent
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import apc.appcradle.kotlinjc_friendsactivity_app.domain.NetworkClient
 import apc.appcradle.kotlinjc_friendsactivity_app.domain.model.AppState
 import apc.appcradle.kotlinjc_friendsactivity_app.permissions.PermissionManager
 import apc.appcradle.kotlinjc_friendsactivity_app.sensors.StepCounterService
@@ -14,7 +16,8 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class MainViewModel(
-    permissionManager: PermissionManager,
+    private val permissionManager: PermissionManager,
+    private val networkClient: NetworkClient
 ) : ViewModel() {
 
     private var _state = MutableStateFlow(AppState())
@@ -46,4 +49,17 @@ class MainViewModel(
 
     }
 
+    fun sendRegisterData(login: String, password: String): Boolean? {
+        var isSendInit: Boolean? = null
+        viewModelScope.launch {
+            val isSend = networkClient.sendRegistrationInfo(login, password)
+            if (isSend) {
+                Log.i("dataTransfer", "viewModel transfer - OK")
+            } else {
+                Log.e("dataTransfer", "viewModel transfer not successful")
+            }
+            isSendInit = isSend
+        }
+        return isSendInit
+    }
 }
