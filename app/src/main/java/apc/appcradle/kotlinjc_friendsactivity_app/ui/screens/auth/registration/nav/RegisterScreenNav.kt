@@ -7,9 +7,9 @@ import apc.appcradle.kotlinjc_friendsactivity_app.MainViewModel
 import apc.appcradle.kotlinjc_friendsactivity_app.ui.screens.Destinations
 import apc.appcradle.kotlinjc_friendsactivity_app.ui.screens.auth.registration.RegistrationScreen
 
-fun NavGraphBuilder.registerScreen(viewModel: MainViewModel) {
+fun NavGraphBuilder.registerScreen(viewModel: MainViewModel,navController: NavController) {
     composable(Destinations.REGISTER.route) {
-        RegistrationScreen(viewModel = viewModel)
+        RegistrationScreen(viewModel = viewModel, navController = navController)
     }
 }
 

@@ -23,6 +23,9 @@ class MainViewModel(
     private var _state = MutableStateFlow(AppState())
     val state: StateFlow<AppState> = _state.asStateFlow()
 
+    private var _isSend = MutableStateFlow<Boolean?>(null)
+    val isSend: StateFlow<Boolean?> = _isSend.asStateFlow()
+
     init {
         viewModelScope.launch {
             permissionManager.permissionsGranted.collect { isGranted ->
@@ -49,17 +52,17 @@ class MainViewModel(
 
     }
 
-    fun sendRegisterData(login: String, password: String): Boolean? {
-        var isSendInit: Boolean? = null
-        viewModelScope.launch {
+    suspend fun sendRegisterData(login: String, password: String): Boolean? {
+//        viewModelScope.launch {
             val isSend = networkClient.sendRegistrationInfo(login, password)
             if (isSend) {
                 Log.i("dataTransfer", "viewModel transfer - OK")
+                _isSend.update { true }
             } else {
                 Log.e("dataTransfer", "viewModel transfer not successful")
+                _isSend.update { false }
             }
-            isSendInit = isSend
-        }
-        return isSendInit
+//        }
+        return isSend
     }
 }

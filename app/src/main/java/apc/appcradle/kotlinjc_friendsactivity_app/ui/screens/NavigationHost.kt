@@ -61,7 +61,7 @@ fun NavigationHost(
                 toMainScreen = { navController.toMainScreen() },
                 onRegisterClick = { navController.toRegisterScreen() }
             )
-            registerScreen(viewModel)
+            registerScreen(viewModel, navController)
             mainScreen(viewModel)
             ratingsScreen(viewModel)
             settingsScreen()

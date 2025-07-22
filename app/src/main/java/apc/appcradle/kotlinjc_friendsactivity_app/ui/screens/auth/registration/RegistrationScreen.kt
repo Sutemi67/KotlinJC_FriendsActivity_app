@@ -10,25 +10,32 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import apc.appcradle.kotlinjc_friendsactivity_app.MainViewModel
 import apc.appcradle.kotlinjc_friendsactivity_app.ThemePreviewsNoUi
+import apc.appcradle.kotlinjc_friendsactivity_app.ui.screens.main.nav.toMainScreen
 import apc.appcradle.kotlinjc_friendsactivity_app.ui.theme.KotlinJC_FriendsActivity_appTheme
+import kotlinx.coroutines.launch
 
 @Composable
 fun RegistrationScreen(
-    viewModel: MainViewModel
+    viewModel: MainViewModel,
+    navController: NavController,
 ) {
     var loginText by remember { mutableStateOf("") }
     var passText by remember { mutableStateOf("") }
-    var isSend: Boolean? = null
+    val scope = rememberCoroutineScope()
+    val isSend: Boolean? = viewModel.isSend.collectAsState().value
 
     Scaffold { paddingValues ->
         Column(
@@ -72,7 +79,13 @@ fun RegistrationScreen(
             ElevatedButton(
                 modifier = Modifier.padding(10.dp),
                 onClick = {
-                    isSend = viewModel.sendRegisterData(loginText, passText)
+                    scope.launch {
+                        if (viewModel.sendRegisterData(
+                                loginText,
+                                passText
+                            ) == true
+                        ) navController.toMainScreen()
+                    }
                 }
             ) { Text("Зарегистрироваться") }
         }
