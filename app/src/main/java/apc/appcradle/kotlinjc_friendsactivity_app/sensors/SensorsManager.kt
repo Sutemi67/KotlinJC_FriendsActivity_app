@@ -17,6 +17,8 @@ class AppSensorsManager(context: Context) : SensorEventListener {
         sensorManager.getDefaultSensor(Sensor.TYPE_STEP_COUNTER)
 
     private var stepsInitial = -1
+    private var currentSteps = 0
+    private var rememberedSteps = 0
 
     private var _stepsData = MutableStateFlow(0)
     val stepsData = _stepsData.asStateFlow()
@@ -36,11 +38,12 @@ class AppSensorsManager(context: Context) : SensorEventListener {
         stepCounterSensor?.let { sensor ->
             sensorManager.unregisterListener(this, sensor)
         }
+        rememberedSteps = currentSteps
     }
 
     fun resetSteps() {
         stepsInitial = -1
-        _stepsData.value = 0
+//        _stepsData.value = 0
     }
 
     override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) {}
@@ -50,10 +53,16 @@ class AppSensorsManager(context: Context) : SensorEventListener {
             when (sensorEvent.sensor.type) {
                 Sensor.TYPE_STEP_COUNTER -> {
                     val totalSteps = sensorEvent.values[0].toInt()
-                    if (stepsInitial == -1) {
-                        stepsInitial = totalSteps
+                    stepsInitial = when (stepsInitial) {
+                        -1 -> {
+                            totalSteps
+                        }
+
+                        else -> {
+                            rememberedSteps
+                        }
                     }
-                    val currentSteps = totalSteps - stepsInitial
+                    currentSteps = totalSteps - stepsInitial
                     _stepsData.value = currentSteps
                     Log.i("sensors", "Steps detected: Total=$totalSteps, Current=$currentSteps")
                 }

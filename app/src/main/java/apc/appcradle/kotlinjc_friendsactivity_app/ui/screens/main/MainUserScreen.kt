@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
@@ -36,11 +35,11 @@ fun MainUserScreen(
         permissionManager.onPermissionResult(allGranted)
     }
 
-    LaunchedEffect(state.isPermissionsGet) {
-        if (state.isPermissionsGet) {
-            viewModel.startService(context)
-        }
-    }
+//    LaunchedEffect(state.isPermissionsGet) {
+//        if (state.isPermissionsGet) {
+//            viewModel.startService(context)
+//        }
+//    }
 
     Scaffold { paddingValues ->
         Box(
@@ -57,7 +56,6 @@ fun MainUserScreen(
             } else {
                 PermittedUi(
                     viewModel = viewModel,
-                    sensorManager = sensorManager,
                     stepCount = stepCount
                 )
             }
