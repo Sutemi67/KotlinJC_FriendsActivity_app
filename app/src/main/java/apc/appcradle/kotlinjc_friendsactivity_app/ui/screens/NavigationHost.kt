@@ -1,5 +1,6 @@
 package apc.appcradle.kotlinjc_friendsactivity_app.ui.screens
 
+import android.util.Log
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
@@ -15,10 +16,11 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import apc.appcradle.kotlinjc_friendsactivity_app.MainViewModel
-import apc.appcradle.kotlinjc_friendsactivity_app.ui.screens.auth.login.nav.loginScreen
+import apc.appcradle.kotlinjc_friendsactivity_app.ui.screens.auth.authScreen
 import apc.appcradle.kotlinjc_friendsactivity_app.ui.screens.auth.registration.nav.registerScreen
 import apc.appcradle.kotlinjc_friendsactivity_app.ui.screens.auth.registration.nav.toRegisterScreen
 import apc.appcradle.kotlinjc_friendsactivity_app.ui.screens.main.nav.mainScreen
+import apc.appcradle.kotlinjc_friendsactivity_app.ui.screens.main.nav.toMainScreen
 import apc.appcradle.kotlinjc_friendsactivity_app.ui.screens.ratings.nav.ratingsScreen
 import apc.appcradle.kotlinjc_friendsactivity_app.ui.screens.settings.nav.settingsScreen
 import org.koin.androidx.compose.koinViewModel
@@ -31,11 +33,12 @@ fun NavigationHost(
     val navController = rememberNavController()
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val noAuthDestinations =
-        Destinations.entries.filter { it != Destinations.LOGIN && it != Destinations.REGISTER }
+        Destinations.entries.filter { it != Destinations.AUTH && it != Destinations.REGISTER }
 
     LaunchedEffect(state.isLoggedIn) {
         if (!state.isLoggedIn) {
-            navController.navigate(Destinations.LOGIN.route) {
+            Log.d("dataTransfer", "goes to auth in launched effect in host")
+            navController.navigate(Destinations.AUTH.route) {
                 popUpTo(navController.graph.startDestinationId) {
                     inclusive = true
                 }
@@ -45,7 +48,7 @@ fun NavigationHost(
 
     Scaffold(
         bottomBar = {
-            if (navBackStackEntry?.destination?.route != Destinations.LOGIN.route &&
+            if (navBackStackEntry?.destination?.route != Destinations.AUTH.route &&
                 navBackStackEntry?.destination?.route != Destinations.REGISTER.route
             )
                 NavigationBar {
@@ -66,21 +69,22 @@ fun NavigationHost(
         }
     ) { contentPadding ->
         val startDestination =
-            if (state.isLoggedIn) Destinations.MAIN.route else Destinations.LOGIN.route
+            if (state.isLoggedIn) Destinations.MAIN.route else Destinations.AUTH.route
         NavHost(
             modifier = Modifier.padding(contentPadding),
             navController = navController,
             startDestination = startDestination
         ) {
-            loginScreen(
-                toMainScreen = {
-                    navController.navigate(Destinations.MAIN.route) {
-                        popUpTo(Destinations.LOGIN.route) { inclusive = true }
-                    }
+            authScreen(
+                sendLoginData = { log, pass ->
+                    viewModel.sendLoginData(login = log, password = pass)
+//                    navController.navigate(Destinations.MAIN.route) {
+//                        popUpTo(Destinations.AUTH.route) { inclusive = true }
+//                    }
                 },
-                onRegisterClick = { navController.toRegisterScreen() }
+                toRegisterScreen = { navController.toRegisterScreen() }
             )
-            registerScreen(viewModel, navController)
+            registerScreen(viewModel) { navController.toMainScreen() }
             mainScreen(viewModel)
             ratingsScreen(viewModel)
             settingsScreen(viewModel)

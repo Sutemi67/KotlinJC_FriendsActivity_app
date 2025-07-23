@@ -1,6 +1,7 @@
 package apc.appcradle.kotlinjc_friendsactivity_app.domain
 
 import android.util.Log
+import apc.appcradle.kotlinjc_friendsactivity_app.domain.model.DataTransferState
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.engine.android.Android
@@ -29,6 +30,17 @@ class NetworkClient(private val tokenStorage: TokenStorage) {
 
         @Serializable
         data class RegisterResponseRemote(
+            val token: String
+        )
+
+        @Serializable
+        data class LoginReceiveRemote(
+            val login: String,
+            val password: String
+        )
+
+        @Serializable
+        data class LoginResponseRemote(
             val token: String
         )
     }
@@ -62,6 +74,8 @@ class NetworkClient(private val tokenStorage: TokenStorage) {
             }
         }
     }
+
+    //    private val serverUrl = "http://127.0.0.1:5555"
     private val serverUrl = "http://212.3.131.67:5555/"
 
     private fun saveToken(token: String) {
@@ -75,7 +89,7 @@ class NetworkClient(private val tokenStorage: TokenStorage) {
     suspend fun sendRegistrationInfo(
         login: String,
         password: String
-    ): Boolean {
+    ): DataTransferState {
         val body = RegisterReceiveRemote(login = login, password = password)
 
         return try {
@@ -90,16 +104,46 @@ class NetworkClient(private val tokenStorage: TokenStorage) {
                     "dataTransfer",
                     "сохраненный токен: ${tokenStorage.getToken()}\nвыданный токен: $token"
                 )
-                true
+                DataTransferState(true)
             } else {
                 Log.e("dataTransfer", "${response.body<String?>()}")
-                false
+                DataTransferState(true, response.body<String?>())
             }
         } catch (e: Exception) {
             Log.e("dataTransfer", "not successful sending", e)
-            false
+            DataTransferState(false, "Connection error")
         }
     }
+
+
+    suspend fun sendLoginInfo(
+        login: String,
+        password: String
+    ): DataTransferState {
+        val body = LoginReceiveRemote(login, password)
+        return try {
+            val response = networkService.post(urlString = "$serverUrl/login") {
+                contentType(ContentType.Application.Json)
+                setBody(body)
+            }
+            if (response.status.isSuccess()) {
+                val token = response.body<LoginResponseRemote>().token
+                saveToken(token)
+                Log.d(
+                    "dataTransfer",
+                    "сохраненный токен: ${tokenStorage.getToken()}\nвыданный токен: $token"
+                )
+                DataTransferState(true, errorMessage = null)
+            } else {
+                Log.e("dataTransfer", "${response.body<String?>()}")
+                DataTransferState(true, response.body<String?>())
+            }
+        } catch (e: Exception) {
+            Log.e("dataTransfer", "not successful sending", e)
+            DataTransferState(false, "Connection error")
+        }
+    }
+
 
     // Example of a request to a protected endpoint
     suspend fun getSomeProtectedData(): String? {
@@ -112,3 +156,4 @@ class NetworkClient(private val tokenStorage: TokenStorage) {
         }
     }
 }
+
