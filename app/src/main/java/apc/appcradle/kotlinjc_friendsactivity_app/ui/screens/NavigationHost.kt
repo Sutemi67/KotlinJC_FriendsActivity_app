@@ -7,6 +7,8 @@ import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
@@ -17,7 +19,6 @@ import apc.appcradle.kotlinjc_friendsactivity_app.ui.screens.auth.login.nav.logi
 import apc.appcradle.kotlinjc_friendsactivity_app.ui.screens.auth.registration.nav.registerScreen
 import apc.appcradle.kotlinjc_friendsactivity_app.ui.screens.auth.registration.nav.toRegisterScreen
 import apc.appcradle.kotlinjc_friendsactivity_app.ui.screens.main.nav.mainScreen
-import apc.appcradle.kotlinjc_friendsactivity_app.ui.screens.main.nav.toMainScreen
 import apc.appcradle.kotlinjc_friendsactivity_app.ui.screens.ratings.nav.ratingsScreen
 import apc.appcradle.kotlinjc_friendsactivity_app.ui.screens.settings.nav.settingsScreen
 import org.koin.androidx.compose.koinViewModel
@@ -26,9 +27,21 @@ import org.koin.androidx.compose.koinViewModel
 fun NavigationHost(
 ) {
     val viewModel: MainViewModel = koinViewModel()
+    val state by viewModel.state.collectAsState()
     val navController = rememberNavController()
     val navBackStackEntry by navController.currentBackStackEntryAsState()
-    val noLoginDestinations = Destinations.entries.filter { it != Destinations.LOGIN }
+    val noAuthDestinations =
+        Destinations.entries.filter { it != Destinations.LOGIN && it != Destinations.REGISTER }
+
+    LaunchedEffect(state.isLoggedIn) {
+        if (!state.isLoggedIn) {
+            navController.navigate(Destinations.LOGIN.route) {
+                popUpTo(navController.graph.startDestinationId) {
+                    inclusive = true
+                }
+            }
+        }
+    }
 
     Scaffold(
         bottomBar = {
@@ -36,7 +49,7 @@ fun NavigationHost(
                 navBackStackEntry?.destination?.route != Destinations.REGISTER.route
             )
                 NavigationBar {
-                    noLoginDestinations.forEachIndexed { index, item ->
+                    noAuthDestinations.forEachIndexed { index, item ->
                         NavigationBarItem(
                             icon = {
                                 Icon(
@@ -52,19 +65,25 @@ fun NavigationHost(
                 }
         }
     ) { contentPadding ->
+        val startDestination =
+            if (state.isLoggedIn) Destinations.MAIN.route else Destinations.LOGIN.route
         NavHost(
             modifier = Modifier.padding(contentPadding),
             navController = navController,
-            startDestination = Destinations.LOGIN.route
+            startDestination = startDestination
         ) {
             loginScreen(
-                toMainScreen = { navController.toMainScreen() },
+                toMainScreen = {
+                    navController.navigate(Destinations.MAIN.route) {
+                        popUpTo(Destinations.LOGIN.route) { inclusive = true }
+                    }
+                },
                 onRegisterClick = { navController.toRegisterScreen() }
             )
             registerScreen(viewModel, navController)
             mainScreen(viewModel)
             ratingsScreen(viewModel)
-            settingsScreen()
+            settingsScreen(viewModel)
         }
     }
 }

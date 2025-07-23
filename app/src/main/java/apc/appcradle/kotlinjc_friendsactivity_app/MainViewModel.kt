@@ -6,6 +6,7 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import apc.appcradle.kotlinjc_friendsactivity_app.domain.NetworkClient
+import apc.appcradle.kotlinjc_friendsactivity_app.domain.TokenStorage
 import apc.appcradle.kotlinjc_friendsactivity_app.domain.model.AppState
 import apc.appcradle.kotlinjc_friendsactivity_app.permissions.PermissionManager
 import apc.appcradle.kotlinjc_friendsactivity_app.sensors.StepCounterService
@@ -17,7 +18,8 @@ import kotlinx.coroutines.launch
 
 class MainViewModel(
     private val permissionManager: PermissionManager,
-    private val networkClient: NetworkClient
+    private val networkClient: NetworkClient,
+    private val tokenStorage: TokenStorage
 ) : ViewModel() {
 
     private var _state = MutableStateFlow(AppState())
@@ -27,11 +29,26 @@ class MainViewModel(
     val isSend: StateFlow<Boolean?> = _isSend.asStateFlow()
 
     init {
+        checkAuth()
         viewModelScope.launch {
             permissionManager.permissionsGranted.collect { isGranted ->
                 _state.update { it.copy(isPermissionsGet = isGranted) }
             }
         }
+    }
+
+    private fun checkAuth() {
+        val token = tokenStorage.getToken()
+        if (token != null) {
+            _state.update { it.copy(isLoggedIn = true) }
+        }
+        Log.d("dataTransfer", "Token is valid. Loading main screen...")
+    }
+
+    fun logout() {
+        tokenStorage.clearToken()
+        _state.update { it.copy(isLoggedIn = false) }
+        _isSend.update { null } // Reset registration state
     }
 
     fun isRunning(context: Context) {
@@ -52,17 +69,17 @@ class MainViewModel(
 
     }
 
-    suspend fun sendRegisterData(login: String, password: String): Boolean? {
-//        viewModelScope.launch {
-            val isSend = networkClient.sendRegistrationInfo(login, password)
-            if (isSend) {
+    fun sendRegisterData(login: String, password: String) {
+        viewModelScope.launch {
+            val isSuccess = networkClient.sendRegistrationInfo(login, password)
+            if (isSuccess) {
                 Log.i("dataTransfer", "viewModel transfer - OK")
                 _isSend.update { true }
+                _state.update { it.copy(isLoggedIn = true) }
             } else {
                 Log.e("dataTransfer", "viewModel transfer not successful")
                 _isSend.update { false }
             }
-//        }
-        return isSend
+        }
     }
 }

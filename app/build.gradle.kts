@@ -80,4 +80,8 @@ dependencies {
     implementation(libs.ktor.client.content.negotiation)
     implementation(libs.ktor.serialization.kotlinx.json)
     implementation(libs.kotlinx.serialization.json.v160)
+    implementation(libs.ktor.client.auth)
+
+    // Security
+    implementation(libs.androidx.security.crypto)
 }
