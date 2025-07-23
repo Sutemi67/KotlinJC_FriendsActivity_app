@@ -63,7 +63,7 @@ class MainViewModel(
     fun logout() {
         tokenStorage.clearToken()
         _state.update { it.copy(isLoggedIn = false) }
-        _transferState.update { it.copy(isSuccessful = true) }
+        _transferState.update { it.copy(isSuccessful = null, errorMessage = null) }
     }
 
     private fun checkPermanentAuth() {
