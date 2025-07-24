@@ -34,7 +34,7 @@ fun RatingsScreen() {
     val isSynced = statsRepository.syncStatus.collectAsState().value
 
     LaunchedEffect(Unit) {
-        val sync = scope.async { statsRepository.percentageCalc() }
+        val sync = scope.async { statsRepository.percentageMax() }
         sync.await()
         list = statsRepository.playersList
         Log.d("players", "data synced")

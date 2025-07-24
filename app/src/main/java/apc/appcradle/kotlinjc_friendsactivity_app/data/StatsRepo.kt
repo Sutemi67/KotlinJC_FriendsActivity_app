@@ -1,6 +1,5 @@
 package apc.appcradle.kotlinjc_friendsactivity_app.data
 
-import android.util.Log
 import apc.appcradle.kotlinjc_friendsactivity_app.domain.model.PlayerActivityData
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -27,6 +26,19 @@ class StatsRepo {
         }
         playersList.forEach { it ->
             it.percentage = it.steps.toFloat() / sumSteps
+        }
+        playersList.sortByDescending { it.percentage }
+        _syncStatus.update { false }
+    }
+
+    fun percentageMax() {
+        _syncStatus.update { true }
+        var maxSteps = 0
+        playersList.forEach { it ->
+            if (it.steps > maxSteps) maxSteps = it.steps
+        }
+        playersList.forEach { it ->
+            it.percentage = it.steps.toFloat() / maxSteps
         }
         playersList.sortByDescending { it.percentage }
         _syncStatus.update { false }
