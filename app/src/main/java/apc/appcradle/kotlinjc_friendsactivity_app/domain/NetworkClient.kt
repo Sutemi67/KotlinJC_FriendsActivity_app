@@ -5,6 +5,7 @@ import apc.appcradle.kotlinjc_friendsactivity_app.domain.model.DataTransferState
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.engine.android.Android
+import io.ktor.client.plugins.HttpTimeout
 import io.ktor.client.plugins.auth.Auth
 import io.ktor.client.plugins.auth.providers.BearerTokens
 import io.ktor.client.plugins.auth.providers.bearer
@@ -18,6 +19,7 @@ import io.ktor.http.isSuccess
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
+import java.net.SocketTimeoutException
 
 class NetworkClient(private val tokenStorage: TokenStorage) {
 
@@ -46,6 +48,9 @@ class NetworkClient(private val tokenStorage: TokenStorage) {
     }
 
     private val networkService = HttpClient(engineFactory = Android) {
+        install(HttpTimeout) {
+            requestTimeoutMillis = 3000
+        }
         install(ContentNegotiation) {
             json(
                 Json {
@@ -104,14 +109,14 @@ class NetworkClient(private val tokenStorage: TokenStorage) {
                     "dataTransfer",
                     "сохраненный токен: ${tokenStorage.getToken()}\nвыданный токен: $token"
                 )
-                DataTransferState(true)
+                DataTransferState(isLoading = false, true)
             } else {
                 Log.e("dataTransfer", "${response.body<String?>()}")
-                DataTransferState(true, response.body<String?>())
+                DataTransferState(isLoading = false, true, response.body<String?>())
             }
-        } catch (e: Exception) {
+        } catch (e: SocketTimeoutException) {
             Log.e("dataTransfer", "not successful sending", e)
-            DataTransferState(false, "Connection error")
+            DataTransferState(isLoading = false, false, "Connection error: server does not respond")
         }
     }
 
@@ -133,14 +138,14 @@ class NetworkClient(private val tokenStorage: TokenStorage) {
                     "dataTransfer",
                     "сохраненный токен: ${tokenStorage.getToken()}\nвыданный токен: $token"
                 )
-                DataTransferState(true, errorMessage = null)
+                DataTransferState(isLoading = false, true, errorMessage = null)
             } else {
                 Log.e("dataTransfer", "${response.body<String?>()}")
-                DataTransferState(true, response.body<String?>())
+                DataTransferState(isLoading = false, true, response.body<String?>())
             }
-        } catch (e: Exception) {
-            Log.e("dataTransfer", "not successful sending", e)
-            DataTransferState(false, "Connection error")
+        } catch (e: SocketTimeoutException) {
+            Log.e("dataTransfer", "error is - ${e.message}")
+            DataTransferState(isLoading = false, false, "Connection error: server does not respond")
         }
     }
 

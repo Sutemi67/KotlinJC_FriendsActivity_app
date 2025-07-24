@@ -14,6 +14,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -30,8 +31,8 @@ fun RegistrationScreen(
     viewModel: MainViewModel,
     toMainScreen: () -> Unit,
 ) {
-    var loginText by remember { mutableStateOf("") }
-    var passText by remember { mutableStateOf("") }
+    var loginText by rememberSaveable { mutableStateOf("") }
+    var passText by rememberSaveable { mutableStateOf("") }
     val transferResult: DataTransferState by viewModel.transferState.collectAsState()
 
     LaunchedEffect(transferResult) {
@@ -56,10 +57,12 @@ fun RegistrationScreen(
             )
             AppComponents.AppInputField(
                 label = "login",
+                value = loginText,
                 onValueChange = { loginText = it }
             )
             AppComponents.AppInputField(
                 label = "password",
+                value = passText,
                 onValueChange = { passText = it }
             )
 

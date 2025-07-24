@@ -71,16 +71,20 @@ class MainViewModel(
         if (token != null) {
             _state.update { it.copy(isLoggedIn = true) }
             Log.d("dataTransfer", "Token is valid. Loading main screen...")
+        } else {
+            Log.d("dataTransfer", "Permanent token is not valid...")
         }
     }
 
     fun sendLoginData(login: String, password: String) {
         viewModelScope.launch {
+            _transferState.update { it.copy(isLoading = true) }
             val result = networkClient.sendLoginInfo(login, password)
             if (result.isSuccessful == true && result.errorMessage == null) {
                 Log.i("dataTransfer", "viewModel transfer - OK")
                 _transferState.update {
                     it.copy(
+                        isLoading = false,
                         isSuccessful = true,
                         errorMessage = result.errorMessage
                     )
@@ -94,6 +98,7 @@ class MainViewModel(
                 Log.e("dataTransfer", "viewModel transfer not successful")
                 _transferState.update {
                     it.copy(
+                        isLoading = false,
                         isSuccessful = result.isSuccessful,
                         errorMessage = result.errorMessage
                     )
@@ -104,11 +109,13 @@ class MainViewModel(
 
     fun sendRegisterData(login: String, password: String) {
         viewModelScope.launch {
+            _transferState.update { it.copy(isLoading = true) }
             val result = networkClient.sendRegistrationInfo(login, password)
             if (result.isSuccessful == true && result.errorMessage == null) {
                 Log.i("dataTransfer", "viewModel transfer - OK")
                 _transferState.update {
                     it.copy(
+                        isLoading = false,
                         isSuccessful = true,
                         errorMessage = result.errorMessage
                     )
@@ -118,6 +125,7 @@ class MainViewModel(
                 Log.e("dataTransfer", "viewModel transfer error: ${result.errorMessage}")
                 _transferState.update {
                     it.copy(
+                        isLoading = false,
                         isSuccessful = result.isSuccessful,
                         errorMessage = result.errorMessage
                     )

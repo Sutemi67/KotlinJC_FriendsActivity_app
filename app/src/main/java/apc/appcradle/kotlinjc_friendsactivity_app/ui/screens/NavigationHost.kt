@@ -1,6 +1,5 @@
 package apc.appcradle.kotlinjc_friendsactivity_app.ui.screens
 
-import android.util.Log
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
@@ -8,7 +7,6 @@ import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
@@ -16,6 +14,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import apc.appcradle.kotlinjc_friendsactivity_app.MainViewModel
+import apc.appcradle.kotlinjc_friendsactivity_app.ui.app_components.AppComponents
 import apc.appcradle.kotlinjc_friendsactivity_app.ui.screens.auth.authScreen
 import apc.appcradle.kotlinjc_friendsactivity_app.ui.screens.auth.registration.nav.registerScreen
 import apc.appcradle.kotlinjc_friendsactivity_app.ui.screens.auth.registration.nav.toRegisterScreen
@@ -35,18 +34,22 @@ fun NavigationHost(
     val noAuthDestinations =
         Destinations.entries.filter { it != Destinations.AUTH && it != Destinations.REGISTER }
 
-    LaunchedEffect(state.isLoggedIn) {
-        if (!state.isLoggedIn) {
-            Log.d("dataTransfer", "goes to auth in launched effect in host")
-            navController.navigate(Destinations.AUTH.route) {
-                popUpTo(navController.graph.startDestinationId) {
-                    inclusive = true
-                }
-            }
-        }
-    }
+//    LaunchedEffect(state.isLoggedIn) {
+//        if (!state.isLoggedIn) {
+//            Log.d("dataTransfer", "goes to auth in launched effect in host")
+//            navController.navigate(Destinations.AUTH.route) {
+//                popUpTo(0) { inclusive = true }
+//            }
+//        }
+//    }
 
     Scaffold(
+        topBar = {
+            if (navBackStackEntry?.destination?.route != Destinations.AUTH.route &&
+                navBackStackEntry?.destination?.route != Destinations.REGISTER.route
+            )
+                AppComponents.AppTopBar()
+        },
         bottomBar = {
             if (navBackStackEntry?.destination?.route != Destinations.AUTH.route &&
                 navBackStackEntry?.destination?.route != Destinations.REGISTER.route
@@ -76,12 +79,7 @@ fun NavigationHost(
             startDestination = startDestination
         ) {
             authScreen(
-                sendLoginData = { log, pass ->
-                    viewModel.sendLoginData(login = log, password = pass)
-//                    navController.navigate(Destinations.MAIN.route) {
-//                        popUpTo(Destinations.AUTH.route) { inclusive = true }
-//                    }
-                },
+                viewModel = viewModel,
                 toRegisterScreen = { navController.toRegisterScreen() }
             )
             registerScreen(viewModel) { navController.toMainScreen() }

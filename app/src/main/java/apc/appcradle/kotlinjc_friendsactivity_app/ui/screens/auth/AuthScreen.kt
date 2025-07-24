@@ -1,5 +1,11 @@
 package apc.appcradle.kotlinjc_friendsactivity_app.ui.screens.auth
 
+import android.util.Log
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -9,20 +15,21 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material3.ElevatedButton
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import apc.appcradle.kotlinjc_friendsactivity_app.MainViewModel
 import apc.appcradle.kotlinjc_friendsactivity_app.ui.app_components.AppComponents
-import apc.appcradle.kotlinjc_friendsactivity_app.ui.theme.KotlinJC_FriendsActivity_appTheme
 
 private enum class FieldState {
     Login, Password
@@ -30,12 +37,13 @@ private enum class FieldState {
 
 @Composable
 fun AuthScreen(
-    sendLoginData: (String, String) -> Unit,
+    viewModel: MainViewModel,
     onRegisterClick: () -> Unit
 ) {
-    var fieldState by remember { mutableStateOf(FieldState.Login) }
-    var loginText by remember { mutableStateOf("") }
-    var passwordText by remember { mutableStateOf("") }
+    var fieldState by rememberSaveable { mutableStateOf(FieldState.Login) }
+    var loginText by rememberSaveable { mutableStateOf("") }
+    var passwordText by rememberSaveable { mutableStateOf("") }
+    val transferState = viewModel.transferState.collectAsState().value
 
     Scaffold { paddingValues ->
         Box(
@@ -53,39 +61,56 @@ fun AuthScreen(
                     text = "Hello, user!\nPlease login or register",
                     textAlign = TextAlign.Center
                 )
-                when (fieldState) {
-                    FieldState.Login -> {
-                        AppComponents.AppInputField(
-                            label = "enter your login",
-                            onValueChange = { loginText = it },
-                            trailingIcon = if (loginText.isNotBlank()) Icons.Default.PlayArrow else null,
-                            onIconClick = { fieldState = FieldState.Password }
-                        )
-                    }
-
-                    FieldState.Password -> {
-                        AppComponents.AppInputField(
-                            label = "enter your password",
-                            onValueChange = { passwordText = it },
-                            trailingIcon = if (passwordText.isNotBlank()) Icons.Default.PlayArrow else null,
-                            onIconClick = { sendLoginData(loginText, passwordText) }
-                        )
-                    }
+                AnimatedVisibility(
+                    visible = fieldState == FieldState.Login,
+                    enter = fadeIn() + expandVertically(),
+                    exit = fadeOut() + shrinkVertically()
+                ) {
+                    AppComponents.AppInputField(
+                        label = "enter your login",
+                        value = loginText,
+                        onValueChange = { loginText = it },
+                        trailingIcon = if (loginText.isNotBlank()) Icons.Default.PlayArrow else null,
+                        onIconClick = { fieldState = FieldState.Password }
+                    )
                 }
-
+                AnimatedVisibility(
+                    visible = fieldState == FieldState.Password,
+                    enter = fadeIn() + expandVertically(),
+                    exit = fadeOut() + shrinkVertically()
+                ) {
+                    AppComponents.AppInputField(
+                        label = "enter your password",
+                        value = passwordText,
+                        onValueChange = { passwordText = it },
+                        trailingIcon = if (passwordText.isNotBlank()) Icons.Default.PlayArrow else null,
+                        onIconClick = {
+                            Log.d("dataTransfer", "$loginText, $passwordText")
+                            viewModel.sendLoginData(loginText, passwordText)
+                        },
+                        needLeadingBackIcon = true,
+                        onLeadingIconClick = { fieldState = FieldState.Login }
+                    )
+                }
+                if (transferState.isLoading) {
+                    LinearProgressIndicator(modifier = Modifier.padding(horizontal = 15.dp))
+                }
                 ElevatedButton(
                     modifier = Modifier.width(200.dp),
                     onClick = onRegisterClick
                 ) { Text("or Register...") }
+                if (transferState.errorMessage != null) {
+                    Text(transferState.errorMessage)
+                }
             }
         }
     }
 }
 
-@Preview
-@Composable
-private fun Preview() {
-    KotlinJC_FriendsActivity_appTheme {
-        AuthScreen(sendLoginData = { log, pass -> {} }, onRegisterClick = {})
-    }
-}
+//@Preview
+//@Composable
+//private fun Preview() {
+//    KotlinJC_FriendsActivity_appTheme {
+//        AuthScreen(sendLoginData = { log, pass -> {} }, onRegisterClick = {})
+//    }
+//}
