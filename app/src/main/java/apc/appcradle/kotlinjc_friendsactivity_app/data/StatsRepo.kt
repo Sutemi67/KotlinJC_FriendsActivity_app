@@ -14,7 +14,9 @@ class StatsRepo {
     val playersList = mutableListOf(
         PlayerActivityData("Alexander", 4324, 0f),
         PlayerActivityData("Maria", 343, 0f),
-        PlayerActivityData("Nicolas", 43242, 0.3f),
+        PlayerActivityData("Nicolas", 43242, 0f),
+        PlayerActivityData("Andrew", 13242, 0f),
+        PlayerActivityData("Maike", 11322, 0f),
     )
 
     fun percentageCalc() {
