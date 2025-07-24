@@ -14,5 +14,5 @@ fun NavController.toRatingsScreen() {
 fun NavGraphBuilder.ratingsScreen(
     viewModel: MainViewModel
 ) {
-    composable(Destinations.RATINGS.route) { RatingsScreen(viewModel) }
+    composable(Destinations.RATINGS.route) { RatingsScreen() }
 }

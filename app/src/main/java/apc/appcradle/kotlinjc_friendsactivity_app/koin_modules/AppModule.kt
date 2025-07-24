@@ -1,6 +1,7 @@
 package apc.appcradle.kotlinjc_friendsactivity_app.koin_modules
 
 import apc.appcradle.kotlinjc_friendsactivity_app.MainViewModel
+import apc.appcradle.kotlinjc_friendsactivity_app.data.StatsRepo
 import apc.appcradle.kotlinjc_friendsactivity_app.domain.NetworkClient
 import apc.appcradle.kotlinjc_friendsactivity_app.domain.TokenStorage
 import apc.appcradle.kotlinjc_friendsactivity_app.permissions.PermissionManager
@@ -14,5 +15,7 @@ val appModule = module {
     singleOf(::PermissionManager)
     singleOf(::TokenStorage)
     singleOf(::NetworkClient)
+    singleOf(::StatsRepo)
+
     viewModelOf(::MainViewModel)
 }
