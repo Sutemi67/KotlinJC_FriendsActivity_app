@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
@@ -84,19 +83,7 @@ fun PermittedUi(
                     }
                 )
             }
-//            Text(
-//                text = "Если вы прошли уже несколько шагов и вверху не 0, то сбор статистики можно выключить для экономии батареи, а затем включить для обновления данных в любой момент (нужно будет шагнуть). Либо оставить обновление постоянным.",
-//                style = TextStyle(
-//                    fontSize = 12.sp,
-//                    color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.5f)
-//                )
-//            )
         }
-        ElevatedButton(
-            onClick = {
-//                sensorManager.resetSteps()
-            }
-        ) { Text("Reset steps count") }
     }
 }
 

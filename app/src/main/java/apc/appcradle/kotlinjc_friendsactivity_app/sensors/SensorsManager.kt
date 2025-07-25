@@ -53,7 +53,7 @@ class AppSensorsManager(
         if (!isSaved) {
             isSaved = true
             CoroutineScope(Dispatchers.IO).launch {
-                delay(6000)
+                delay(10000)
                 settingsPreferences.saveSteps(currentSteps)
                 isSaved = false
             }

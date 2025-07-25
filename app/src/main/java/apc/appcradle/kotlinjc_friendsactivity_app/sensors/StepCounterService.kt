@@ -9,6 +9,7 @@ import android.content.pm.ServiceInfo
 import android.os.Build
 import android.os.IBinder
 import android.util.Log
+import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
 import org.koin.android.ext.android.inject
 
@@ -20,12 +21,14 @@ class StepCounterService : Service() {
 
     private val sensorManager: AppSensorsManager by inject()
 
+    @RequiresApi(Build.VERSION_CODES.S)
     override fun onCreate() {
         super.onCreate()
         createNotificationChannel()
         startServiceInForeground()
     }
 
+    @RequiresApi(Build.VERSION_CODES.S)
     private fun startServiceInForeground() {
         try {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
@@ -46,7 +49,6 @@ class StepCounterService : Service() {
 
                 else -> {
                     Log.e("service", "Unknown error starting service: ${e.message}")
-                    // На старых версиях Android пробуем запустить без типа сервиса
                     try {
                         startForeground(NOTIFICATION_ID, createNotification())
                     } catch (e2: Exception) {
@@ -57,10 +59,6 @@ class StepCounterService : Service() {
             }
         }
     }
-
-//    fun cancelNotify() {
-//        notificationManager.cancel(NOTIFICATION_ID)
-//    }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         sensorManager.startCounting()
