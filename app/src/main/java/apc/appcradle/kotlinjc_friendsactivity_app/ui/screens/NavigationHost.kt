@@ -7,9 +7,11 @@ import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
@@ -37,15 +39,11 @@ fun NavigationHost(
         Destinations.entries.filter { it != Destinations.AUTH && it != Destinations.REGISTER }
 
     val sensorManager: AppSensorsManager = koinInject<AppSensorsManager>()
+    val context = LocalContext.current
 
-//    LaunchedEffect(state.isLoggedIn) {
-//        if (!state.isLoggedIn) {
-//            Log.d("dataTransfer", "goes to auth in launched effect in host")
-//            navController.navigate(Destinations.AUTH.route) {
-//                popUpTo(0) { inclusive = true }
-//            }
-//        }
-//    }
+    LaunchedEffect(Unit) {
+        viewModel.isServiceRunning(context)
+    }
 
     Scaffold(
         topBar = {

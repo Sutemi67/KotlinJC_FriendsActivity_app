@@ -31,10 +31,6 @@ fun PermittedUi(
     val state = viewModel.state.collectAsState()
     val stepCount by sensorManager.stepsData.collectAsState()
 
-    LaunchedEffect(Unit) {
-        viewModel.isServiceRunning(context)
-    }
-
     Column(
         modifier = Modifier
             .fillMaxSize()
