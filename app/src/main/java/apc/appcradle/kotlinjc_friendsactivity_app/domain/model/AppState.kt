@@ -8,4 +8,5 @@ data class AppState(
     val isLoggedIn: Boolean = false,
 
     val currentDestination: String = Destinations.AUTH.route,
+    val userLogin: String? = null
 )

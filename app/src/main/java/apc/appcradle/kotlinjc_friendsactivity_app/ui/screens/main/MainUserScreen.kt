@@ -12,11 +12,13 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import apc.appcradle.kotlinjc_friendsactivity_app.MainViewModel
 import apc.appcradle.kotlinjc_friendsactivity_app.permissions.PermissionManager
+import apc.appcradle.kotlinjc_friendsactivity_app.sensors.AppSensorsManager
 import org.koin.compose.koinInject
 
 @Composable
 fun MainUserScreen(
     viewModel: MainViewModel,
+    sensorManager: AppSensorsManager
 ) {
     val permissionManager = koinInject<PermissionManager>()
 
@@ -41,7 +43,7 @@ fun MainUserScreen(
                     }
                 )
             } else {
-                PermittedUi(viewModel = viewModel)
+                PermittedUi(viewModel = viewModel, sensorManager = sensorManager)
             }
         }
     }

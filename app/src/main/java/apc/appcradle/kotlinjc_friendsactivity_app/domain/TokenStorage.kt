@@ -1,9 +1,9 @@
 package apc.appcradle.kotlinjc_friendsactivity_app.domain
 
 import android.content.Context
+import androidx.core.content.edit
 import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKeys
-import androidx.core.content.edit
 
 class TokenStorage(context: Context) {
     private val masterKeyAlias = MasterKeys.getOrCreate(MasterKeys.AES256_GCM_SPEC)
@@ -15,8 +15,15 @@ class TokenStorage(context: Context) {
         EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
     )
 
-    fun saveToken(token: String) {
-        sharedPreferences.edit { putString("auth_token", token) }
+    fun saveToken(login: String, token: String) {
+        sharedPreferences.edit {
+            putString("auth_token", token)
+            putString("login", login)
+        }
+    }
+
+    fun getLogin(): String? {
+        return sharedPreferences.getString("login", null)
     }
 
     fun getToken(): String? {

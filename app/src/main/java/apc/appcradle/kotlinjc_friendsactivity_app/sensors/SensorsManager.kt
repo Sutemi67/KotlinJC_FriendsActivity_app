@@ -24,6 +24,7 @@ class AppSensorsManager(context: Context) : SensorEventListener {
     val stepsData = _stepsData.asStateFlow()
 
     fun startCounting() {
+        Log.d("steps_debug", "Starting step counting, initial steps: $stepsInitial")
         stepCounterSensor?.let { sensor ->
             sensorManager.registerListener(
                 this,

@@ -23,10 +23,10 @@ import org.koin.compose.koinInject
 @Composable
 fun PermittedUi(
     viewModel: MainViewModel,
+    sensorManager: AppSensorsManager
 ) {
     val context = LocalContext.current
     val state = viewModel.state.collectAsState()
-    val sensorManager = koinInject<AppSensorsManager>()
     val stepCount by sensorManager.stepsData.collectAsState()
 
     Column(

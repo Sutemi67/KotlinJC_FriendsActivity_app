@@ -14,6 +14,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import apc.appcradle.kotlinjc_friendsactivity_app.MainViewModel
+import apc.appcradle.kotlinjc_friendsactivity_app.sensors.AppSensorsManager
 import apc.appcradle.kotlinjc_friendsactivity_app.ui.app_components.AppComponents
 import apc.appcradle.kotlinjc_friendsactivity_app.ui.screens.auth.authScreen
 import apc.appcradle.kotlinjc_friendsactivity_app.ui.screens.auth.registration.nav.registerScreen
@@ -23,6 +24,7 @@ import apc.appcradle.kotlinjc_friendsactivity_app.ui.screens.main.nav.toMainScre
 import apc.appcradle.kotlinjc_friendsactivity_app.ui.screens.ratings.nav.ratingsScreen
 import apc.appcradle.kotlinjc_friendsactivity_app.ui.screens.settings.nav.settingsScreen
 import org.koin.androidx.compose.koinViewModel
+import org.koin.compose.koinInject
 
 @Composable
 fun NavigationHost(
@@ -33,6 +35,8 @@ fun NavigationHost(
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val noAuthDestinations =
         Destinations.entries.filter { it != Destinations.AUTH && it != Destinations.REGISTER }
+
+    val sensorManager: AppSensorsManager = koinInject<AppSensorsManager>()
 
 //    LaunchedEffect(state.isLoggedIn) {
 //        if (!state.isLoggedIn) {
@@ -48,7 +52,7 @@ fun NavigationHost(
             if (navBackStackEntry?.destination?.route != Destinations.AUTH.route &&
                 navBackStackEntry?.destination?.route != Destinations.REGISTER.route
             )
-                AppComponents.AppTopBar()
+                AppComponents.AppTopBar(state.userLogin)
         },
         bottomBar = {
             if (navBackStackEntry?.destination?.route != Destinations.AUTH.route &&
@@ -83,8 +87,8 @@ fun NavigationHost(
                 toRegisterScreen = { navController.toRegisterScreen() }
             )
             registerScreen(viewModel) { navController.toMainScreen() }
-            mainScreen(viewModel)
-            ratingsScreen(viewModel)
+            mainScreen(viewModel, sensorManager)
+            ratingsScreen(viewModel, state.userLogin, sensorManager = sensorManager)
             settingsScreen(viewModel)
         }
     }

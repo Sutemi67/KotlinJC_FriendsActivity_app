@@ -10,7 +10,6 @@ import io.ktor.client.plugins.auth.Auth
 import io.ktor.client.plugins.auth.providers.BearerTokens
 import io.ktor.client.plugins.auth.providers.bearer
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
-import io.ktor.client.request.get
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
 import io.ktor.http.ContentType
@@ -21,7 +20,9 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 import java.net.SocketTimeoutException
 
-class NetworkClient(private val tokenStorage: TokenStorage) {
+class NetworkClient(
+    private val tokenStorage: TokenStorage
+) {
 
     companion object {
         @Serializable
@@ -44,6 +45,18 @@ class NetworkClient(private val tokenStorage: TokenStorage) {
         @Serializable
         data class LoginResponseRemote(
             val token: String
+        )
+
+        @Serializable
+        data class UserActivity(
+            val login: String,
+            val steps: Int
+        )
+
+        @Serializable
+        data class UserActivityResponse(
+            val friendsList: MutableList<UserActivity>,
+            val errorMessage: String?
         )
     }
 
@@ -80,11 +93,10 @@ class NetworkClient(private val tokenStorage: TokenStorage) {
         }
     }
 
-    //    private val serverUrl = "http://127.0.0.1:5555"
     private val serverUrl = "http://212.3.131.67:5555/"
 
-    private fun saveToken(token: String) {
-        tokenStorage.saveToken(token)
+    private fun saveToken(login: String, token: String) {
+        tokenStorage.saveToken(login = login, token = token)
     }
 
     fun clearToken() {
@@ -104,7 +116,7 @@ class NetworkClient(private val tokenStorage: TokenStorage) {
             }
             if (response.status.isSuccess()) {
                 val token = response.body<RegisterResponseRemote>().token
-                saveToken(token)
+                saveToken(login = login, token = token)
                 Log.d(
                     "dataTransfer",
                     "сохраненный токен: ${tokenStorage.getToken()}\nвыданный токен: $token"
@@ -133,7 +145,7 @@ class NetworkClient(private val tokenStorage: TokenStorage) {
             }
             if (response.status.isSuccess()) {
                 val token = response.body<LoginResponseRemote>().token
-                saveToken(token)
+                saveToken(login = login, token = token)
                 Log.d(
                     "dataTransfer",
                     "сохраненный токен: ${tokenStorage.getToken()}\nвыданный токен: $token"
@@ -150,14 +162,34 @@ class NetworkClient(private val tokenStorage: TokenStorage) {
     }
 
 
-    // Example of a request to a protected endpoint
-    suspend fun getSomeProtectedData(): String? {
+//    suspend fun getActivityData(): String? {
+//
+//        return try {
+//            networkService.get(urlString = "$serverUrl/some_protected_route").body()
+//        } catch (e: Exception) {
+//            Log.e("dataTransfer", "not successful getting protected data", e)
+//            null
+//        }
+//    }
+
+    suspend fun postUserDataAndSyncFriendsData(login: String, steps: Int): UserActivityResponse {
+        val body = UserActivity(login, steps)
         return try {
-            // The Auth plugin will automatically add the "Authorization: Bearer ..." header
-            networkService.get(urlString = "$serverUrl/some_protected_route").body()
+            val request = networkService.post(urlString = "$serverUrl/post_activity") {
+                contentType(ContentType.Application.Json)
+                setBody(body)
+            }
+            if (request.status.isSuccess()) {
+                val response = request.body<UserActivityResponse>()
+                Log.i("dataTransfer", "success: $response")
+                UserActivityResponse(response.friendsList, null)
+            } else {
+                Log.e("dataTransfer", "${request.body<String?>()}")
+                UserActivityResponse(mutableListOf(), "${request.body<String?>()}")
+            }
         } catch (e: Exception) {
-            Log.e("dataTransfer", "not successful getting protected data", e)
-            null
+            Log.e("dataTransfer", "not successful getting protected data in network client", e)
+            UserActivityResponse(mutableListOf(), "Connection error")
         }
     }
 }

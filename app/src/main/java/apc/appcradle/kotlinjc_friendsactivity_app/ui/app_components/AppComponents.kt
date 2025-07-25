@@ -84,9 +84,14 @@ object AppComponents {
 
     @OptIn(ExperimentalMaterial3Api::class)
     @Composable
-    fun AppTopBar() {
+    fun AppTopBar(login: String?) {
         TopAppBar(
-            title = { Text("Have a good day, login!") }
+            title = {
+                if (login != null)
+                    Text("Have a good day, $login!")
+                else
+                    Text("Have a good day!")
+            }
         )
     }
 }
@@ -108,6 +113,6 @@ private fun InputFieldPreview() {
 @Composable
 private fun AppTopBarPreview() {
     KotlinJC_FriendsActivity_appTheme {
-        AppComponents.AppTopBar()
+        AppComponents.AppTopBar("AlexxMagnus")
     }
 }

@@ -62,15 +62,27 @@ class MainViewModel(
     //region Authentification
     fun logout() {
         tokenStorage.clearToken()
-        _state.update { it.copy(isLoggedIn = false) }
+        _state.update {
+            it.copy(
+                isLoggedIn = false,
+                userLogin = null
+            )
+        }
         _transferState.update { it.copy(isSuccessful = null, errorMessage = null) }
     }
 
     private fun checkPermanentAuth() {
         val token = tokenStorage.getToken()
+
         if (token != null) {
-            _state.update { it.copy(isLoggedIn = true) }
-            Log.d("dataTransfer", "Token is valid. Loading main screen...")
+            val login = tokenStorage.getLogin()
+            _state.update {
+                it.copy(
+                    isLoggedIn = true,
+                    userLogin = login
+                )
+            }
+            Log.d("dataTransfer", "Token is valid. Loading main screen for login: $login")
         } else {
             Log.d("dataTransfer", "Permanent token is not valid...")
         }
@@ -91,7 +103,7 @@ class MainViewModel(
                 }
                 _state.update {
                     it.copy(
-                        isLoggedIn = true
+                        isLoggedIn = true, userLogin = login
                     )
                 }
             } else {
@@ -120,7 +132,12 @@ class MainViewModel(
                         errorMessage = result.errorMessage
                     )
                 }
-                _state.update { it.copy(isLoggedIn = true) }
+                _state.update {
+                    it.copy(
+                        isLoggedIn = true,
+                        userLogin = login
+                    )
+                }
             } else {
                 Log.e("dataTransfer", "viewModel transfer error: ${result.errorMessage}")
                 _transferState.update {
