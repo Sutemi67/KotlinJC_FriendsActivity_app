@@ -13,7 +13,7 @@ import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
 import org.koin.android.ext.android.inject
 
-class StepCounterService() : Service() {
+class StepCounterService : Service() {
     companion object {
         const val NOTIFICATION_ID = 1
         const val CHANNEL_ID = "StepCounterChannel"
@@ -25,6 +25,11 @@ class StepCounterService() : Service() {
     override fun onCreate() {
         super.onCreate()
         createNotificationChannel()
+        startServiceInForeground()
+    }
+
+    @RequiresApi(Build.VERSION_CODES.S)
+    private fun startServiceInForeground() {
         try {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
                 startForeground(
@@ -35,9 +40,23 @@ class StepCounterService() : Service() {
             } else {
                 startForeground(NOTIFICATION_ID, createNotification())
             }
-        } catch (e: ForegroundServiceStartNotAllowedException) {
-            stopSelf()
-            Log.i("sensors", "${e.message}")
+        } catch (e: Exception) {
+            when (e) {
+                is ForegroundServiceStartNotAllowedException -> {
+                    Log.e("sensors", "Failed to start foreground service: ${e.message}")
+                    stopSelf()
+                }
+                else -> {
+                    Log.e("sensors", "Unknown error starting service: ${e.message}")
+                    // На старых версиях Android пробуем запустить без типа сервиса
+                    try {
+                        startForeground(NOTIFICATION_ID, createNotification())
+                    } catch (e2: Exception) {
+                        Log.e("sensors", "Failed fallback start: ${e2.message}")
+                        stopSelf()
+                    }
+                }
+            }
         }
     }
 

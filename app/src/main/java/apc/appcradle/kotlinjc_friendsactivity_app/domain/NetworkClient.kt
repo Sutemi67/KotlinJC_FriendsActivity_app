@@ -62,13 +62,16 @@ class NetworkClient(
 
     private val networkService = HttpClient(engineFactory = Android) {
         install(HttpTimeout) {
-            requestTimeoutMillis = 3000
+            requestTimeoutMillis = 5000
+            connectTimeoutMillis = 5000
+            socketTimeoutMillis = 5000
         }
         install(ContentNegotiation) {
             json(
                 Json {
                     prettyPrint = true
                     isLenient = true
+                    ignoreUnknownKeys = true
                 }
             )
         }
@@ -83,9 +86,6 @@ class NetworkClient(
                     }
                 }
                 refreshTokens {
-                    // This block is called when a 401 Unauthorized response is received.
-                    // You can implement token refresh logic here if your API supports it.
-                    // For now, we will just clear the tokens as there is no refresh token logic.
                     tokenStorage.clearToken()
                     null
                 }
@@ -160,17 +160,6 @@ class NetworkClient(
             DataTransferState(isLoading = false, false, "Connection error: server does not respond")
         }
     }
-
-
-//    suspend fun getActivityData(): String? {
-//
-//        return try {
-//            networkService.get(urlString = "$serverUrl/some_protected_route").body()
-//        } catch (e: Exception) {
-//            Log.e("dataTransfer", "not successful getting protected data", e)
-//            null
-//        }
-//    }
 
     suspend fun postUserDataAndSyncFriendsData(login: String, steps: Int): UserActivityResponse {
         val body = UserActivity(login, steps)

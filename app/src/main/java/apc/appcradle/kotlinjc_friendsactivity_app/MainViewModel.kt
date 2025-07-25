@@ -3,6 +3,7 @@ package apc.appcradle.kotlinjc_friendsactivity_app
 import android.content.Context
 import android.content.Intent
 import android.util.Log
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import apc.appcradle.kotlinjc_friendsactivity_app.domain.NetworkClient
@@ -44,17 +45,31 @@ class MainViewModel(
         _state.update { it.copy(isServiceRunning = isRun) }
     }
 
+    fun dataUpdateChecker(state: Boolean) {
+        _state.update { it.copy(isDataUpdatePermanently = state) }
+    }
+
     fun startService(context: Context) {
         val serviceIntent = Intent(context, StepCounterService::class.java)
-        context.startService(serviceIntent)
-        isRunning(context)
+        try {
+            ContextCompat.startForegroundService(context, serviceIntent)
+            isRunning(context)
+        } catch (e: Exception) {
+            Log.e("service", "Failed to start service: ${e.message}")
+        }
     }
 
     fun stopService(context: Context) {
         val serviceIntent = Intent(context, StepCounterService::class.java)
         context.stopService(serviceIntent)
         isRunning(context)
+    }
 
+    private fun isServiceRunning(context: Context, serviceClass: Class<*>): Boolean {
+        val manager =
+            context.getSystemService(Context.ACTIVITY_SERVICE) as android.app.ActivityManager
+        return manager.getRunningServices(Integer.MAX_VALUE)
+            .any { it.service.className == serviceClass.name }
     }
 
     //endregion

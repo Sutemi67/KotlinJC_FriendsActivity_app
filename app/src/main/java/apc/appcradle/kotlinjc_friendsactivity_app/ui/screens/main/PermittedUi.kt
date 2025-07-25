@@ -14,9 +14,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -35,7 +32,6 @@ fun PermittedUi(
     val context = LocalContext.current
     val state = viewModel.state.collectAsState()
     val stepCount by sensorManager.stepsData.collectAsState()
-    var isSwitched by remember { mutableStateOf(false) }
 
     Column(
         modifier = Modifier
@@ -66,9 +62,9 @@ fun PermittedUi(
                 )
 
                 Switch(
-                    checked = isSwitched,
+                    checked = state.value.isDataUpdatePermanently,
                     onCheckedChange = { state ->
-                        isSwitched = state
+                        viewModel.dataUpdateChecker(state)
                         when (state) {
                             true -> {
                                 viewModel.startService(context)

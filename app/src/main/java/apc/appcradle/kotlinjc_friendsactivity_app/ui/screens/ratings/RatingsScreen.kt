@@ -43,13 +43,19 @@ fun RatingsScreen(
     val stepCount = sensorManager.stepsData.collectAsState().value
     var errorMessage: String? by remember { mutableStateOf("") }
 
-    LaunchedEffect(Unit, stepCount) {
+    LaunchedEffect(Unit) {
         if (login != null) {
             Log.d("dataTransfer", "Current stepCount before sync: $stepCount")
-            val sync = scope.async { statsRepository.syncData(login = login, steps = stepCount) }
-            errorMessage = sync.await()
-            list = statsRepository.playersList
-            Log.d("dataTransfer", "data synced, user=$login, steps=$stepCount")
+            try {
+                val sync =
+                    scope.async { statsRepository.syncData(login = login, steps = stepCount) }
+                errorMessage = sync.await()
+                list = statsRepository.playersList
+                Log.d("dataTransfer", "data synced, user=$login, steps=$stepCount")
+            } catch (e: Exception) {
+                Log.e("dataTransfer", "Error syncing data: ${e.message}")
+                errorMessage = "Error syncing data: ${e.message}"
+            }
         } else {
             list = emptyList()
         }
