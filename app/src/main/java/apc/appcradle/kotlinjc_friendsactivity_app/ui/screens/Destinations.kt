@@ -1,6 +1,7 @@
 package apc.appcradle.kotlinjc_friendsactivity_app.ui.screens
 
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Settings
@@ -39,14 +40,14 @@ enum class Destinations(
         { it.toMainScreen() }),
     RATINGS(
         "ratings",
-        Icons.Filled.Settings,
-        Icons.Filled.Home,
+        Icons.Filled.DateRange,
+        Icons.Filled.DateRange,
         "RatingsScreenRoute",
         { it.toRatingsScreen() }),
     SETTINGS(
         "settings",
         Icons.Filled.Settings,
-        Icons.Filled.Home,
+        Icons.Filled.Settings,
         "SettingsScreenRoute",
         { it.toSettingsScreen() })
 }
