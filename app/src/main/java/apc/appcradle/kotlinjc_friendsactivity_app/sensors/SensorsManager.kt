@@ -39,12 +39,11 @@ class AppSensorsManager(context: Context) : SensorEventListener {
         stepCounterSensor?.let { sensor ->
             sensorManager.unregisterListener(this, sensor)
         }
-//        rememberedSteps = currentSteps
     }
 
     fun resetSteps() {
         stepsInitial = -1
-//        _stepsData.value = 0
+        _stepsData.value = 0
     }
 
     override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) {}

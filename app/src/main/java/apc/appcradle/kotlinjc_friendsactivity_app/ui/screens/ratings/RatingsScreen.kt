@@ -40,9 +40,7 @@ fun RatingsScreen(
     var list by remember { mutableStateOf<List<PlayerActivityData>>(emptyList()) }
     val scope = rememberCoroutineScope()
     val isSynced = statsRepository.syncStatus.collectAsState().value
-
     val stepCount = sensorManager.stepsData.collectAsState().value
-
     var errorMessage: String? by remember { mutableStateOf("") }
 
     LaunchedEffect(Unit, stepCount) {

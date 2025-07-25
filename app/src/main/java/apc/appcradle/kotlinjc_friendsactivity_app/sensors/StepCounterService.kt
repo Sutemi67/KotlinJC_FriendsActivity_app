@@ -68,9 +68,9 @@ class StepCounterService() : Service() {
     }
 
     private fun createNotification() = NotificationCompat.Builder(this, CHANNEL_ID)
-        .setContentTitle("Подсчет шагов")
-        .setContentText("Пройдено: ${sensorManager.stepsData.value}")
-        .setSmallIcon(apc.appcradle.kotlinjc_friendsactivity_app.R.drawable.sleep)
+        .setContentTitle("Friends Activity")
+        .setContentText("Не сиди долго.")
+        .setSmallIcon(apc.appcradle.kotlinjc_friendsactivity_app.R.drawable.outline_directions_run_24)
         .setPriority(NotificationCompat.PRIORITY_LOW)
         .setOngoing(true)
         .build()
