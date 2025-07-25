@@ -1,6 +1,7 @@
 package apc.appcradle.kotlinjc_friendsactivity_app.domain
 
 import android.util.Log
+import apc.appcradle.kotlinjc_friendsactivity_app.data.TokenStorage
 import apc.appcradle.kotlinjc_friendsactivity_app.domain.model.DataTransferState
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
@@ -99,14 +100,7 @@ class NetworkClient(
         tokenStorage.saveToken(login = login, token = token)
     }
 
-    fun clearToken() {
-        tokenStorage.clearToken()
-    }
-
-    suspend fun sendRegistrationInfo(
-        login: String,
-        password: String
-    ): DataTransferState {
+    suspend fun sendRegistrationInfo(login: String, password: String): DataTransferState {
         val body = RegisterReceiveRemote(login = login, password = password)
 
         return try {
@@ -132,11 +126,7 @@ class NetworkClient(
         }
     }
 
-
-    suspend fun sendLoginInfo(
-        login: String,
-        password: String
-    ): DataTransferState {
+    suspend fun sendLoginInfo(login: String, password: String): DataTransferState {
         val body = LoginReceiveRemote(login, password)
         return try {
             val response = networkService.post(urlString = "$serverUrl/login") {

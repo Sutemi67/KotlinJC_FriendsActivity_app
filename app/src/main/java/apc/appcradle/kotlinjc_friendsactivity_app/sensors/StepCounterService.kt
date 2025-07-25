@@ -9,7 +9,6 @@ import android.content.pm.ServiceInfo
 import android.os.Build
 import android.os.IBinder
 import android.util.Log
-import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
 import org.koin.android.ext.android.inject
 
@@ -21,14 +20,12 @@ class StepCounterService : Service() {
 
     private val sensorManager: AppSensorsManager by inject()
 
-    @RequiresApi(Build.VERSION_CODES.S)
     override fun onCreate() {
         super.onCreate()
         createNotificationChannel()
         startServiceInForeground()
     }
 
-    @RequiresApi(Build.VERSION_CODES.S)
     private fun startServiceInForeground() {
         try {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
@@ -43,16 +40,17 @@ class StepCounterService : Service() {
         } catch (e: Exception) {
             when (e) {
                 is ForegroundServiceStartNotAllowedException -> {
-                    Log.e("sensors", "Failed to start foreground service: ${e.message}")
+                    Log.e("service", "Failed to start foreground service: ${e.message}")
                     stopSelf()
                 }
+
                 else -> {
-                    Log.e("sensors", "Unknown error starting service: ${e.message}")
+                    Log.e("service", "Unknown error starting service: ${e.message}")
                     // На старых версиях Android пробуем запустить без типа сервиса
                     try {
                         startForeground(NOTIFICATION_ID, createNotification())
                     } catch (e2: Exception) {
-                        Log.e("sensors", "Failed fallback start: ${e2.message}")
+                        Log.e("service", "Failed fallback start: ${e2.message}")
                         stopSelf()
                     }
                 }
@@ -60,13 +58,19 @@ class StepCounterService : Service() {
         }
     }
 
+//    fun cancelNotify() {
+//        notificationManager.cancel(NOTIFICATION_ID)
+//    }
+
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         sensorManager.startCounting()
+        Log.e("service", "Started")
         return START_STICKY
     }
 
     override fun onTaskRemoved(rootIntent: Intent?) {
-        sensorManager.stopCounting()
+//        sensorManager.stopCounting()
+        Log.e("service", "Stopped")
         super.onTaskRemoved(rootIntent)
     }
 
@@ -91,11 +95,12 @@ class StepCounterService : Service() {
         .setContentText("Не сиди долго.")
         .setSmallIcon(apc.appcradle.kotlinjc_friendsactivity_app.R.drawable.outline_directions_run_24)
         .setPriority(NotificationCompat.PRIORITY_LOW)
-        .setOngoing(true)
+//        .setOngoing(true)
         .build()
 
     override fun onDestroy() {
         super.onDestroy()
         sensorManager.stopCounting()
+        Log.e("service", "destroyed")
     }
 } 

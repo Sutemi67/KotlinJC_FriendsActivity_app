@@ -6,7 +6,7 @@ data class AppState(
     val isPermissionsGet: Boolean = false,
     val isServiceRunning: Boolean = false,
     val isLoggedIn: Boolean = false,
-    val isDataUpdatePermanently: Boolean = false,
+//    val isDataUpdatePermanently: Boolean = false,
 
     val currentDestination: String = Destinations.AUTH.route,
     val userLogin: String? = null

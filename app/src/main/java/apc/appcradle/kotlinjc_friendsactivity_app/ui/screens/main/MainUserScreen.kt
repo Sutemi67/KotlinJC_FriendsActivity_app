@@ -43,7 +43,10 @@ fun MainUserScreen(
                     }
                 )
             } else {
-                PermittedUi(viewModel = viewModel, sensorManager = sensorManager)
+                PermittedUi(
+                    viewModel = viewModel,
+                    sensorManager = sensorManager
+                )
             }
         }
     }

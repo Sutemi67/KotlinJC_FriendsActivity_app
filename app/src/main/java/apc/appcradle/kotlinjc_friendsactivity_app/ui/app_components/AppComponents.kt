@@ -36,7 +36,8 @@ object AppComponents {
         trailingIcon: ImageVector? = null,
         onIconClick: () -> Unit = {},
         needLeadingBackIcon: Boolean = false,
-        onLeadingIconClick: () -> Unit = {}
+        onLeadingIconClick: () -> Unit = {},
+        isError: Boolean = false
     ) {
 
         var inputText by rememberSaveable { mutableStateOf(value) }
@@ -61,6 +62,7 @@ object AppComponents {
                     }
                 }
             },
+            isError = isError,
             textStyle = TextStyle(textAlign = TextAlign.Center),
             leadingIcon = {
                 if (needLeadingBackIcon)
@@ -73,9 +75,20 @@ object AppComponents {
                     }
             },
             label = {
-                Text(
-                    text = label,
-                )
+                when (isError) {
+                    true -> {
+                        Text(
+                            text = "Can't be empty",
+                        )
+                    }
+
+                    false -> {
+                        Text(
+                            text = label,
+                        )
+                    }
+                }
+
             },
             shape = RoundedCornerShape(20.dp)
         )

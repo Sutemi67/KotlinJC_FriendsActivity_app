@@ -6,8 +6,8 @@ import android.util.Log
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import apc.appcradle.kotlinjc_friendsactivity_app.data.TokenStorage
 import apc.appcradle.kotlinjc_friendsactivity_app.domain.NetworkClient
-import apc.appcradle.kotlinjc_friendsactivity_app.domain.TokenStorage
 import apc.appcradle.kotlinjc_friendsactivity_app.domain.model.AppState
 import apc.appcradle.kotlinjc_friendsactivity_app.domain.model.DataTransferState
 import apc.appcradle.kotlinjc_friendsactivity_app.permissions.PermissionManager
@@ -40,20 +40,16 @@ class MainViewModel(
     }
 
     //region Service
-    fun isRunning(context: Context) {
+    fun isServiceRunning(context: Context) {
         val isRun: Boolean = isServiceRunning(context, StepCounterService::class.java)
         _state.update { it.copy(isServiceRunning = isRun) }
-    }
-
-    fun dataUpdateChecker(state: Boolean) {
-        _state.update { it.copy(isDataUpdatePermanently = state) }
     }
 
     fun startService(context: Context) {
         val serviceIntent = Intent(context, StepCounterService::class.java)
         try {
             ContextCompat.startForegroundService(context, serviceIntent)
-            isRunning(context)
+            isServiceRunning(context)
         } catch (e: Exception) {
             Log.e("service", "Failed to start service: ${e.message}")
         }
@@ -62,7 +58,7 @@ class MainViewModel(
     fun stopService(context: Context) {
         val serviceIntent = Intent(context, StepCounterService::class.java)
         context.stopService(serviceIntent)
-        isRunning(context)
+        isServiceRunning(context)
     }
 
     private fun isServiceRunning(context: Context, serviceClass: Class<*>): Boolean {

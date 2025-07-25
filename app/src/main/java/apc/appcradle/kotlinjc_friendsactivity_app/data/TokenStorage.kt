@@ -1,4 +1,4 @@
-package apc.appcradle.kotlinjc_friendsactivity_app.domain
+package apc.appcradle.kotlinjc_friendsactivity_app.data
 
 import android.content.Context
 import androidx.core.content.edit
@@ -33,4 +33,4 @@ class TokenStorage(context: Context) {
     fun clearToken() {
         sharedPreferences.edit { remove("auth_token") }
     }
-} 
+}

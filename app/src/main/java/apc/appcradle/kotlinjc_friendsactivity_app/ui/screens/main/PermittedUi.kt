@@ -7,11 +7,11 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ElevatedButton
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -23,7 +23,6 @@ import androidx.compose.ui.unit.sp
 import apc.appcradle.kotlinjc_friendsactivity_app.MainViewModel
 import apc.appcradle.kotlinjc_friendsactivity_app.sensors.AppSensorsManager
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PermittedUi(
     viewModel: MainViewModel,
@@ -33,6 +32,10 @@ fun PermittedUi(
     val state = viewModel.state.collectAsState()
     val stepCount by sensorManager.stepsData.collectAsState()
 
+    LaunchedEffect(Unit) {
+        viewModel.isServiceRunning(context)
+    }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -41,9 +44,14 @@ fun PermittedUi(
         verticalArrangement = Arrangement.Center
     ) {
         Text(
-            text = "Шагов пройдено: $stepCount",
-            style = MaterialTheme.typography.headlineMedium,
+            text = "Шагов пройдено:",
+            style = MaterialTheme.typography.bodyMedium,
             modifier = Modifier.padding(bottom = 16.dp)
+        )
+        Text(
+            modifier = Modifier.padding(bottom = 16.dp),
+            style = MaterialTheme.typography.headlineLarge,
+            text = "$stepCount"
         )
         Column(
             modifier = Modifier.padding(10.dp),
@@ -62,9 +70,8 @@ fun PermittedUi(
                 )
 
                 Switch(
-                    checked = state.value.isDataUpdatePermanently,
+                    checked = state.value.isServiceRunning,
                     onCheckedChange = { state ->
-                        viewModel.dataUpdateChecker(state)
                         when (state) {
                             true -> {
                                 viewModel.startService(context)
@@ -77,16 +84,18 @@ fun PermittedUi(
                     }
                 )
             }
-            Text(
-                text = "Если вы прошли уже несколько шагов и вверху не 0, то сбор статистики можно выключить для экономии батареи, а затем включить для обновления данных в любой момент (нужно будет шагнуть). Либо оставить обновление постоянным.",
-                style = TextStyle(
-                    fontSize = 12.sp,
-                    color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.5f)
-                )
-            )
+//            Text(
+//                text = "Если вы прошли уже несколько шагов и вверху не 0, то сбор статистики можно выключить для экономии батареи, а затем включить для обновления данных в любой момент (нужно будет шагнуть). Либо оставить обновление постоянным.",
+//                style = TextStyle(
+//                    fontSize = 12.sp,
+//                    color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.5f)
+//                )
+//            )
         }
         ElevatedButton(
-            onClick = { sensorManager.resetSteps() }
+            onClick = {
+//                sensorManager.resetSteps()
+            }
         ) { Text("Reset steps count") }
     }
 }

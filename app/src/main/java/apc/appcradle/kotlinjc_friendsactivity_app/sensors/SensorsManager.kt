@@ -7,24 +7,38 @@ import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
 import android.hardware.SensorManager
 import android.util.Log
+import apc.appcradle.kotlinjc_friendsactivity_app.data.SettingsPreferences
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
 
-class AppSensorsManager(context: Context) : SensorEventListener {
+class AppSensorsManager(
+    context: Context,
+    private val settingsPreferences: SettingsPreferences
+) : SensorEventListener {
 
     private val sensorManager = context.getSystemService(SENSOR_SERVICE) as SensorManager
     private val stepCounterSensor: Sensor? =
         sensorManager.getDefaultSensor(Sensor.TYPE_STEP_COUNTER)
 
-    private var stepsInitial = -1
-    private var currentSteps = 0
-//    private var rememberedSteps = 0
-
     private var _stepsData = MutableStateFlow(0)
     val stepsData = _stepsData.asStateFlow()
 
+    private var stepsInitial = loadSteps()
+    private var currentSteps = 0
+    private var stepsWithoutChecking = 0
+    private var isFirstStart = true
+    private var isSaved = false
+    private var saveJob: Job? = null
+
+    @OptIn(DelicateCoroutinesApi::class)
     fun startCounting() {
-        Log.d("steps_debug", "Starting step counting, initial steps: $stepsInitial")
+        Log.d("sensors", "Starting step counting, initial steps: $stepsInitial")
         stepCounterSensor?.let { sensor ->
             sensorManager.registerListener(
                 this,
@@ -35,14 +49,37 @@ class AppSensorsManager(context: Context) : SensorEventListener {
         }
     }
 
+    private fun saving() {
+        if (!isSaved) {
+            isSaved = true
+            CoroutineScope(Dispatchers.IO).launch {
+                delay(6000)
+                settingsPreferences.saveSteps(currentSteps)
+                isSaved = false
+            }
+            Log.i(
+                "sensors",
+                "log from coroutine, $currentSteps"
+            )
+        }
+    }
+
     fun stopCounting() {
         stepCounterSensor?.let { sensor ->
             sensorManager.unregisterListener(this, sensor)
         }
+        settingsPreferences.saveSteps(currentSteps)
+    }
+
+    fun loadSteps(): Int {
+        val steps = settingsPreferences.getSteps()
+        Log.i("sensors", "Steps loaded, $steps")
+        _stepsData.value = steps
+        return steps
     }
 
     fun resetSteps() {
-        stepsInitial = -1
+        stepsInitial = 0
         _stepsData.value = 0
     }
 
@@ -53,6 +90,10 @@ class AppSensorsManager(context: Context) : SensorEventListener {
             when (sensorEvent.sensor.type) {
                 Sensor.TYPE_STEP_COUNTER -> {
                     val totalSensorSteps = sensorEvent.values[0].toInt()
+                    if (isFirstStart) {
+                        stepsWithoutChecking = totalSensorSteps - stepsInitial
+                        isFirstStart = false
+                    }
                     stepsCounter(totalSensorSteps)
                 }
             }
@@ -60,14 +101,13 @@ class AppSensorsManager(context: Context) : SensorEventListener {
     }
 
     private fun stepsCounter(totalSensorSteps: Int) {
-        if (stepsInitial == -1) {
-            stepsInitial = totalSensorSteps
-        }
-        currentSteps = totalSensorSteps - stepsInitial
+        currentSteps = totalSensorSteps - stepsWithoutChecking
         _stepsData.value = currentSteps
-        Log.i(
-            "sensors",
-            "Steps detected: Total=$totalSensorSteps, Current=$currentSteps"
-        )
+        saving()
+//        Log.i(
+//            "sensors",
+//            "Steps detected:\nTotal=$totalSensorSteps\nCurrent=$currentSteps\nInitial=$stepsInitial\nwitoutChecking=$stepsWithoutChecking"
+//        )
     }
+
 }

@@ -1,6 +1,5 @@
 package apc.appcradle.kotlinjc_friendsactivity_app.ui.screens.auth
 
-import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
@@ -10,6 +9,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
@@ -26,6 +26,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import apc.appcradle.kotlinjc_friendsactivity_app.MainViewModel
@@ -37,8 +38,7 @@ private enum class FieldState {
 
 @Composable
 fun AuthScreen(
-    viewModel: MainViewModel,
-    onRegisterClick: () -> Unit
+    viewModel: MainViewModel, onRegisterClick: () -> Unit
 ) {
     var fieldState by rememberSaveable { mutableStateOf(FieldState.Login) }
     var loginText by rememberSaveable { mutableStateOf("") }
@@ -71,8 +71,7 @@ fun AuthScreen(
                         value = loginText,
                         onValueChange = { loginText = it },
                         trailingIcon = if (loginText.isNotBlank()) Icons.Default.PlayArrow else null,
-                        onIconClick = { fieldState = FieldState.Password }
-                    )
+                        onIconClick = { fieldState = FieldState.Password })
                 }
                 AnimatedVisibility(
                     visible = fieldState == FieldState.Password,
@@ -85,22 +84,23 @@ fun AuthScreen(
                         onValueChange = { passwordText = it },
                         trailingIcon = if (passwordText.isNotBlank()) Icons.Default.PlayArrow else null,
                         onIconClick = {
-                            Log.d("dataTransfer", "$loginText, $passwordText")
                             viewModel.sendLoginData(loginText, passwordText)
                         },
                         needLeadingBackIcon = true,
-                        onLeadingIconClick = { fieldState = FieldState.Login }
-                    )
+                        onLeadingIconClick = { fieldState = FieldState.Login })
                 }
-                if (transferState.isLoading) {
-                    LinearProgressIndicator(modifier = Modifier.padding(horizontal = 15.dp))
+                Box(Modifier.height(10.dp)) {
+                    if (transferState.isLoading) {
+                        LinearProgressIndicator(modifier = Modifier.padding(horizontal = 15.dp))
+                    }
                 }
                 ElevatedButton(
-                    modifier = Modifier.width(200.dp),
-                    onClick = onRegisterClick
-                ) { Text("or Register...") }
-                if (transferState.errorMessage != null) {
-                    Text(transferState.errorMessage)
+                    modifier = Modifier.width(200.dp), onClick = onRegisterClick
+                ) { Text("Create an account") }
+                Box(Modifier.height(30.dp)) {
+                    if (transferState.errorMessage != null) {
+                        Text(text = transferState.errorMessage, color = Color.Red)
+                    }
                 }
             }
         }
