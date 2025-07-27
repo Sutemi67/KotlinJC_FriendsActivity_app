@@ -102,7 +102,7 @@ fun RegistrationScreen(
                     }
                 }
             ) { Text("Зарегистрироваться") }
-            Box(Modifier.height(30.dp)) {
+            Box(Modifier.height(50.dp)) {
                 if (!transferResult.errorMessage.isNullOrEmpty()) {
                     Text(text = transferResult.errorMessage!!, color = Color.Red)
                 }

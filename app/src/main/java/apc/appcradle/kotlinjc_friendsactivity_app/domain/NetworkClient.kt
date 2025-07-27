@@ -94,7 +94,7 @@ class NetworkClient(
         }
     }
 
-    private val serverUrl = "http://212.3.131.67:5555/"
+    private val serverUrl = "http://212.3.131.67:6655/"
 
     private fun saveToken(login: String, token: String) {
         tokenStorage.saveToken(login = login, token = token)
@@ -120,9 +120,9 @@ class NetworkClient(
                 Log.e("dataTransfer", "${response.body<String?>()}")
                 DataTransferState(isLoading = false, true, response.body<String?>())
             }
-        } catch (e: SocketTimeoutException) {
+        } catch (e: Exception) {
             Log.e("dataTransfer", "not successful sending", e)
-            DataTransferState(isLoading = false, false, "Connection error: server does not respond")
+            DataTransferState(isLoading = false, false, "${e.message}")
         }
     }
 
@@ -168,7 +168,7 @@ class NetworkClient(
             }
         } catch (e: Exception) {
             Log.e("dataTransfer", "not successful getting protected data in network client", e)
-            UserActivityResponse(mutableListOf(), "Connection error")
+            UserActivityResponse(mutableListOf(), "Connection error: ${e.message}")
         }
     }
 }
