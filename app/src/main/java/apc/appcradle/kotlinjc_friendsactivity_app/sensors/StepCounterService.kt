@@ -6,6 +6,7 @@ import android.app.NotificationManager
 import android.app.Service
 import android.content.Intent
 import android.content.pm.ServiceInfo
+import android.graphics.BitmapFactory
 import android.os.Build
 import android.os.IBinder
 import android.util.Log
@@ -67,7 +68,6 @@ class StepCounterService : Service() {
     }
 
     override fun onTaskRemoved(rootIntent: Intent?) {
-//        sensorManager.stopCounting()
         Log.e("service", "Stopped")
         super.onTaskRemoved(rootIntent)
     }
@@ -92,6 +92,7 @@ class StepCounterService : Service() {
         .setContentTitle("Friends Activity")
         .setContentText("Не сиди долго.")
         .setSmallIcon(apc.appcradle.kotlinjc_friendsactivity_app.R.drawable.outline_directions_run_24)
+        .setLargeIcon(BitmapFactory.decodeResource(resources, apc.appcradle.kotlinjc_friendsactivity_app.R.mipmap.ic_launcher))
         .setPriority(NotificationCompat.PRIORITY_LOW)
 //        .setOngoing(true)
         .build()

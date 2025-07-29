@@ -9,7 +9,6 @@ import android.hardware.SensorManager
 import android.util.Log
 import apc.appcradle.kotlinjc_friendsactivity_app.data.SettingsPreferences
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -36,7 +35,6 @@ class AppSensorsManager(
     private var isSaved = false
     private var saveJob: Job? = null
 
-    @OptIn(DelicateCoroutinesApi::class)
     fun startCounting() {
         Log.d("sensors", "Starting step counting, initial steps: $stepsInitial")
         stepCounterSensor?.let { sensor ->
@@ -53,7 +51,7 @@ class AppSensorsManager(
         if (!isSaved) {
             isSaved = true
             CoroutineScope(Dispatchers.IO).launch {
-                delay(10000)
+                delay(60000)
                 settingsPreferences.saveSteps(currentSteps)
                 isSaved = false
             }
@@ -104,10 +102,6 @@ class AppSensorsManager(
         currentSteps = totalSensorSteps - stepsWithoutChecking
         _stepsData.value = currentSteps
         saving()
-//        Log.i(
-//            "sensors",
-//            "Steps detected:\nTotal=$totalSensorSteps\nCurrent=$currentSteps\nInitial=$stepsInitial\nwitoutChecking=$stepsWithoutChecking"
-//        )
     }
 
 }
