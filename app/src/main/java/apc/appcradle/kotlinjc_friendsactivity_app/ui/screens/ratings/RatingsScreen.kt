@@ -28,6 +28,7 @@ import apc.appcradle.kotlinjc_friendsactivity_app.data.StatsRepo
 import apc.appcradle.kotlinjc_friendsactivity_app.domain.model.PlayerActivityData
 import apc.appcradle.kotlinjc_friendsactivity_app.sensors.AppSensorsManager
 import apc.appcradle.kotlinjc_friendsactivity_app.ui.theme.KotlinJC_FriendsActivity_appTheme
+import apc.appcradle.kotlinjc_friendsactivity_app.ui.theme.Typography
 import kotlinx.coroutines.async
 import org.koin.compose.koinInject
 
@@ -69,11 +70,7 @@ fun RatingsScreen(
             if (isSynced)
                 LinearProgressIndicator()
         }
-        Text(
-            modifier = Modifier.padding(top = 10.dp),
-            text = "Players stats",
-            fontSize = 20.sp
-        )
+        StatsTable()
         if (errorMessage == null) {
             LazyColumn(
                 modifier = Modifier.fillMaxWidth()
@@ -93,7 +90,7 @@ fun RatingsScreen(
 
 @ThemePreviewsNoUi
 @Composable
-private fun Preview() {
+private fun Preview2() {
     KotlinJC_FriendsActivity_appTheme {
         RatingsScreen("AlexMagnuss")
     }
