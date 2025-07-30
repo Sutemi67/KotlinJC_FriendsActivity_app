@@ -5,17 +5,20 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.MaterialTheme.typography
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
+import apc.appcradle.kotlinjc_friendsactivity_app.PreviewsDifferentSizes
 import apc.appcradle.kotlinjc_friendsactivity_app.ui.theme.KotlinJC_FriendsActivity_appTheme
 
 @Composable
 fun StatsTable() {
+    val headerSize = typography.headlineLarge
+    val textSize = typography.bodyLarge
+
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -26,26 +29,26 @@ fun StatsTable() {
         Text(
             modifier = Modifier.padding(bottom = 10.dp),
             text = "Статистика игроков",
-            fontSize = 18.sp
+            style = headerSize
         )
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            Text("Чемпион прошлой недели: ", fontSize = 16.sp)
-            Text("конечно же ты <3", fontSize = 16.sp)
+            Text("Чемпион прошлой недели: ", style = textSize)
+            Text("конечно же ты <3", style = textSize)
         }
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            Text("В общем пройдено: ", fontSize = 16.sp)
-            Text("234 км.", fontSize = 16.sp)
+            Text("В общем пройдено: ", style = textSize)
+            Text("234 км.", style = textSize)
         }
     }
 }
 
-@Preview
+@PreviewsDifferentSizes
 @Composable
 private fun Preview() {
     KotlinJC_FriendsActivity_appTheme {

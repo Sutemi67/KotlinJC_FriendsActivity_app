@@ -38,7 +38,9 @@ fun PlayerStatsView(
             .padding(vertical = 4.dp, horizontal = 15.dp),
         shape = RoundedCornerShape(20.dp)
     ) {
-        Box() {
+        Box(
+            contentAlignment = Alignment.CenterStart
+        ) {
             Box(
                 modifier = Modifier
                     .background(
@@ -56,10 +58,13 @@ fun PlayerStatsView(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
+                    modifier = Modifier.weight(1f),
+                    style = MaterialTheme.typography.bodyLarge,
                     color = MaterialTheme.colorScheme.onSurface,
-                    text = "$index ${playerActivityData.login}"
+                    text = "${index + 1}. ${playerActivityData.login}"
                 )
                 Text(
+                    style = MaterialTheme.typography.bodyLarge,
                     color = MaterialTheme.colorScheme.onSurface,
                     text = "${playerActivityData.steps}"
                 )
@@ -68,7 +73,7 @@ fun PlayerStatsView(
     }
 }
 
-@Preview
+@Preview(device = "spec:width=411dp,height=891dp,dpi=160")
 @Composable
 private fun Preview() {
     KotlinJC_FriendsActivity_appTheme {

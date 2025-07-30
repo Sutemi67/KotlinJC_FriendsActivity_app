@@ -30,6 +30,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import apc.appcradle.kotlinjc_friendsactivity_app.MainViewModel
+import apc.appcradle.kotlinjc_friendsactivity_app.nonScaledSp
 import apc.appcradle.kotlinjc_friendsactivity_app.ui.app_components.AppComponents
 
 private enum class FieldState {
@@ -59,7 +60,8 @@ fun AuthScreen(
                 Text(
                     modifier = Modifier.padding(15.dp),
                     text = "Hello, user!\nPlease login or register",
-                    textAlign = TextAlign.Center
+                    textAlign = TextAlign.Center,
+                    fontSize = nonScaledSp(15)
                 )
                 AnimatedVisibility(
                     visible = fieldState == FieldState.Login,
@@ -96,7 +98,7 @@ fun AuthScreen(
                 }
                 ElevatedButton(
                     modifier = Modifier.width(200.dp), onClick = onRegisterClick
-                ) { Text("Create an account") }
+                ) { Text("Create an account", fontSize = nonScaledSp(15)) }
                 Box(Modifier.height(30.dp)) {
                     if (transferState.errorMessage != null) {
                         Text(text = transferState.errorMessage, color = Color.Red)
