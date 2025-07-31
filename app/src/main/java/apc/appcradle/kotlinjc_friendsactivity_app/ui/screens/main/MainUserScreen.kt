@@ -10,18 +10,17 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import apc.appcradle.kotlinjc_friendsactivity_app.MainViewModel
 import apc.appcradle.kotlinjc_friendsactivity_app.permissions.PermissionManager
-import apc.appcradle.kotlinjc_friendsactivity_app.sensors.AppSensorsManager
+import apc.appcradle.kotlinjc_friendsactivity_app.ui.screens.LocalSensorManager
+import apc.appcradle.kotlinjc_friendsactivity_app.ui.screens.LocalViewModel
 import org.koin.compose.koinInject
 
-@Composable
-fun MainUserScreen(
-    viewModel: MainViewModel,
-    sensorManager: AppSensorsManager
-) {
-    val permissionManager = koinInject<PermissionManager>()
 
+@Composable
+fun MainUserScreen() {
+    val viewModel = LocalViewModel.current
+    val sensorManager = LocalSensorManager.current
+    val permissionManager = koinInject<PermissionManager>()
     val state by viewModel.state.collectAsState()
 
     val permissionLauncher = rememberLauncherForActivityResult(
@@ -30,6 +29,7 @@ fun MainUserScreen(
         val allGranted = permissions.entries.all { it.value }
         permissionManager.onPermissionResult(allGranted)
     }
+
     Scaffold { paddingValues ->
         Box(
             modifier = Modifier
@@ -43,13 +43,9 @@ fun MainUserScreen(
                     }
                 )
             } else {
-                PermittedUi(
-                    viewModel = viewModel,
-                    sensorManager = sensorManager
-                )
+                PermittedUi(sensorManager.isStepSensorAvailable)
             }
         }
     }
-
 }
 

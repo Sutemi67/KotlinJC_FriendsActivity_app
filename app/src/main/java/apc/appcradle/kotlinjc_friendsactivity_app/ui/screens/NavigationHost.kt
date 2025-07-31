@@ -7,8 +7,10 @@ import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -28,6 +30,9 @@ import apc.appcradle.kotlinjc_friendsactivity_app.ui.screens.settings.nav.settin
 import org.koin.androidx.compose.koinViewModel
 import org.koin.compose.koinInject
 
+val LocalViewModel = compositionLocalOf<MainViewModel> { error("no view model provided") }
+val LocalSensorManager = compositionLocalOf<AppSensorsManager> { error("no view model provided") }
+
 @Composable
 fun NavigationHost(
 ) {
@@ -45,49 +50,54 @@ fun NavigationHost(
         viewModel.isServiceRunning(context)
     }
 
-    Scaffold(
-        topBar = {
-            if (navBackStackEntry?.destination?.route != Destinations.AUTH.route &&
-                navBackStackEntry?.destination?.route != Destinations.REGISTER.route
-            )
-                AppComponents.AppTopBar(state.userLogin)
-        },
-        bottomBar = {
-            if (navBackStackEntry?.destination?.route != Destinations.AUTH.route &&
-                navBackStackEntry?.destination?.route != Destinations.REGISTER.route
-            )
-                NavigationBar {
-                    noAuthDestinations.forEachIndexed { index, item ->
-                        NavigationBarItem(
-                            icon = {
-                                Icon(
-                                    if (navBackStackEntry?.destination?.route == item.route) item.iconSelected else item.iconUnselected,
-                                    contentDescription = item.label,
-                                )
-                            },
-                            label = { Text(item.label) },
-                            selected = navBackStackEntry?.destination?.route == item.route,
-                            onClick = { item.navigateOnClick(navController) },
-                        )
+    CompositionLocalProvider(
+        LocalViewModel provides viewModel,
+        LocalSensorManager provides sensorManager
+    ) {
+        Scaffold(
+            topBar = {
+                if (navBackStackEntry?.destination?.route != Destinations.AUTH.route &&
+                    navBackStackEntry?.destination?.route != Destinations.REGISTER.route
+                )
+                    AppComponents.AppTopBar(state.userLogin)
+            },
+            bottomBar = {
+                if (navBackStackEntry?.destination?.route != Destinations.AUTH.route &&
+                    navBackStackEntry?.destination?.route != Destinations.REGISTER.route
+                )
+                    NavigationBar {
+                        noAuthDestinations.forEachIndexed { index, item ->
+                            NavigationBarItem(
+                                icon = {
+                                    Icon(
+                                        if (navBackStackEntry?.destination?.route == item.route) item.iconSelected else item.iconUnselected,
+                                        contentDescription = item.label,
+                                    )
+                                },
+                                label = { Text(item.label) },
+                                selected = navBackStackEntry?.destination?.route == item.route,
+                                onClick = { item.navigateOnClick(navController) },
+                            )
+                        }
                     }
-                }
-        }
-    ) { contentPadding ->
-        val startDestination =
-            if (state.isLoggedIn) Destinations.MAIN.route else Destinations.AUTH.route
-        NavHost(
-            modifier = Modifier.padding(contentPadding),
-            navController = navController,
-            startDestination = startDestination
-        ) {
-            authScreen(
-                viewModel = viewModel,
-                toRegisterScreen = { navController.toRegisterScreen() }
-            )
-            registerScreen(viewModel) { navController.toMainScreen() }
-            mainScreen(viewModel, sensorManager)
-            ratingsScreen(viewModel, state.userLogin, sensorManager = sensorManager)
-            settingsScreen(viewModel)
+            }
+        ) { contentPadding ->
+            val startDestination =
+                if (state.isLoggedIn) Destinations.MAIN.route else Destinations.AUTH.route
+            NavHost(
+                modifier = Modifier.padding(contentPadding),
+                navController = navController,
+                startDestination = startDestination
+            ) {
+                authScreen(
+                    viewModel = viewModel,
+                    toRegisterScreen = { navController.toRegisterScreen() }
+                )
+                registerScreen(viewModel) { navController.toMainScreen() }
+                mainScreen()
+                ratingsScreen(viewModel, state.userLogin, sensorManager = sensorManager)
+                settingsScreen(viewModel)
+            }
         }
     }
 }

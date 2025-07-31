@@ -10,23 +10,46 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import apc.appcradle.kotlinjc_friendsactivity_app.MainViewModel
-import apc.appcradle.kotlinjc_friendsactivity_app.sensors.AppSensorsManager
+import apc.appcradle.kotlinjc_friendsactivity_app.ui.screens.LocalSensorManager
+import apc.appcradle.kotlinjc_friendsactivity_app.ui.screens.LocalViewModel
 
 @Composable
 fun PermittedUi(
-    viewModel: MainViewModel,
-    sensorManager: AppSensorsManager
+    isStepSensorsAvailable: Boolean
 ) {
+    if (isStepSensorsAvailable) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(10.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
+        ) {
+            Text(
+                text = "Шагомер не поддерживается на этом устройстве",
+                style = MaterialTheme.typography.bodyMedium,
+                modifier = Modifier.padding(bottom = 16.dp)
+            )
+        }
+        return
+    }
+    PermittedColumn()
+}
+
+@Composable
+private fun PermittedColumn() {
+
+    val viewModel = LocalViewModel.current
+    val sensorManager = LocalSensorManager.current
     val context = LocalContext.current
     val state = viewModel.state.collectAsState()
     val stepCount by sensorManager.stepsData.collectAsState()
@@ -83,10 +106,8 @@ fun PermittedUi(
     }
 }
 
-//@ThemePreviews
-//@Composable
-//private fun Preview() {
-//    KotlinJC_FriendsActivity_appTheme {
-//        PermittedUi()
-//    }
-//}
+@Preview
+@Composable
+private fun Preview() {
+    PermittedUi(false)
+}
