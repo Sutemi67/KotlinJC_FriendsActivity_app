@@ -10,18 +10,20 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import apc.appcradle.kotlinjc_friendsactivity_app.MainViewModel
 import apc.appcradle.kotlinjc_friendsactivity_app.permissions.PermissionManager
 import apc.appcradle.kotlinjc_friendsactivity_app.ui.screens.LocalSensorManager
-import apc.appcradle.kotlinjc_friendsactivity_app.ui.screens.LocalViewModel
 import org.koin.compose.koinInject
 
-
 @Composable
-fun MainUserScreen() {
-    val viewModel = LocalViewModel.current
-    val sensorManager = LocalSensorManager.current
+fun MainUserScreen(
+    viewModel: MainViewModel
+) {
+    val sensorsManager = LocalSensorManager.current
     val permissionManager = koinInject<PermissionManager>()
     val state by viewModel.state.collectAsState()
+    val context = LocalContext.current
 
     val permissionLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestMultiplePermissions()
@@ -43,7 +45,13 @@ fun MainUserScreen() {
                     }
                 )
             } else {
-                PermittedUi(sensorManager.isStepSensorAvailable)
+                PermittedUi(
+                    isStepSensorsAvailable = sensorsManager.isStepSensorAvailable,
+                    stepCount = sensorsManager.stepsData.collectAsState().value,
+                    isServiceRunning = state.isServiceRunning,
+                    onTrueCallback = { viewModel.startService(context) },
+                    onFalseCallback = { viewModel.stopService(context) }
+                )
             }
         }
     }

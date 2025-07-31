@@ -1,5 +1,6 @@
 package apc.appcradle.kotlinjc_friendsactivity_app.ui.screens
 
+import android.util.Log
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
@@ -30,12 +31,13 @@ import apc.appcradle.kotlinjc_friendsactivity_app.ui.screens.settings.nav.settin
 import org.koin.androidx.compose.koinViewModel
 import org.koin.compose.koinInject
 
-val LocalViewModel = compositionLocalOf<MainViewModel> { error("no view model provided") }
-val LocalSensorManager = compositionLocalOf<AppSensorsManager> { error("no view model provided") }
+val LocalSensorManager =
+    compositionLocalOf<AppSensorsManager> { error("No sensor manager provided") }
+val LocalViewModel =
+    compositionLocalOf<MainViewModel> { error("no view model provided") }
 
 @Composable
-fun NavigationHost(
-) {
+fun NavigationHost() {
     val viewModel: MainViewModel = koinViewModel()
     val state by viewModel.state.collectAsState()
     val navController = rememberNavController()
@@ -48,6 +50,7 @@ fun NavigationHost(
 
     LaunchedEffect(Unit) {
         viewModel.isServiceRunning(context)
+        Log.d("sensors", sensorManager.isStepSensorAvailable.toString())
     }
 
     CompositionLocalProvider(
@@ -94,9 +97,9 @@ fun NavigationHost(
                     toRegisterScreen = { navController.toRegisterScreen() }
                 )
                 registerScreen(viewModel) { navController.toMainScreen() }
-                mainScreen()
+                mainScreen(viewModel)
                 ratingsScreen(viewModel, state.userLogin, sensorManager = sensorManager)
-                settingsScreen(viewModel)
+                settingsScreen(onLogoutClick = { viewModel.logout() })
             }
         }
     }

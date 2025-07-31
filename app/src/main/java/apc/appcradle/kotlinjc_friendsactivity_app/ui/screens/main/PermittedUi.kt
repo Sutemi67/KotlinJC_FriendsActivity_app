@@ -10,23 +10,23 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import apc.appcradle.kotlinjc_friendsactivity_app.ui.screens.LocalSensorManager
-import apc.appcradle.kotlinjc_friendsactivity_app.ui.screens.LocalViewModel
+import apc.appcradle.kotlinjc_friendsactivity_app.ui.theme.KotlinJC_FriendsActivity_appTheme
 
 @Composable
 fun PermittedUi(
-    isStepSensorsAvailable: Boolean
+    isStepSensorsAvailable: Boolean,
+    stepCount: Int,
+    isServiceRunning: Boolean,
+    onTrueCallback: () -> Unit,
+    onFalseCallback: () -> Unit,
 ) {
-    if (isStepSensorsAvailable) {
+    if (!isStepSensorsAvailable) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -42,18 +42,6 @@ fun PermittedUi(
         }
         return
     }
-    PermittedColumn()
-}
-
-@Composable
-private fun PermittedColumn() {
-
-    val viewModel = LocalViewModel.current
-    val sensorManager = LocalSensorManager.current
-    val context = LocalContext.current
-    val state = viewModel.state.collectAsState()
-    val stepCount by sensorManager.stepsData.collectAsState()
-
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -80,7 +68,7 @@ private fun PermittedColumn() {
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Text(
-                    text = "Включить обновление шагов",
+                    text = "Включить счетчик",
                     style = TextStyle(
                         fontSize = 17.sp,
                         color = MaterialTheme.colorScheme.onBackground
@@ -88,19 +76,20 @@ private fun PermittedColumn() {
                 )
 
                 Switch(
-                    checked = state.value.isServiceRunning,
+                    checked = isServiceRunning,
                     onCheckedChange = { state ->
                         when (state) {
                             true -> {
-                                viewModel.startService(context)
+                                onTrueCallback()
                             }
 
                             false -> {
-                                viewModel.stopService(context)
+                                onFalseCallback()
                             }
                         }
                     }
                 )
+
             }
         }
     }
@@ -109,5 +98,12 @@ private fun PermittedColumn() {
 @Preview
 @Composable
 private fun Preview() {
-    PermittedUi(false)
+    KotlinJC_FriendsActivity_appTheme {
+        PermittedUi(
+            true,
+            stepCount = 2342,
+            isServiceRunning = true,
+            {},
+            {})
+    }
 }

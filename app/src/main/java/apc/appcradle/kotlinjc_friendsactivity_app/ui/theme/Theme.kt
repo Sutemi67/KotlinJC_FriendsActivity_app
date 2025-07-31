@@ -72,7 +72,6 @@ fun KotlinJC_FriendsActivity_appTheme(
     val typography: Typography = when (currentWindowSizeClass.widthSizeClass) {
         WindowWidthSizeClass.Expanded -> ExpandedTypography
         WindowWidthSizeClass.Medium -> MediumTypography
-//        else -> if (density > 3.5f) CompactHighDpiTypography else CompactTypography
         else -> when {
             density >= 3.1f -> CompactHighDpiTypography
             density >= 2.5f -> CompactTypography
