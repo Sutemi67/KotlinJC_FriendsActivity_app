@@ -1,5 +1,6 @@
 package apc.appcradle.kotlinjc_friendsactivity_app.ui.app_components
 
+import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -23,6 +24,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import apc.appcradle.kotlinjc_friendsactivity_app.ui.screens.Destinations
 import apc.appcradle.kotlinjc_friendsactivity_app.ui.theme.KotlinJC_FriendsActivity_appTheme
 
 object AppComponents {
@@ -39,7 +41,6 @@ object AppComponents {
         onLeadingIconClick: () -> Unit = {},
         isError: Boolean = false
     ) {
-
         var inputText by rememberSaveable { mutableStateOf(value) }
 
         OutlinedTextField(
@@ -94,16 +95,27 @@ object AppComponents {
         )
     }
 
-
     @OptIn(ExperimentalMaterial3Api::class)
     @Composable
-    fun AppTopBar(login: String?) {
+    fun AppTopBar(
+        login: String?,
+        screenRoute: String?
+    ) {
+        val titleText = when (screenRoute) {
+            Destinations.MAIN.route -> {
+                if (login != null) "Have a good day, $login!"
+                else "Have a good day!"
+            }
+
+            Destinations.RATINGS.route -> "Players weekly statistic"
+            Destinations.SETTINGS.route -> "Settings"
+            else -> ""
+        }
         TopAppBar(
             title = {
-                if (login != null)
-                    Text("Have a good day, $login!")
-                else
-                    Text("Have a good day!")
+                Crossfade(targetState = titleText) { text ->
+                    Text(text = text)
+                }
             }
         )
     }
@@ -126,6 +138,6 @@ private fun InputFieldPreview() {
 @Composable
 private fun AppTopBarPreview() {
     KotlinJC_FriendsActivity_appTheme {
-        AppComponents.AppTopBar("AlexxMagnus")
+        AppComponents.AppTopBar(screenRoute = Destinations.MAIN.route, login = "Alex")
     }
 }

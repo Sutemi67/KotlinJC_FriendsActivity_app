@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
@@ -50,15 +51,44 @@ fun PermittedUi(
         verticalArrangement = Arrangement.Center
     ) {
         Text(
-            text = "Шагов пройдено:",
-            style = MaterialTheme.typography.bodyMedium,
-            modifier = Modifier.padding(bottom = 16.dp)
-        )
-        Text(
-            modifier = Modifier.padding(bottom = 16.dp),
             style = MaterialTheme.typography.headlineLarge,
             text = "$stepCount"
         )
+        Text(
+            text = "Шагов за сегодня:",
+            style = MaterialTheme.typography.bodyMedium,
+        )
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 15.dp),
+            horizontalArrangement = Arrangement.SpaceEvenly
+        ) {
+            Column(
+                modifier = Modifier.width(90.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text("123456")
+                Text("За неделю:")
+            }
+            Column(
+                modifier = Modifier.width(90.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+
+            ) {
+                Text("123")
+                Text("Километров:")
+            }
+            Column(
+                modifier = Modifier.width(90.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+
+
+            ) {
+                Text("13")
+                Text("Этаж:")
+            }
+        }
         Column(
             modifier = Modifier.padding(10.dp),
         ) {

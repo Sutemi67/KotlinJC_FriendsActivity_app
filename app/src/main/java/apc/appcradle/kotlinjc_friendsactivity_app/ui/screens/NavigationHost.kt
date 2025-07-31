@@ -62,7 +62,10 @@ fun NavigationHost() {
                 if (navBackStackEntry?.destination?.route != Destinations.AUTH.route &&
                     navBackStackEntry?.destination?.route != Destinations.REGISTER.route
                 )
-                    AppComponents.AppTopBar(state.userLogin)
+                    AppComponents.AppTopBar(
+                        login = state.userLogin,
+                        screenRoute = navBackStackEntry?.destination?.route
+                    )
             },
             bottomBar = {
                 if (navBackStackEntry?.destination?.route != Destinations.AUTH.route &&
