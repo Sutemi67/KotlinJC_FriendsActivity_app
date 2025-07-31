@@ -14,6 +14,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableDoubleStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -40,6 +41,7 @@ fun RatingsScreen(
     val isSynced = statsRepository.syncStatus.collectAsState().value
     val stepCount = sensorManager.stepsData.collectAsState().value
     var errorMessage: String? by remember { mutableStateOf("") }
+    var summaryKm by remember { mutableDoubleStateOf(0.0) }
 
     LaunchedEffect(Unit) {
         if (login != null) {
@@ -50,13 +52,18 @@ fun RatingsScreen(
                 errorMessage = sync.await()
                 list = statsRepository.playersList
                 Log.d("dataTransfer", "data synced, user=$login, steps=$stepCount")
+                val func = scope.async { calcSumSteps(list) }
+                summaryKm = func.await()
             } catch (e: Exception) {
                 Log.e("dataTransfer", "Error syncing data: ${e.message}")
                 errorMessage = "Error syncing data: ${e.message}"
+                summaryKm = 0.0
             }
         } else {
             list = emptyList()
+            summaryKm = 0.0
         }
+
     }
 
     Column(
@@ -67,7 +74,7 @@ fun RatingsScreen(
             if (isSynced)
                 LinearProgressIndicator()
         }
-        StatsTable()
+        StatsTable(summaryKm)
         if (errorMessage == null) {
             LazyColumn(
                 modifier = Modifier.fillMaxWidth()
@@ -83,6 +90,14 @@ fun RatingsScreen(
             Text(errorMessage!!)
         }
     }
+}
+
+private fun calcSumSteps(list: List<PlayerActivityData>): Double {
+    var stepsSum = 0
+    list.forEach { player ->
+        stepsSum += player.steps
+    }
+    return stepsSum * 0.35 / 1000
 }
 
 @ThemePreviewsNoUi

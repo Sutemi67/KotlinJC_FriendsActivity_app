@@ -15,7 +15,7 @@ import apc.appcradle.kotlinjc_friendsactivity_app.PreviewsDifferentSizes
 import apc.appcradle.kotlinjc_friendsactivity_app.ui.theme.KotlinJC_FriendsActivity_appTheme
 
 @Composable
-fun StatsTable() {
+fun StatsTable(distance: Double) {
     val headerSize = typography.headlineLarge
     val textSize = typography.bodyLarge
 
@@ -23,14 +23,14 @@ fun StatsTable() {
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 15.dp)
-            .padding(bottom = 10.dp),
+            .padding(bottom = 15.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Text(
-            modifier = Modifier.padding(bottom = 10.dp),
-            text = "Статистика игроков",
-            style = headerSize
-        )
+//        Text(
+//            modifier = Modifier.padding(bottom = 10.dp),
+//            text = "Статистика игроков",
+//            style = headerSize
+//        )
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween
@@ -43,7 +43,7 @@ fun StatsTable() {
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             Text("В общем пройдено: ", style = textSize)
-            Text("234 км.", style = textSize)
+            Text("${distance.toInt()} км.", style = textSize)
         }
     }
 }
@@ -52,6 +52,6 @@ fun StatsTable() {
 @Composable
 private fun Preview() {
     KotlinJC_FriendsActivity_appTheme {
-        StatsTable()
+        StatsTable(4334.3)
     }
 }

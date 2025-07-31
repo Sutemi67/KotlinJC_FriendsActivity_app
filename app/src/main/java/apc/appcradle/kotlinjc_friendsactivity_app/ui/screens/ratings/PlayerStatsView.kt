@@ -3,10 +3,10 @@ package apc.appcradle.kotlinjc_friendsactivity_app.ui.screens.ratings
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -19,6 +19,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import apc.appcradle.kotlinjc_friendsactivity_app.PreviewsDifferentSizes
 import apc.appcradle.kotlinjc_friendsactivity_app.domain.model.PlayerActivityData
 import apc.appcradle.kotlinjc_friendsactivity_app.ui.theme.KotlinJC_FriendsActivity_appTheme
 
@@ -39,12 +40,12 @@ fun PlayerStatsView(
         shape = RoundedCornerShape(20.dp)
     ) {
         Box(
-            contentAlignment = Alignment.CenterStart
+            contentAlignment = Alignment.BottomStart
         ) {
             Box(
                 modifier = Modifier
                     .background(
-                        color = MaterialTheme.colorScheme.primary,
+                        color = MaterialTheme.colorScheme.secondaryContainer,
                         shape = RoundedCornerShape(20.dp)
                     )
                     .fillMaxWidth(percentageAnimate.value)
@@ -52,13 +53,13 @@ fun PlayerStatsView(
             )
             Row(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(15.dp),
-                horizontalArrangement = Arrangement.SpaceBetween,
+                    .fillMaxSize()
+                    .padding(horizontal = 15.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    modifier = Modifier.weight(1f),
+                    modifier = Modifier
+                        .weight(1f),
                     style = MaterialTheme.typography.bodyLarge,
                     color = MaterialTheme.colorScheme.onSurface,
                     text = "${index + 1}. ${playerActivityData.login}"
@@ -73,7 +74,7 @@ fun PlayerStatsView(
     }
 }
 
-@Preview(device = "spec:width=411dp,height=891dp,dpi=160")
+@Preview
 @Composable
 private fun Preview() {
     KotlinJC_FriendsActivity_appTheme {

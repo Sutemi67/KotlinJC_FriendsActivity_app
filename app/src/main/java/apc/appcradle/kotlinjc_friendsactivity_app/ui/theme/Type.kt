@@ -22,7 +22,7 @@ val CompactTypography = Typography(
 val CompactHighDpiTypography = Typography(
     bodyLarge = TextStyle(
         fontFamily = FontFamily.Default,
-        fontWeight = FontWeight.Light, // More elegant on high-res screens
+        fontWeight = FontWeight.ExtraLight, // More elegant on high-res screens
         fontSize = 11.sp,
     ),
     headlineLarge = TextStyle(

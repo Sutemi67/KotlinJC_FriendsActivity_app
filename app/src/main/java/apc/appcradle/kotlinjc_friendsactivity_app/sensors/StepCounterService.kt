@@ -10,7 +10,6 @@ import android.graphics.BitmapFactory
 import android.os.Build
 import android.os.IBinder
 import android.util.Log
-import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
 import org.koin.android.ext.android.inject
 
@@ -21,15 +20,21 @@ class StepCounterService : Service() {
     }
 
     private val sensorManager: AppSensorsManager by inject()
-
-    @RequiresApi(Build.VERSION_CODES.S)
-    override fun onCreate() {
-        super.onCreate()
+    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         createNotificationChannel()
         startServiceInForeground()
+        sensorManager.startCounting()
+        Log.e("service", "Started")
+        return START_STICKY
     }
 
-    @RequiresApi(Build.VERSION_CODES.S)
+    override fun onTaskRemoved(rootIntent: Intent?) {
+        Log.e("service", "Stopped")
+        super.onTaskRemoved(rootIntent)
+    }
+
+    override fun onBind(intent: Intent?): IBinder? = null
+
     private fun startServiceInForeground() {
         try {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
@@ -61,19 +66,6 @@ class StepCounterService : Service() {
         }
     }
 
-    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        sensorManager.startCounting()
-        Log.e("service", "Started")
-        return START_STICKY
-    }
-
-    override fun onTaskRemoved(rootIntent: Intent?) {
-        Log.e("service", "Stopped")
-        super.onTaskRemoved(rootIntent)
-    }
-
-    override fun onBind(intent: Intent?): IBinder? = null
-
     private fun createNotificationChannel() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val name = "Step Counter"
@@ -102,4 +94,4 @@ class StepCounterService : Service() {
         sensorManager.stopCounting()
         Log.e("service", "destroyed")
     }
-} 
+}

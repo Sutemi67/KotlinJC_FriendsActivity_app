@@ -95,11 +95,13 @@ class AppSensorsManager(
             when (sensorEvent.sensor.type) {
                 Sensor.TYPE_STEP_COUNTER -> {
                     val totalSensorSteps = sensorEvent.values[0].toInt()
-                    if (isFirstStart) {
+                    if (isFirstStart && totalSensorSteps > 0) {
                         stepsWithoutChecking = totalSensorSteps - stepsInitial
                         isFirstStart = false
                     }
-                    stepsCounter(totalSensorSteps)
+                    if (!isFirstStart){
+                        stepsCounter(totalSensorSteps)
+                    }
                 }
             }
         }
