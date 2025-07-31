@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
@@ -50,14 +51,22 @@ fun PermittedUi(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        Text(
-            style = MaterialTheme.typography.headlineLarge,
-            text = "$stepCount"
-        )
-        Text(
-            text = "Шагов за сегодня:",
-            style = MaterialTheme.typography.bodyMedium,
-        )
+        ElevatedCard {
+            Column(
+                modifier = Modifier.padding(vertical = 10.dp, horizontal = 15.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text(
+                    style = MaterialTheme.typography.headlineLarge,
+                    text = "$stepCount"
+                )
+                Text(
+                    text = "Шагов за сегодня:",
+                    style = MaterialTheme.typography.bodyMedium,
+                )
+            }
+        }
+
         Row(
             modifier = Modifier
                 .fillMaxWidth()
