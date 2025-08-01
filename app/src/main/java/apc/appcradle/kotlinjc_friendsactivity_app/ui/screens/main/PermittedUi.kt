@@ -22,9 +22,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -116,41 +114,7 @@ fun PermittedUi(
                     .padding(5.dp)
                     .padding(horizontal = 30.dp)
             )
-            Text(
-                modifier = Modifier.padding(10.dp),
-                text = "Осталось только..."
-            )
-            StatisticRow(
-                leftText = "сходить за пивом",
-                rightText = "1 км.",
-                isActive = false,
-                isCompleted = true
-            )
-            StatisticRow(
-                leftText = "подняться на Эверест",
-                rightText = "8.85 км.",
-                isActive = true
-            )
-            StatisticRow(
-                leftText = "пройти Гран Каньон",
-                rightText = "446 км.",
-                isActive = false
-            )
-            StatisticRow(
-                leftText = "дойти до центра Земли:",
-                rightText = "6371 км.",
-                isActive = false
-            )
-            StatisticRow(
-                leftText = "обойти Землю вокруг:",
-                rightText = "40075 км.",
-                isActive = false
-            )
-            StatisticRow(
-                leftText = "пешком до Луны",
-                rightText = "384400 км.",
-                isActive = false
-            )
+            StatsColumn(km)
         }
         Column(
             modifier = Modifier.padding(20.dp),
@@ -184,30 +148,6 @@ fun PermittedUi(
                 )
             }
         }
-    }
-}
-
-@Composable
-fun StatisticRow(
-    leftText: String,
-    rightText: String,
-    isActive: Boolean,
-    isCompleted: Boolean = false
-) {
-    val textStyle = if (isCompleted) {
-        TextStyle(textDecoration = TextDecoration.LineThrough)
-    } else {
-        MaterialTheme.typography.bodyLarge
-    }
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 5.dp, horizontal = 10.dp)
-            .alpha(if (!isActive) 0.3f else 1f),
-        horizontalArrangement = Arrangement.SpaceBetween
-    ) {
-        Text(text = leftText, style = textStyle)
-        Text(rightText, style = textStyle)
     }
 }
 
