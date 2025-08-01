@@ -7,18 +7,29 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.material3.Card
 import androidx.compose.material3.ElevatedCard
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableDoubleStateOf
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import apc.appcradle.kotlinjc_friendsactivity_app.ui.theme.KotlinJC_FriendsActivity_appTheme
+import kotlin.math.roundToInt
 
 @Composable
 fun PermittedUi(
@@ -28,6 +39,14 @@ fun PermittedUi(
     onTrueCallback: () -> Unit,
     onFalseCallback: () -> Unit,
 ) {
+    var km by remember { mutableDoubleStateOf(0.0) }
+    var floor by remember { mutableIntStateOf(0) }
+
+    LaunchedEffect(stepCount) {
+        km = (stepCount * 0.35 / 1000 * 100.0).roundToInt() / 100.0
+        floor = stepCount / 25
+    }
+//    if (isStepSensorsAvailable) {
     if (!isStepSensorsAvailable) {
         Column(
             modifier = Modifier
@@ -52,54 +71,89 @@ fun PermittedUi(
         verticalArrangement = Arrangement.Center
     ) {
         ElevatedCard {
-            Column(
-                modifier = Modifier.padding(vertical = 10.dp, horizontal = 15.dp),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Text(
-                    style = MaterialTheme.typography.headlineLarge,
-                    text = "$stepCount"
-                )
-                Text(
-                    text = "Шагов за сегодня:",
-                    style = MaterialTheme.typography.bodyMedium,
-                )
+            Card {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 10.dp, horizontal = 15.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Text(
+                        style = MaterialTheme.typography.headlineLarge,
+                        text = "$stepCount"
+                    )
+                    Text(
+                        text = "Шагов за сегодня:",
+                        style = MaterialTheme.typography.bodyMedium,
+                    )
+                }
             }
-        }
 
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(vertical = 15.dp),
-            horizontalArrangement = Arrangement.SpaceEvenly
-        ) {
-            Column(
-                modifier = Modifier.width(90.dp),
-                horizontalAlignment = Alignment.CenterHorizontally
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 15.dp),
+                horizontalArrangement = Arrangement.SpaceEvenly
             ) {
-                Text("123456")
-                Text("За неделю:")
-            }
-            Column(
-                modifier = Modifier.width(90.dp),
-                horizontalAlignment = Alignment.CenterHorizontally
+                Column(
+                    modifier = Modifier.width(90.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
 
-            ) {
-                Text("123")
-                Text("Километров:")
+                ) {
+                    Text("$km")
+                    Text("Километров:")
+                }
+                Column(
+                    modifier = Modifier.width(90.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Text("$floor")
+                    Text("Этаж:")
+                }
             }
-            Column(
-                modifier = Modifier.width(90.dp),
-                horizontalAlignment = Alignment.CenterHorizontally
-
-
-            ) {
-                Text("13")
-                Text("Этаж:")
-            }
+            HorizontalDivider(
+                Modifier
+                    .padding(5.dp)
+                    .padding(horizontal = 30.dp)
+            )
+            Text(
+                modifier = Modifier.padding(10.dp),
+                text = "Осталось только..."
+            )
+            StatisticRow(
+                leftText = "сходить за пивом",
+                rightText = "1 км.",
+                isActive = false,
+                isCompleted = true
+            )
+            StatisticRow(
+                leftText = "подняться на Эверест",
+                rightText = "8.85 км.",
+                isActive = true
+            )
+            StatisticRow(
+                leftText = "пройти Гран Каньон",
+                rightText = "446 км.",
+                isActive = false
+            )
+            StatisticRow(
+                leftText = "дойти до центра Земли:",
+                rightText = "6371 км.",
+                isActive = false
+            )
+            StatisticRow(
+                leftText = "обойти Землю вокруг:",
+                rightText = "40075 км.",
+                isActive = false
+            )
+            StatisticRow(
+                leftText = "пешком до Луны",
+                rightText = "384400 км.",
+                isActive = false
+            )
         }
         Column(
-            modifier = Modifier.padding(10.dp),
+            modifier = Modifier.padding(20.dp),
         ) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -128,9 +182,32 @@ fun PermittedUi(
                         }
                     }
                 )
-
             }
         }
+    }
+}
+
+@Composable
+fun StatisticRow(
+    leftText: String,
+    rightText: String,
+    isActive: Boolean,
+    isCompleted: Boolean = false
+) {
+    val textStyle = if (isCompleted) {
+        TextStyle(textDecoration = TextDecoration.LineThrough)
+    } else {
+        MaterialTheme.typography.bodyLarge
+    }
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 5.dp, horizontal = 10.dp)
+            .alpha(if (!isActive) 0.3f else 1f),
+        horizontalArrangement = Arrangement.SpaceBetween
+    ) {
+        Text(text = leftText, style = textStyle)
+        Text(rightText, style = textStyle)
     }
 }
 

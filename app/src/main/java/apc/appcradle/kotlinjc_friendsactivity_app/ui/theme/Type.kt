@@ -15,7 +15,7 @@ val CompactTypography = Typography(
     headlineLarge = TextStyle(
         fontFamily = FontFamily.Default,
         fontWeight = FontWeight.Normal,
-        fontSize = 17.sp,
+        fontSize = 25.sp,
     ),
 )
 
@@ -28,7 +28,7 @@ val CompactHighDpiTypography = Typography(
     headlineLarge = TextStyle(
         fontFamily = FontFamily.Default,
         fontWeight = FontWeight.Light, // More elegant on high-res screens
-        fontSize = 13.sp,
+        fontSize = 20.sp,
     ),
 )
 
