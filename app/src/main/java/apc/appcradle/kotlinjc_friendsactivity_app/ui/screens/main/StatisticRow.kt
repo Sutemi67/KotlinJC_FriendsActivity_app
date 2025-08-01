@@ -11,8 +11,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextDecoration
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import apc.appcradle.kotlinjc_friendsactivity_app.ThemePreviewsNoUi
 import apc.appcradle.kotlinjc_friendsactivity_app.ui.theme.KotlinJC_FriendsActivity_appTheme
 
 @Composable
@@ -25,10 +25,10 @@ fun StatisticRow(
     } else if (overallDistanceKm >= stepsTarget.distance) {
         TextStyle(
             textDecoration = TextDecoration.LineThrough,
-            color = Color.Unspecified.copy(alpha = 0.3f)
+            color = Color.Gray.copy(alpha = 0.8f)
         )
     } else {
-        TextStyle(color = Color.Unspecified.copy(alpha = 0.3f))
+        TextStyle(color = Color.Gray.copy(alpha = 0.8f))
     }
 
     Row(
@@ -38,14 +38,14 @@ fun StatisticRow(
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
         Text(text = stepsTarget.destination, style = textStyle)
-        Text(text = stepsTarget.distance.toString(), style = textStyle)
+        Text(text = "${stepsTarget.distance.toInt().toString()} км", style = textStyle)
     }
 }
 
-@Preview
+@ThemePreviewsNoUi
 @Composable
 private fun Preview() {
     KotlinJC_FriendsActivity_appTheme {
-        StatisticRow(Distances.Pivo, 0.0)
+        StatisticRow(Distances.Pivo, 10.50)
     }
 }

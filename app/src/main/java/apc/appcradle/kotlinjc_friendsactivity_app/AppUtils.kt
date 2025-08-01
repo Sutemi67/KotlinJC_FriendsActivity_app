@@ -12,7 +12,6 @@ import java.util.Calendar
 
 @Preview(uiMode = Configuration.UI_MODE_TYPE_NORMAL)
 @Preview(
-    device = "spec:parent=pixel_5,orientation=landscape",
     uiMode = Configuration.UI_MODE_NIGHT_YES or Configuration.UI_MODE_TYPE_NORMAL
 )
 annotation class ThemePreviewsNoUi

@@ -23,9 +23,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import apc.appcradle.kotlinjc_friendsactivity_app.ThemePreviews
 import apc.appcradle.kotlinjc_friendsactivity_app.ui.theme.KotlinJC_FriendsActivity_appTheme
 import kotlin.math.roundToInt
 
@@ -151,13 +151,13 @@ fun PermittedUi(
     }
 }
 
-@Preview
+@ThemePreviews
 @Composable
 private fun Preview() {
     KotlinJC_FriendsActivity_appTheme {
         PermittedUi(
             true,
-            stepCount = 2342,
+            stepCount = 235842,
             isServiceRunning = true,
             {},
             {})
