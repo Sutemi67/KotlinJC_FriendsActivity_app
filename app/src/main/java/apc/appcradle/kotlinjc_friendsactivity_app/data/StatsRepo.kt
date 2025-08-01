@@ -29,19 +29,6 @@ class StatsRepo(
         PlayerActivityData("Maike", 11322, 0f),
     )
 
-    fun percentageCalc() {
-        _syncStatus.update { true }
-        var sumSteps = 0
-        playersList.forEach { it ->
-            sumSteps += it.steps
-        }
-        playersList.forEach { it ->
-            it.percentage = it.steps.toFloat() / sumSteps
-        }
-        playersList.sortByDescending { it.percentage }
-        _syncStatus.update { false }
-    }
-
     fun percentageMax() {
         _syncStatus.update { true }
         var maxSteps = 0
