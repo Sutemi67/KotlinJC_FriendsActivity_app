@@ -131,7 +131,6 @@ fun PermittedUi(
                         color = MaterialTheme.colorScheme.onBackground
                     )
                 )
-
                 Switch(
                     checked = isServiceRunning,
                     onCheckedChange = { state ->
