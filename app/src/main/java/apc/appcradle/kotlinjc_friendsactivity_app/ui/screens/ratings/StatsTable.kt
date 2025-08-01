@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme.typography
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -15,8 +16,10 @@ import apc.appcradle.kotlinjc_friendsactivity_app.PreviewsDifferentSizes
 import apc.appcradle.kotlinjc_friendsactivity_app.ui.theme.KotlinJC_FriendsActivity_appTheme
 
 @Composable
-fun StatsTable(distance: Double) {
-    val headerSize = typography.headlineLarge
+fun StatsTable(
+    distance: Double,
+    leaderDifference: Double
+) {
     val textSize = typography.bodyLarge
 
     Column(
@@ -26,24 +29,30 @@ fun StatsTable(distance: Double) {
             .padding(bottom = 15.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-//        Text(
-//            modifier = Modifier.padding(bottom = 10.dp),
-//            text = "Статистика игроков",
-//            style = headerSize
-//        )
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            Text("Чемпион прошлой недели: ", style = textSize)
+            Text("Чемпион прошлой недели:", style = textSize)
             Text("конечно же ты <3", style = textSize)
         }
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            Text("В общем пройдено: ", style = textSize)
+            Text("В общем пройдено:", style = textSize)
             Text("${distance.toInt()} км.", style = textSize)
+        }
+        HorizontalDivider(Modifier.padding(10.dp))
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Text("Текущее отставание от лидера: ", style = textSize)
+            Text(
+                text = if (leaderDifference != 0.0) "${leaderDifference.toInt()} км."
+                else "-", style = textSize
+            )
         }
     }
 }
@@ -52,6 +61,6 @@ fun StatsTable(distance: Double) {
 @Composable
 private fun Preview() {
     KotlinJC_FriendsActivity_appTheme {
-        StatsTable(4334.3)
+        StatsTable(4334.3, leaderDifference = 0.0)
     }
 }

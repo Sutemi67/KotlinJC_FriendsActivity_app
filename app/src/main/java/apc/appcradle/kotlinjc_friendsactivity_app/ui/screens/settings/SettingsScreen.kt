@@ -24,7 +24,7 @@ import apc.appcradle.kotlinjc_friendsactivity_app.ui.theme.KotlinJC_FriendsActiv
 
 @Composable
 fun SettingsScreen(
-    userLogin: String = "Alex",
+    userLogin: String? = "Alex",
     onLogoutClick: () -> Unit,
     onStepDistanceClick: () -> Unit,
     onNicknameClick: () -> Unit = {},
@@ -53,7 +53,7 @@ fun SettingsScreen(
                 ) {
                     Text(
                         modifier = Modifier.padding(vertical = 10.dp, horizontal = 20.dp),
-                        text = userLogin
+                        text = userLogin ?: "-"
                     )
                 }
             }

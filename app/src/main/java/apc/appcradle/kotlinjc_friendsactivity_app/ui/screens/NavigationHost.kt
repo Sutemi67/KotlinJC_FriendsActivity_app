@@ -99,10 +99,23 @@ fun NavigationHost() {
                     viewModel = viewModel,
                     toRegisterScreen = { navController.toRegisterScreen() }
                 )
-                registerScreen(viewModel) { navController.toMainScreen() }
-                mainScreen(viewModel)
-                ratingsScreen(viewModel, state.userLogin, sensorManager = sensorManager)
-                settingsScreen(onLogoutClick = { viewModel.logout() })
+                registerScreen(
+                    viewModel = viewModel,
+                    toMainScreen = { navController.toMainScreen() }
+                )
+                mainScreen(
+                    viewModel = viewModel
+                )
+                ratingsScreen(
+                    login = state.userLogin
+                )
+                settingsScreen(
+                    onLogoutClick = { viewModel.logout() },
+                    userLogin = state.userLogin,
+                    onThemeClick = {},
+                    onNickNameClick = {},
+                    onStepDistanceClick = {}
+                )
             }
         }
     }

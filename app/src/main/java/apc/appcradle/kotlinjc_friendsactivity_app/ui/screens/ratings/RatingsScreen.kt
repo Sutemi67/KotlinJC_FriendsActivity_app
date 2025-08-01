@@ -33,15 +33,20 @@ import org.koin.compose.koinInject
 @Composable
 fun RatingsScreen(
     login: String?,
-    sensorManager: AppSensorsManager = koinInject<AppSensorsManager>()
 ) {
+    val sensorManager = koinInject<AppSensorsManager>()
     val statsRepository = koinInject<StatsRepo>()
-    var list by remember { mutableStateOf<List<PlayerActivityData>>(emptyList()) }
-    val scope = rememberCoroutineScope()
-    val isSynced = statsRepository.syncStatus.collectAsState().value
-    val stepCount = sensorManager.stepsData.collectAsState().value
+
     var errorMessage: String? by remember { mutableStateOf("") }
     var summaryKm by remember { mutableDoubleStateOf(0.0) }
+    var leaderDifference by remember { mutableDoubleStateOf(0.0) }
+    var list by remember { mutableStateOf<List<PlayerActivityData>>(emptyList()) }
+
+    val scope = rememberCoroutineScope()
+
+    val isSynced = statsRepository.syncStatus.collectAsState().value
+    val stepCount = sensorManager.stepsData.collectAsState().value
+
 
     LaunchedEffect(Unit) {
         if (login != null) {
@@ -52,8 +57,9 @@ fun RatingsScreen(
                 errorMessage = sync.await()
                 list = statsRepository.playersList
                 Log.d("dataTransfer", "data synced, user=$login, steps=$stepCount")
-                val func = scope.async { calcSumSteps(list) }
-                summaryKm = func.await()
+                summaryKm = scope.async { calcSumSteps(list) }.await()
+//                summaryKm = func.await()
+                leaderDifference = scope.async { calcLeaderDiff(list, login) }.await()
             } catch (e: Exception) {
                 Log.e("dataTransfer", "Error syncing data: ${e.message}")
                 errorMessage = "Error syncing data: ${e.message}"
@@ -74,7 +80,7 @@ fun RatingsScreen(
             if (isSynced)
                 LinearProgressIndicator()
         }
-        StatsTable(summaryKm)
+        StatsTable(summaryKm, leaderDifference)
         if (errorMessage == null) {
             LazyColumn(
                 modifier = Modifier.fillMaxWidth()
@@ -98,6 +104,13 @@ private fun calcSumSteps(list: List<PlayerActivityData>): Double {
         stepsSum += player.steps
     }
     return stepsSum * 0.35 / 1000
+}
+
+private fun calcLeaderDiff(list: List<PlayerActivityData>, login: String?): Double {
+    val leader = list.first()
+    val player = list.first { it.login == login }
+    val diff = (leader.steps - player.steps) * 0.35 / 1000
+    return diff
 }
 
 @ThemePreviewsNoUi
