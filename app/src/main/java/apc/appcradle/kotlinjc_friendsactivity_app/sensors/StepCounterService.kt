@@ -84,7 +84,12 @@ class StepCounterService : Service() {
         .setContentTitle("Friends Activity")
         .setContentText("Не сиди долго.")
         .setSmallIcon(apc.appcradle.kotlinjc_friendsactivity_app.R.drawable.outline_directions_run_24)
-        .setLargeIcon(BitmapFactory.decodeResource(resources, apc.appcradle.kotlinjc_friendsactivity_app.R.mipmap.ic_launcher))
+        .setLargeIcon(
+            BitmapFactory.decodeResource(
+                resources,
+                apc.appcradle.kotlinjc_friendsactivity_app.R.mipmap.ic_launcher
+            )
+        )
         .setPriority(NotificationCompat.PRIORITY_LOW)
 //        .setOngoing(true)
         .build()
