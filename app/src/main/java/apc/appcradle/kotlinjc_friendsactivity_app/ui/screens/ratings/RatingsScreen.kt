@@ -21,13 +21,16 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import apc.appcradle.kotlinjc_friendsactivity_app.ThemePreviewsNoUi
 import apc.appcradle.kotlinjc_friendsactivity_app.data.StatsRepo
 import apc.appcradle.kotlinjc_friendsactivity_app.domain.model.PlayerActivityData
 import apc.appcradle.kotlinjc_friendsactivity_app.sensors.AppSensorsManager
 import apc.appcradle.kotlinjc_friendsactivity_app.ui.theme.KotlinJC_FriendsActivity_appTheme
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
+import kotlinx.coroutines.withContext
 import org.koin.compose.koinInject
 
 @Composable
@@ -52,24 +55,23 @@ fun RatingsScreen(
         if (login != null) {
             Log.d("dataTransfer", "Current stepCount before sync: $stepCount")
             try {
-                val sync =
-                    scope.async { statsRepository.syncData(login = login, steps = stepCount) }
+                val sync = scope.async(Dispatchers.IO) {
+                    statsRepository.syncData(login = login, steps = stepCount)
+                }
                 errorMessage = sync.await()
                 list = statsRepository.playersList
+
                 Log.d("dataTransfer", "data synced, user=$login, steps=$stepCount")
-                summaryKm = scope.async { calcSumSteps(list) }.await()
-//                summaryKm = func.await()
-                leaderDifference = scope.async { calcLeaderDiff(list, login) }.await()
+                summaryKm = withContext(Dispatchers.Default) { calcSumSteps(list) }
+                leaderDifference = withContext(Dispatchers.Default) { calcLeaderDiff(list, login) }
             } catch (e: Exception) {
                 Log.e("dataTransfer", "Error syncing data: ${e.message}")
-                errorMessage = "Error syncing data: ${e.message}"
-                summaryKm = 0.0
+                errorMessage = "${e.message}"
             }
         } else {
             list = emptyList()
             summaryKm = 0.0
         }
-
     }
 
     Column(
@@ -93,23 +95,31 @@ fun RatingsScreen(
                 }
             }
         } else {
-            Text(errorMessage!!)
+            Text(
+                color = Color.Red,
+                text = errorMessage!!
+            )
         }
     }
 }
 
 private fun calcSumSteps(list: List<PlayerActivityData>): Double {
     var stepsSum = 0
-    list.forEach { player ->
-        stepsSum += player.steps
+    if (list.isNotEmpty()) {
+        list.forEach { player ->
+            stepsSum += player.steps
+        }
     }
     return stepsSum * 0.35 / 1000
 }
 
 private fun calcLeaderDiff(list: List<PlayerActivityData>, login: String?): Double {
-    val leader = list.first()
-    val player = list.first { it.login == login }
-    val diff = (leader.steps - player.steps) * 0.35 / 1000
+    var diff = 0.0
+    if (list.isNotEmpty()) {
+        val leader = list.first()
+        val player = list.first { it.login == login }
+        diff = (leader.steps - player.steps) * 0.35 / 1000
+    }
     return diff
 }
 

@@ -1,12 +1,12 @@
 package apc.appcradle.kotlinjc_friendsactivity_app.data
 
+import android.util.Log
 import apc.appcradle.kotlinjc_friendsactivity_app.domain.NetworkClient
 import apc.appcradle.kotlinjc_friendsactivity_app.domain.model.PlayerActivityData
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
-import android.util.Log
 
 class StatsRepo(
     private val networkClient: NetworkClient
@@ -44,7 +44,7 @@ class StatsRepo(
 
     suspend fun syncData(login: String, steps: Int): String? {
         _syncStatus.update { true }
-        Log.d("steps_debug", "StatsRepo syncData called with steps: $steps")
+        Log.d("dataTransfer", "StatsRepo syncData called with steps: $steps")
         val data = networkClient.postUserDataAndSyncFriendsData(login, steps)
         val newPlayersList = mutableListOf<PlayerActivityData>()
         data.friendsList.forEach { it ->
@@ -59,6 +59,7 @@ class StatsRepo(
         playersList = newPlayersList
         percentageMax()
         _syncStatus.update { false }
+        Log.i("dataTransfer", "${data.errorMessage}")
         return data.errorMessage
     }
 }

@@ -6,6 +6,7 @@ import apc.appcradle.kotlinjc_friendsactivity_app.domain.model.DataTransferState
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.engine.android.Android
+import io.ktor.client.plugins.HttpRequestTimeoutException
 import io.ktor.client.plugins.HttpTimeout
 import io.ktor.client.plugins.auth.Auth
 import io.ktor.client.plugins.auth.providers.BearerTokens
@@ -166,6 +167,12 @@ class NetworkClient(
                 Log.e("dataTransfer", "${request.body<String?>()}")
                 UserActivityResponse(mutableListOf(), "${request.body<String?>()}")
             }
+        } catch (e: SocketTimeoutException) {
+            Log.e("dataTransfer", "not successful getting protected data in network client", e)
+            UserActivityResponse(mutableListOf(), "Не удалось подключиться к серверу. Проблема соединения.")
+        } catch (e: HttpRequestTimeoutException) {
+            Log.e("dataTransfer", "not successful getting protected data in network client", e)
+            UserActivityResponse(mutableListOf(), "За требуемое время сервер не ответил. Повторите попытку позже.")
         } catch (e: Exception) {
             Log.e("dataTransfer", "not successful getting protected data in network client", e)
             UserActivityResponse(mutableListOf(), "Connection error: ${e.message}")
