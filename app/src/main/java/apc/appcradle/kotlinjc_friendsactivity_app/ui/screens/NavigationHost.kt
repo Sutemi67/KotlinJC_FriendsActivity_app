@@ -50,7 +50,7 @@ fun NavigationHost(
         viewModel.isServiceRunning(context)
         Log.d("sensors", sensorManager.isStepSensorAvailable.toString())
     }
-    LaunchedEffect(key1 = state.currentTheme) {
+    LaunchedEffect(key1 = state) {
         Log.d("theme", "theme in nav host changed: ${state.currentTheme}")
     }
 
@@ -113,7 +113,9 @@ fun NavigationHost(
                     onLogoutClick = { viewModel.logout() },
                     userLogin = state.userLogin,
                     userStepLength = state.userStepLength,
-                    onThemeClick = { viewModel.changeTheme(it) },
+                    onThemeClick = {
+                        viewModel.changeTheme(it)
+                    },
                     onNickNameClick = {},
                     onStepDistanceClick = {},
                     currentTheme = state.currentTheme

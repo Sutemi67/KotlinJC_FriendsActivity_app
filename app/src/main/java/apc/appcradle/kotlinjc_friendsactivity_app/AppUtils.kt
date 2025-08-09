@@ -1,8 +1,10 @@
 package apc.appcradle.kotlinjc_friendsactivity_app
 
+import android.app.Activity
 import android.app.ActivityManager
 import android.content.Context
 import android.content.res.Configuration
+import android.window.SplashScreen
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.tooling.preview.Preview
@@ -57,6 +59,12 @@ fun isTodayMonday(): Boolean {
     val calendar = Calendar.getInstance()
     return calendar.get(Calendar.DAY_OF_WEEK) == Calendar.MONDAY
 }
+
+//fun Activity.installSplashScreen() {
+//    val splashScreen = SplashScreen(this)
+//    splashScreen.install()
+//    return splashScreen
+//}
 
 @Composable
 fun nonScaledSp(size: Int): TextUnit {

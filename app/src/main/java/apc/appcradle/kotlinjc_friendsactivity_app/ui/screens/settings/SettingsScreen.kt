@@ -44,7 +44,7 @@ fun SettingsScreen(
     var isThemeDialogVisible by remember { mutableStateOf(false) }
 
     LaunchedEffect(currentTheme) {
-        Log.i("theme", "settings screen theme painted to: $currentTheme")
+        Log.i("theme", "settings screen theme first start painted to: $currentTheme")
     }
 
     Column(
@@ -163,8 +163,8 @@ fun SettingsScreen(
     if (isThemeDialogVisible)
         AppComponents.ThemeDialog(
             currentThemes = currentTheme,
-            onConfirmClick = {
-                onThemeClick(it)
+            onConfirmClick = { newTheme ->
+                onThemeClick(newTheme)
                 isThemeDialogVisible = false
             },
             onDismiss = { isThemeDialogVisible = false }

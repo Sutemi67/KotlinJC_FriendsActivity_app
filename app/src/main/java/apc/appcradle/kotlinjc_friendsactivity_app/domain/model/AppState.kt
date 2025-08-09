@@ -8,13 +8,13 @@ data class AppState(
     val isPermissionsGet: Boolean = false,
     val isServiceRunning: Boolean = false,
     val isLoggedIn: Boolean = false,
+    val userLogin: String? = null,
 
     //Navigation
     val currentDestination: String = Destinations.AUTH.route,
 
     //Settings
-    val userLogin: String? = null,
-    val userStepLength: Double? = null,
+    val userStepLength: Double = 0.4,
     val currentTheme: AppThemes = AppThemes.System,
-    val settingsClass: AppSavedSettingsData = AppSavedSettingsData()
+    val userScale: Int = 1,
 )

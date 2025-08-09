@@ -9,6 +9,7 @@ import androidx.lifecycle.viewModelScope
 import apc.appcradle.kotlinjc_friendsactivity_app.data.SettingsPreferencesImpl
 import apc.appcradle.kotlinjc_friendsactivity_app.data.TokenStorage
 import apc.appcradle.kotlinjc_friendsactivity_app.domain.NetworkClient
+import apc.appcradle.kotlinjc_friendsactivity_app.domain.model.AppSavedSettingsData
 import apc.appcradle.kotlinjc_friendsactivity_app.domain.model.AppState
 import apc.appcradle.kotlinjc_friendsactivity_app.domain.model.AppThemes
 import apc.appcradle.kotlinjc_friendsactivity_app.domain.model.DataTransferState
@@ -40,6 +41,7 @@ class MainViewModel(
                 _state.update { it.copy(isPermissionsGet = isGranted) }
             }
         }
+        loadSettings()
     }
 
     //region Service
@@ -167,14 +169,35 @@ class MainViewModel(
     //endregion
 
     //region Settings
-    fun changeTheme(appThemes: AppThemes) {
-        when (appThemes) {
-            AppThemes.Dark -> _state.update { it.copy(currentTheme = AppThemes.Dark) }
-            AppThemes.Light -> _state.update { it.copy(currentTheme = AppThemes.Light) }
-            AppThemes.System -> _state.update { it.copy(currentTheme = AppThemes.System) }
+    fun changeTheme(currentTheme: AppThemes) {
+        _state.update {
+            it.copy(
+                currentTheme = currentTheme,
+            )
         }
+        saveSettings()
         Log.d("theme", "viewModel theme is: ${state.value.currentTheme}")
+    }
 
+    private fun saveSettings() {
+        settingsPreferencesImpl.saveSettingsData(
+            AppSavedSettingsData(
+                savedTheme = state.value.currentTheme,
+                savedScale = state.value.userScale,
+                savedUserStep = state.value.userStepLength
+            )
+        )
+    }
+
+    private fun loadSettings() {
+        val settings = settingsPreferencesImpl.loadSettingsData()
+        _state.update {
+            it.copy(
+                currentTheme = settings.savedTheme,
+                userStepLength = settings.savedUserStep,
+                userScale = settings.savedScale
+            )
+        }
     }
     //endregion
 }
