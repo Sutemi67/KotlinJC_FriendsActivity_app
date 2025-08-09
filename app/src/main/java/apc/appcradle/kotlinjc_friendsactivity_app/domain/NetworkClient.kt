@@ -149,6 +149,9 @@ class NetworkClient(
         } catch (e: SocketTimeoutException) {
             Log.e("dataTransfer", "error is - ${e.message}")
             DataTransferState(isLoading = false, false, "Connection error: server does not respond")
+        } catch (e: HttpRequestTimeoutException) {
+            Log.e("dataTransfer", "error is - ${e.message}")
+            DataTransferState(isLoading = false, false, "Request timeout has expired")
         }
     }
 
@@ -169,10 +172,16 @@ class NetworkClient(
             }
         } catch (e: SocketTimeoutException) {
             Log.e("dataTransfer", "not successful getting protected data in network client", e)
-            UserActivityResponse(mutableListOf(), "Не удалось подключиться к серверу. Проблема соединения.")
+            UserActivityResponse(
+                mutableListOf(),
+                "Не удалось подключиться к серверу. Проблема соединения."
+            )
         } catch (e: HttpRequestTimeoutException) {
             Log.e("dataTransfer", "not successful getting protected data in network client", e)
-            UserActivityResponse(mutableListOf(), "За требуемое время сервер не ответил. Повторите попытку позже.")
+            UserActivityResponse(
+                mutableListOf(),
+                "За требуемое время сервер не ответил. Повторите попытку позже."
+            )
         } catch (e: Exception) {
             Log.e("dataTransfer", "not successful getting protected data in network client", e)
             UserActivityResponse(mutableListOf(), "Connection error: ${e.message}")
