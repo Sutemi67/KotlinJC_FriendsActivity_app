@@ -1,6 +1,8 @@
 package apc.appcradle.kotlinjc_friendsactivity_app.ui.app_components
 
 import androidx.compose.animation.Crossfade
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -8,10 +10,12 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ElevatedButton
+import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
@@ -20,6 +24,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
@@ -30,6 +35,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import apc.appcradle.kotlinjc_friendsactivity_app.R
+import apc.appcradle.kotlinjc_friendsactivity_app.domain.model.AppThemes
 import apc.appcradle.kotlinjc_friendsactivity_app.ui.screens.Destinations
 import apc.appcradle.kotlinjc_friendsactivity_app.ui.theme.KotlinJC_FriendsActivity_appTheme
 
@@ -162,8 +168,66 @@ object AppComponents {
             },
         )
     }
+
+    @Composable
+    fun ThemeDialog(
+        currentThemes: AppThemes,
+        onConfirmClick: (AppThemes) -> Unit,
+        onDismiss: () -> Unit
+    ) {
+
+        var selectedTheme by remember { mutableStateOf(currentThemes) }
+
+        AlertDialog(
+            title = { Text("Выбор темы") },
+            text = {
+                Column(Modifier.fillMaxWidth()) {
+                    ElevatedCard {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Text(modifier = Modifier.weight(1f), text = "Светлая")
+                            RadioButton(
+                                selected = selectedTheme == AppThemes.Light,
+                                onClick = { selectedTheme = AppThemes.Light }
+                            )
+                        }
+                    }
+                    ElevatedCard {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Text(modifier = Modifier.weight(1f), text = "Темная")
+                            RadioButton(
+                                selected = selectedTheme == AppThemes.Dark,
+                                onClick = { selectedTheme = AppThemes.Dark }
+                            )
+                        }
+                    }
+                    ElevatedCard {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Text(modifier = Modifier.weight(1f), text = "Системная")
+                            RadioButton(
+                                selected = selectedTheme == AppThemes.System,
+                                onClick = { selectedTheme = AppThemes.System }
+                            )
+                        }
+                    }
+                }
+            },
+            onDismissRequest = onDismiss,
+            confirmButton = { ElevatedButton(onClick = { onConfirmClick(selectedTheme) }) { Text("Confirm") } },
+        )
+    }
 }
 
+@Preview
+@Composable
+private fun ThemeDialogPreview() {
+    KotlinJC_FriendsActivity_appTheme {
+        AppComponents.ThemeDialog(
+            currentThemes = AppThemes.Dark,
+            onConfirmClick = {},
+            onDismiss = {}
+        )
+    }
+}
 
 @Preview
 @Composable

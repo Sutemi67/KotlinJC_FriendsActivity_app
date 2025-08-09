@@ -6,9 +6,11 @@ import android.util.Log
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import apc.appcradle.kotlinjc_friendsactivity_app.data.SettingsPreferencesImpl
 import apc.appcradle.kotlinjc_friendsactivity_app.data.TokenStorage
 import apc.appcradle.kotlinjc_friendsactivity_app.domain.NetworkClient
 import apc.appcradle.kotlinjc_friendsactivity_app.domain.model.AppState
+import apc.appcradle.kotlinjc_friendsactivity_app.domain.model.AppThemes
 import apc.appcradle.kotlinjc_friendsactivity_app.domain.model.DataTransferState
 import apc.appcradle.kotlinjc_friendsactivity_app.permissions.PermissionManager
 import apc.appcradle.kotlinjc_friendsactivity_app.sensors.StepCounterService
@@ -21,7 +23,8 @@ import kotlinx.coroutines.launch
 class MainViewModel(
     private val permissionManager: PermissionManager,
     private val networkClient: NetworkClient,
-    private val tokenStorage: TokenStorage
+    private val tokenStorage: TokenStorage,
+    private val settingsPreferencesImpl: SettingsPreferencesImpl
 ) : ViewModel() {
 
     private var _state = MutableStateFlow(AppState())
@@ -160,6 +163,18 @@ class MainViewModel(
                 }
             }
         }
+    }
+    //endregion
+
+    //region Settings
+    fun changeTheme(appThemes: AppThemes) {
+        when (appThemes) {
+            AppThemes.Dark -> _state.update { it.copy(currentTheme = AppThemes.Dark) }
+            AppThemes.Light -> _state.update { it.copy(currentTheme = AppThemes.Light) }
+            AppThemes.System -> _state.update { it.copy(currentTheme = AppThemes.System) }
+        }
+        Log.d("theme", "viewModel theme is: ${state.value.currentTheme}")
+
     }
     //endregion
 }

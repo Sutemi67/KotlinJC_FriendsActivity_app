@@ -85,4 +85,7 @@ dependencies {
 
     // Security
     implementation(libs.androidx.security.crypto)
+
+    //Gson
+    implementation(libs.gson)
 }

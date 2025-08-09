@@ -7,7 +7,7 @@ import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
 import android.hardware.SensorManager
 import android.util.Log
-import apc.appcradle.kotlinjc_friendsactivity_app.data.SettingsPreferences
+import apc.appcradle.kotlinjc_friendsactivity_app.data.SettingsPreferencesImpl
 import apc.appcradle.kotlinjc_friendsactivity_app.isTodayMonday
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -18,7 +18,7 @@ import kotlinx.coroutines.launch
 
 class AppSensorsManager(
     context: Context,
-    private val settingsPreferences: SettingsPreferences
+    private val settingsPreferencesImpl: SettingsPreferencesImpl
 ) : SensorEventListener {
 
     private val sensorManager = context.getSystemService(SENSOR_SERVICE) as SensorManager
@@ -65,7 +65,7 @@ class AppSensorsManager(
             isSaved = true
             CoroutineScope(Dispatchers.IO).launch {
                 delay(60000)
-                settingsPreferences.saveSteps(currentSteps)
+                settingsPreferencesImpl.saveSteps(currentSteps)
                 isSaved = false
             }
             Log.i(
@@ -82,16 +82,16 @@ class AppSensorsManager(
         stepDetectorSensor?.let { sensor ->
             sensorManager.unregisterListener(this, sensor)
         }
-        settingsPreferences.saveSteps(currentSteps)
+        settingsPreferencesImpl.saveSteps(currentSteps)
     }
 
     fun loadSteps(): Int {
         if (isTodayMonday()) {
             resetSteps()
-            settingsPreferences.saveSteps(0)
+            settingsPreferencesImpl.saveSteps(0)
             return 0
         } else {
-            val steps = settingsPreferences.getSteps()
+            val steps = settingsPreferencesImpl.getSteps()
             Log.i("sensors", "Steps loaded, $steps")
             _stepsData.value = steps
             return steps

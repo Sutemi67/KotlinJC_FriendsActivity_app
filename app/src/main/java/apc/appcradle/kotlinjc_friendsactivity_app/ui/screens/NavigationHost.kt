@@ -1,7 +1,6 @@
 package apc.appcradle.kotlinjc_friendsactivity_app.ui.screens
 
 import android.util.Log
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
@@ -11,13 +10,11 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
@@ -31,18 +28,16 @@ import apc.appcradle.kotlinjc_friendsactivity_app.ui.screens.main.nav.mainScreen
 import apc.appcradle.kotlinjc_friendsactivity_app.ui.screens.main.nav.toMainScreen
 import apc.appcradle.kotlinjc_friendsactivity_app.ui.screens.ratings.nav.ratingsScreen
 import apc.appcradle.kotlinjc_friendsactivity_app.ui.screens.settings.nav.settingsScreen
-import org.koin.androidx.compose.koinViewModel
 import org.koin.compose.koinInject
 
 val LocalSensorManager =
     compositionLocalOf<AppSensorsManager> { error("No sensor manager provided") }
-val LocalViewModel =
-    compositionLocalOf<MainViewModel> { error("no view model provided") }
 
 @Composable
-fun NavigationHost() {
-    val viewModel: MainViewModel = koinViewModel()
-    val state by viewModel.state.collectAsState()
+fun NavigationHost(
+    viewModel: MainViewModel
+) {
+    val state by viewModel.state.collectAsStateWithLifecycle()
     val navController = rememberNavController()
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val noAuthDestinations =
@@ -55,9 +50,11 @@ fun NavigationHost() {
         viewModel.isServiceRunning(context)
         Log.d("sensors", sensorManager.isStepSensorAvailable.toString())
     }
+    LaunchedEffect(key1 = state.currentTheme) {
+        Log.d("theme", "theme in nav host changed: ${state.currentTheme}")
+    }
 
     CompositionLocalProvider(
-        LocalViewModel provides viewModel,
         LocalSensorManager provides sensorManager
     ) {
         Scaffold(
@@ -115,9 +112,11 @@ fun NavigationHost() {
                 settingsScreen(
                     onLogoutClick = { viewModel.logout() },
                     userLogin = state.userLogin,
-                    onThemeClick = {},
+                    userStepLength = state.userStepLength,
+                    onThemeClick = { viewModel.changeTheme(it) },
                     onNickNameClick = {},
-                    onStepDistanceClick = {}
+                    onStepDistanceClick = {},
+                    currentTheme = state.currentTheme
                 )
             }
         }

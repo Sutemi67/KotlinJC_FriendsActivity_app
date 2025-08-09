@@ -1,5 +1,6 @@
 package apc.appcradle.kotlinjc_friendsactivity_app.ui.screens.settings
 
+import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -15,21 +16,37 @@ import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import apc.appcradle.kotlinjc_friendsactivity_app.ThemePreviews
+import apc.appcradle.kotlinjc_friendsactivity_app.domain.model.AppThemes
+import apc.appcradle.kotlinjc_friendsactivity_app.ui.app_components.AppComponents
 import apc.appcradle.kotlinjc_friendsactivity_app.ui.theme.KotlinJC_FriendsActivity_appTheme
 
 @Composable
 fun SettingsScreen(
     userLogin: String? = "Alex",
+    userStepLength: Double? = 0.4,
     onLogoutClick: () -> Unit,
     onStepDistanceClick: () -> Unit,
     onNicknameClick: () -> Unit = {},
-    onThemeClick: () -> Unit = {},
+    onScaleClick: () -> Unit = {},
+    currentTheme: AppThemes,
+    onThemeClick: (AppThemes) -> Unit,
 ) {
+    var isThemeDialogVisible by remember { mutableStateOf(false) }
+
+    LaunchedEffect(currentTheme) {
+        Log.i("theme", "settings screen theme painted to: $currentTheme")
+    }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -82,7 +99,7 @@ fun SettingsScreen(
                 ) {
                     Text(
                         modifier = Modifier.padding(vertical = 10.dp, horizontal = 20.dp),
-                        text = "0,3m"
+                        text = "$userStepLength m"
                     )
                 }
             }
@@ -93,6 +110,35 @@ fun SettingsScreen(
                     .padding(10.dp),
                 textAlign = TextAlign.Center,
                 text = "Если вы хотите указать более точное значение советую вам пройти известное расстояние (например, по карте) и разделить на число шагов"
+            )
+        }
+        ElevatedCard(
+            modifier = Modifier.padding(vertical = 5.dp)
+        ) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 5.dp, horizontal = 10.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text("Масштаб шрифтов:")
+                Card(
+                    modifier = Modifier.clickable { onScaleClick() }
+                ) {
+                    Text(
+                        modifier = Modifier.padding(vertical = 10.dp, horizontal = 20.dp),
+                        text = "2"
+                    )
+                }
+            }
+            HorizontalDivider(Modifier.padding(horizontal = 15.dp))
+            Text(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(10.dp),
+                textAlign = TextAlign.Center,
+                text = "Позволяет уменьшить или увеличить шрифты в приложении."
             )
         }
         Spacer(Modifier.height(20.dp))
@@ -108,17 +154,32 @@ fun SettingsScreen(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 20.dp),
-            onClick = onThemeClick
+            onClick = { isThemeDialogVisible = true }
         ) {
             Text("Change theme")
         }
     }
+
+    if (isThemeDialogVisible)
+        AppComponents.ThemeDialog(
+            currentThemes = currentTheme,
+            onConfirmClick = {
+                onThemeClick(it)
+                isThemeDialogVisible = false
+            },
+            onDismiss = { isThemeDialogVisible = false }
+        )
 }
 
 @ThemePreviews
 @Composable
 private fun Preview() {
     KotlinJC_FriendsActivity_appTheme {
-        SettingsScreen(onLogoutClick = {}, onStepDistanceClick = {})
+        SettingsScreen(
+            onLogoutClick = {},
+            onStepDistanceClick = {},
+            onThemeClick = {},
+            currentTheme = AppThemes.Light
+        )
     }
 }

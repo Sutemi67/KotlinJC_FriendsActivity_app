@@ -3,7 +3,7 @@ package apc.appcradle.kotlinjc_friendsactivity_app.koin_modules
 import android.content.Context
 import android.content.SharedPreferences
 import apc.appcradle.kotlinjc_friendsactivity_app.MainViewModel
-import apc.appcradle.kotlinjc_friendsactivity_app.data.SettingsPreferences
+import apc.appcradle.kotlinjc_friendsactivity_app.data.SettingsPreferencesImpl
 import apc.appcradle.kotlinjc_friendsactivity_app.data.StatsRepo
 import apc.appcradle.kotlinjc_friendsactivity_app.data.TokenStorage
 import apc.appcradle.kotlinjc_friendsactivity_app.domain.NetworkClient
@@ -20,7 +20,7 @@ val appModule = module {
     singleOf(::TokenStorage)
     singleOf(::NetworkClient)
     singleOf(::StatsRepo)
-    singleOf(::SettingsPreferences)
+    singleOf(::SettingsPreferencesImpl)
 
     viewModelOf(::MainViewModel)
 

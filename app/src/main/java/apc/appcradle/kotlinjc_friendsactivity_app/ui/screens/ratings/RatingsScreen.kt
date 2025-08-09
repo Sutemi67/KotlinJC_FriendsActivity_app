@@ -62,8 +62,12 @@ fun RatingsScreen(
                 list = statsRepository.playersList
 
                 Log.d("dataTransfer", "data synced, user=$login, steps=$stepCount")
-                summaryKm = withContext(Dispatchers.Default) { calcSumSteps(list) }
-                leaderDifference = withContext(Dispatchers.Default) { calcLeaderDiff(list, login) }
+//                summaryKm = withContext(Dispatchers.Default) { calcSumSteps(list) }
+//                leaderDifference = withContext(Dispatchers.Default) { calcLeaderDiff(list, login) }
+                withContext(Dispatchers.Default) {
+                    summaryKm = calcSumSteps(list)
+                    leaderDifference = calcLeaderDiff(list, login)
+                }
             } catch (e: Exception) {
                 Log.e("dataTransfer", "Error syncing data: ${e.message}")
                 errorMessage = "${e.message}"
