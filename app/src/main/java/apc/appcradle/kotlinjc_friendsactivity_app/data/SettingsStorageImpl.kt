@@ -3,20 +3,20 @@ package apc.appcradle.kotlinjc_friendsactivity_app.data
 import android.content.SharedPreferences
 import android.util.Log
 import androidx.core.content.edit
-import apc.appcradle.kotlinjc_friendsactivity_app.domain.SettingsPreferences
+import apc.appcradle.kotlinjc_friendsactivity_app.domain.SettingsStorage
 import apc.appcradle.kotlinjc_friendsactivity_app.domain.model.AppSavedSettingsData
 import com.google.gson.Gson
 
-class SettingsPreferencesImpl(
+class SettingsStorageImpl(
     private val sharedPreferences: SharedPreferences
-) : SettingsPreferences {
+) : SettingsStorage {
 
     companion object {
         const val STEPS_PREFS_ID = "steps_id"
         const val SETTINGS_PREFS_ID = "settings_id"
     }
 
-    val gson = Gson()
+    private val gson = Gson()
 
     override fun saveSteps(steps: Int) {
         sharedPreferences.edit { putInt(STEPS_PREFS_ID, steps) }

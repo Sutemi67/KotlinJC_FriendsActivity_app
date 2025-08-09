@@ -7,7 +7,8 @@ import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
 import android.hardware.SensorManager
 import android.util.Log
-import apc.appcradle.kotlinjc_friendsactivity_app.data.SettingsPreferencesImpl
+import apc.appcradle.kotlinjc_friendsactivity_app.data.SettingsStorageImpl
+import apc.appcradle.kotlinjc_friendsactivity_app.data.StepsStorageImpl
 import apc.appcradle.kotlinjc_friendsactivity_app.isTodayMonday
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -18,7 +19,8 @@ import kotlinx.coroutines.launch
 
 class AppSensorsManager(
     context: Context,
-    private val settingsPreferencesImpl: SettingsPreferencesImpl
+    private val settingsPreferencesImpl: SettingsStorageImpl,
+    private val stepsStorageImpl: StepsStorageImpl
 ) : SensorEventListener {
 
     private val sensorManager = context.getSystemService(SENSOR_SERVICE) as SensorManager

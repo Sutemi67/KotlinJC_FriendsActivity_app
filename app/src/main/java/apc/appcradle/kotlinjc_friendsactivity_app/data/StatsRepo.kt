@@ -13,7 +13,6 @@ class StatsRepo(
 ) {
     private val _syncStatus = MutableStateFlow(false)
     val syncStatus: StateFlow<Boolean> = _syncStatus.asStateFlow()
-
     var playersList = mutableListOf(
         PlayerActivityData("Alexander", 4324, 0f),
         PlayerActivityData("Maria", 343, 0f),

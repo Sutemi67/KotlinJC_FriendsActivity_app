@@ -1,7 +1,7 @@
 package apc.appcradle.kotlinjc_friendsactivity_app.domain
 
 import android.util.Log
-import apc.appcradle.kotlinjc_friendsactivity_app.data.TokenStorage
+import apc.appcradle.kotlinjc_friendsactivity_app.data.TokenStorageImpl
 import apc.appcradle.kotlinjc_friendsactivity_app.domain.model.DataTransferState
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
@@ -23,7 +23,7 @@ import kotlinx.serialization.json.Json
 import java.net.SocketTimeoutException
 
 class NetworkClient(
-    private val tokenStorage: TokenStorage
+    private val tokenStorageImpl: TokenStorageImpl
 ) {
 
     companion object {
@@ -80,7 +80,7 @@ class NetworkClient(
         install(Auth) {
             bearer {
                 loadTokens {
-                    val token = tokenStorage.getToken()
+                    val token = tokenStorageImpl.getToken()
                     if (token != null) {
                         BearerTokens(accessToken = token, refreshToken = "")
                     } else {
@@ -88,7 +88,7 @@ class NetworkClient(
                     }
                 }
                 refreshTokens {
-                    tokenStorage.clearToken()
+                    tokenStorageImpl.clearToken()
                     null
                 }
             }
@@ -98,7 +98,7 @@ class NetworkClient(
     private val serverUrl = "http://212.3.131.67:6655/"
 
     private fun saveToken(login: String, token: String) {
-        tokenStorage.saveToken(login = login, token = token)
+        tokenStorageImpl.saveToken(login = login, token = token)
     }
 
     suspend fun sendRegistrationInfo(login: String, password: String): DataTransferState {
@@ -114,7 +114,7 @@ class NetworkClient(
                 saveToken(login = login, token = token)
                 Log.d(
                     "dataTransfer",
-                    "сохраненный токен: ${tokenStorage.getToken()}\nвыданный токен: $token"
+                    "сохраненный токен: ${tokenStorageImpl.getToken()}\nвыданный токен: $token"
                 )
                 DataTransferState(isLoading = false, true)
             } else {
@@ -139,7 +139,7 @@ class NetworkClient(
                 saveToken(login = login, token = token)
                 Log.d(
                     "dataTransfer",
-                    "сохраненный токен: ${tokenStorage.getToken()}\nвыданный токен: $token"
+                    "сохраненный токен: ${tokenStorageImpl.getToken()}\nвыданный токен: $token"
                 )
                 DataTransferState(isLoading = false, true, errorMessage = null)
             } else {

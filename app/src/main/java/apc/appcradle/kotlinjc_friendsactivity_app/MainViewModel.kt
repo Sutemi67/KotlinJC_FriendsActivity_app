@@ -6,8 +6,8 @@ import android.util.Log
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import apc.appcradle.kotlinjc_friendsactivity_app.data.SettingsPreferencesImpl
-import apc.appcradle.kotlinjc_friendsactivity_app.data.TokenStorage
+import apc.appcradle.kotlinjc_friendsactivity_app.data.SettingsStorageImpl
+import apc.appcradle.kotlinjc_friendsactivity_app.data.TokenStorageImpl
 import apc.appcradle.kotlinjc_friendsactivity_app.domain.NetworkClient
 import apc.appcradle.kotlinjc_friendsactivity_app.domain.model.AppSavedSettingsData
 import apc.appcradle.kotlinjc_friendsactivity_app.domain.model.AppState
@@ -24,8 +24,8 @@ import kotlinx.coroutines.launch
 class MainViewModel(
     private val permissionManager: PermissionManager,
     private val networkClient: NetworkClient,
-    private val tokenStorage: TokenStorage,
-    private val settingsPreferencesImpl: SettingsPreferencesImpl
+    private val tokenStorageImpl: TokenStorageImpl,
+    private val settingsPreferencesImpl: SettingsStorageImpl
 ) : ViewModel() {
 
     private var _state = MutableStateFlow(AppState())
@@ -77,7 +77,7 @@ class MainViewModel(
 
     //region Authentification
     fun logout() {
-        tokenStorage.clearToken()
+        tokenStorageImpl.clearToken()
         _state.update {
             it.copy(
                 isLoggedIn = false,
@@ -88,10 +88,10 @@ class MainViewModel(
     }
 
     private fun checkPermanentAuth() {
-        val token = tokenStorage.getToken()
+        val token = tokenStorageImpl.getToken()
 
         if (token != null) {
-            val login = tokenStorage.getLogin()
+            val login = tokenStorageImpl.getLogin()
             _state.update {
                 it.copy(
                     isLoggedIn = true,
