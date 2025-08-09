@@ -1,5 +1,6 @@
 package apc.appcradle.kotlinjc_friendsactivity_app.ui.screens.main
 
+import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -17,7 +18,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableDoubleStateOf
-import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -33,18 +34,20 @@ import kotlin.math.roundToInt
 fun PermittedUi(
     isStepSensorsAvailable: Boolean,
     stepCount: Int,
+    userStepLength: Double,
     isServiceRunning: Boolean,
     onTrueCallback: () -> Unit,
     onFalseCallback: () -> Unit,
 ) {
     var km by remember { mutableDoubleStateOf(0.0) }
-    var floor by remember { mutableIntStateOf(0) }
+    var kkal by remember { mutableStateOf(IntRange(1, 2)) }
 
     LaunchedEffect(stepCount) {
-        km = (stepCount * 0.35 / 1000 * 100.0).roundToInt() / 100.0
-        floor = stepCount / 25
+        km = (stepCount * userStepLength / 1000 * 100.0).roundToInt() / 100.0
+        kkal = kkalCalc(userStepLength, stepCount)
+        Log.d("mainScreen", "Launched effect on stepCount")
     }
-//    if (isStepSensorsAvailable) {
+
     if (!isStepSensorsAvailable) {
         Column(
             modifier = Modifier
@@ -99,14 +102,14 @@ fun PermittedUi(
 
                 ) {
                     Text("$km")
-                    Text("Километров:")
+                    Text("Километров")
                 }
                 Column(
                     modifier = Modifier.width(90.dp),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    Text("$floor")
-                    Text("Этаж:")
+                    Text("$kkal")
+                    Text("Калорий")
                 }
             }
             HorizontalDivider(
@@ -150,15 +153,23 @@ fun PermittedUi(
     }
 }
 
+private fun kkalCalc(userStepLength: Double, stepCount: Int): IntRange {
+    val firstValue = (50 * (stepCount * userStepLength / 2500)).roundToInt()
+    val secondValue = (75 * (stepCount * userStepLength / 2500)).roundToInt()
+    return IntRange(firstValue, secondValue)
+}
+
 @ThemePreviews
 @Composable
 private fun Preview() {
     KotlinJC_FriendsActivity_appTheme {
         PermittedUi(
             true,
-            stepCount = 235842,
+            stepCount = 454345,
             isServiceRunning = true,
-            {},
-            {})
+            userStepLength = 0.4,
+            onTrueCallback = {},
+            onFalseCallback = {}
+        )
     }
 }

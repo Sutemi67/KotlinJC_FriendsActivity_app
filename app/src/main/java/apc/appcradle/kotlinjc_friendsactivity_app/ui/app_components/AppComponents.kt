@@ -226,6 +226,7 @@ object AppComponents {
         onDismiss: () -> Unit
     ) {
         var value by remember { mutableStateOf("") }
+        var isError by remember { mutableStateOf(false) }
 
         AlertDialog(
             title = { Text("Новое значение") },
@@ -235,10 +236,14 @@ object AppComponents {
                         imeAction = ImeAction.Done,
                         keyboardType = KeyboardType.Decimal
                     ),
+                    isError = isError,
                     shape = RoundedCornerShape(20.dp),
                     label = { Text("введите новое значение") },
                     value = value,
-                    onValueChange = { value = it }
+                    onValueChange = {
+                        isError = false
+                        value = it
+                    }
                 )
             },
             onDismissRequest = onDismiss,
@@ -248,7 +253,9 @@ object AppComponents {
                         onConfirmClick(value.replace(",", ".").toDouble())
                         onDismiss()
                     } catch (e: Exception) {
-                        Log.d("inputValue", "Ошибка ввода")
+                        isError = true
+                        value = ""
+                        Log.d("inputValue", "Ошибка ввода, ${e.message}")
                     }
                 }) {
                     Text(

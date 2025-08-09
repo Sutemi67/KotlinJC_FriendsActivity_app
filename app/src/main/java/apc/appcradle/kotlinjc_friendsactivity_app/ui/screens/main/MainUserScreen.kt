@@ -50,7 +50,8 @@ fun MainUserScreen(
                     stepCount = sensorsManager.stepsData.collectAsState().value,
                     isServiceRunning = state.isServiceRunning,
                     onTrueCallback = { viewModel.startService(context) },
-                    onFalseCallback = { viewModel.stopService(context) }
+                    onFalseCallback = { viewModel.stopService(context) },
+                    userStepLength = state.userStepLength
                 )
             }
         }
