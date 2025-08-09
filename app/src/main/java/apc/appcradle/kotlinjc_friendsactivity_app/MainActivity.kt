@@ -41,7 +41,7 @@ class MainActivity : ComponentActivity() {
                         "main activity theme changed to ${state.currentTheme}"
                     )
                 }
-                NavigationHost(viewModel)
+                NavigationHost(viewModel, state)
             }
         }
     }

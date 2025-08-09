@@ -170,13 +170,14 @@ class MainViewModel(
 
     //region Settings
     fun changeTheme(currentTheme: AppThemes) {
-        _state.update {
-            it.copy(
-                currentTheme = currentTheme,
-            )
-        }
+        _state.update { it.copy(currentTheme = currentTheme) }
         saveSettings()
         Log.d("theme", "viewModel theme is: ${state.value.currentTheme}")
+    }
+
+    fun changeStepLength(newStepLength: Double) {
+        _state.update { it.copy(userStepLength = newStepLength) }
+        saveSettings()
     }
 
     private fun saveSettings() {

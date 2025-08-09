@@ -14,11 +14,11 @@ import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import apc.appcradle.kotlinjc_friendsactivity_app.MainViewModel
+import apc.appcradle.kotlinjc_friendsactivity_app.domain.model.AppState
 import apc.appcradle.kotlinjc_friendsactivity_app.sensors.AppSensorsManager
 import apc.appcradle.kotlinjc_friendsactivity_app.ui.app_components.AppComponents
 import apc.appcradle.kotlinjc_friendsactivity_app.ui.screens.auth.authScreen
@@ -35,9 +35,9 @@ val LocalSensorManager =
 
 @Composable
 fun NavigationHost(
-    viewModel: MainViewModel
+    viewModel: MainViewModel,
+    state: AppState
 ) {
-    val state by viewModel.state.collectAsStateWithLifecycle()
     val navController = rememberNavController()
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val noAuthDestinations =
@@ -113,11 +113,9 @@ fun NavigationHost(
                     onLogoutClick = { viewModel.logout() },
                     userLogin = state.userLogin,
                     userStepLength = state.userStepLength,
-                    onThemeClick = {
-                        viewModel.changeTheme(it)
-                    },
+                    onThemeClick = { viewModel.changeTheme(it) },
                     onNickNameClick = {},
-                    onStepDistanceClick = {},
+                    onStepLengthClick = {viewModel.changeStepLength(it)},
                     currentTheme = state.currentTheme
                 )
             }

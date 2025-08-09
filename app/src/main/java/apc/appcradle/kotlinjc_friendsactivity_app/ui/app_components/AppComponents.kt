@@ -1,11 +1,13 @@
 package apc.appcradle.kotlinjc_friendsactivity_app.ui.app_components
 
+import android.util.Log
 import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material3.AlertDialog
@@ -31,6 +33,8 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -213,6 +217,56 @@ object AppComponents {
             },
             onDismissRequest = onDismiss,
             confirmButton = { ElevatedButton(onClick = { onConfirmClick(selectedTheme) }) { Text("Confirm") } },
+        )
+    }
+
+    @Composable
+    fun NewStepValueDialog(
+        onConfirmClick: (Double) -> Unit,
+        onDismiss: () -> Unit
+    ) {
+        var value by remember { mutableStateOf("") }
+
+        AlertDialog(
+            title = { Text("Новое значение") },
+            text = {
+                OutlinedTextField(
+                    keyboardOptions = KeyboardOptions(
+                        imeAction = ImeAction.Done,
+                        keyboardType = KeyboardType.Decimal
+                    ),
+                    shape = RoundedCornerShape(20.dp),
+                    label = { Text("введите новое значение") },
+                    value = value,
+                    onValueChange = { value = it }
+                )
+            },
+            onDismissRequest = onDismiss,
+            confirmButton = {
+                ElevatedButton(onClick = {
+                    try {
+                        onConfirmClick(value.replace(",", ".").toDouble())
+                        onDismiss()
+                    } catch (e: Exception) {
+                        Log.d("inputValue", "Ошибка ввода")
+                    }
+                }) {
+                    Text(
+                        "Confirm"
+                    )
+                }
+            },
+        )
+    }
+}
+
+@Preview
+@Composable
+private fun ValueDialogPreview() {
+    KotlinJC_FriendsActivity_appTheme {
+        AppComponents.NewStepValueDialog(
+            onConfirmClick = {},
+            onDismiss = {}
         )
     }
 }

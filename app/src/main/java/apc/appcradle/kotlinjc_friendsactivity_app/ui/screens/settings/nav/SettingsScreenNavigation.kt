@@ -9,10 +9,10 @@ import apc.appcradle.kotlinjc_friendsactivity_app.ui.screens.settings.SettingsSc
 
 fun NavGraphBuilder.settingsScreen(
     userLogin: String?,
-    userStepLength: Double? = 0.4,
+    userStepLength: Double,
     onLogoutClick: () -> Unit,
     onThemeClick: (AppThemes) -> Unit,
-    onStepDistanceClick: () -> Unit,
+    onStepLengthClick: (Double) -> Unit,
     onNickNameClick: () -> Unit,
     currentTheme: AppThemes
 ) {
@@ -22,7 +22,7 @@ fun NavGraphBuilder.settingsScreen(
             userStepLength = userStepLength,
             onLogoutClick = onLogoutClick,
             onThemeClick = onThemeClick,
-            onStepDistanceClick = onStepDistanceClick,
+            onStepDistanceClick = onStepLengthClick,
             onNicknameClick = onNickNameClick,
             currentTheme = currentTheme
         )

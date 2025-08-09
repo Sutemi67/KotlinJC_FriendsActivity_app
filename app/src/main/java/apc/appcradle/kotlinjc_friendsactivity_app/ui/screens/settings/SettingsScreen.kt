@@ -18,6 +18,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableDoubleStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -33,15 +34,17 @@ import apc.appcradle.kotlinjc_friendsactivity_app.ui.theme.KotlinJC_FriendsActiv
 @Composable
 fun SettingsScreen(
     userLogin: String? = "Alex",
-    userStepLength: Double? = 0.4,
+    userStepLength: Double,
     onLogoutClick: () -> Unit,
-    onStepDistanceClick: () -> Unit,
+    onStepDistanceClick: (Double) -> Unit,
     onNicknameClick: () -> Unit = {},
     onScaleClick: () -> Unit = {},
     currentTheme: AppThemes,
     onThemeClick: (AppThemes) -> Unit,
 ) {
     var isThemeDialogVisible by remember { mutableStateOf(false) }
+    var isStepDialogVisible by remember { mutableStateOf(false) }
+    var stepLength by remember { mutableDoubleStateOf(userStepLength) }
 
     LaunchedEffect(currentTheme) {
         Log.i("theme", "settings screen theme first start painted to: $currentTheme")
@@ -95,7 +98,7 @@ fun SettingsScreen(
             ) {
                 Text("Длина вашего шага:")
                 Card(
-                    modifier = Modifier.clickable { onStepDistanceClick() }
+                    modifier = Modifier.clickable { isStepDialogVisible = true }
                 ) {
                     Text(
                         modifier = Modifier.padding(vertical = 10.dp, horizontal = 20.dp),
@@ -169,6 +172,11 @@ fun SettingsScreen(
             },
             onDismiss = { isThemeDialogVisible = false }
         )
+    if (isStepDialogVisible)
+        AppComponents.NewStepValueDialog(
+            onConfirmClick = { newStep -> onStepDistanceClick(newStep) },
+            onDismiss = { isStepDialogVisible = false }
+        )
 }
 
 @ThemePreviews
@@ -177,6 +185,7 @@ private fun Preview() {
     KotlinJC_FriendsActivity_appTheme {
         SettingsScreen(
             onLogoutClick = {},
+            userStepLength = 0.3,
             onStepDistanceClick = {},
             onThemeClick = {},
             currentTheme = AppThemes.Light
