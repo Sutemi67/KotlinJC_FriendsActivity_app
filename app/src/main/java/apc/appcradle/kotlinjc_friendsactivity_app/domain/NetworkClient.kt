@@ -152,6 +152,9 @@ class NetworkClient(
         } catch (e: HttpRequestTimeoutException) {
             Log.e("dataTransfer", "error is - ${e.message}")
             DataTransferState(isLoading = false, false, "Request timeout has expired")
+        } catch (e: Exception) {
+            Log.e("dataTransfer", "error is - ${e.message}")
+            DataTransferState(isLoading = false, false, "Unknown error")
         }
     }
 

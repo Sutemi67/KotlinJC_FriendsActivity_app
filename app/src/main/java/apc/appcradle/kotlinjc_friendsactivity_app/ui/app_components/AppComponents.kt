@@ -2,6 +2,7 @@ package apc.appcradle.kotlinjc_friendsactivity_app.ui.app_components
 
 import android.util.Log
 import androidx.compose.animation.Crossfade
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -186,27 +187,66 @@ object AppComponents {
             title = { Text("Выбор темы") },
             text = {
                 Column(Modifier.fillMaxWidth()) {
-                    ElevatedCard {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Text(modifier = Modifier.weight(1f), text = "Светлая")
+                    ElevatedCard(
+                        modifier = Modifier
+                            .padding(3.dp)
+                            .clickable {
+                                selectedTheme = AppThemes.Light
+                            },
+                    ) {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(
+                                modifier = Modifier
+                                    .weight(1f)
+                                    .padding(horizontal = 15.dp),
+                                text = "Светлая"
+                            )
                             RadioButton(
                                 selected = selectedTheme == AppThemes.Light,
                                 onClick = { selectedTheme = AppThemes.Light }
                             )
                         }
                     }
-                    ElevatedCard {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Text(modifier = Modifier.weight(1f), text = "Темная")
+                    ElevatedCard(
+                        modifier = Modifier
+                            .padding(3.dp)
+                            .clickable {
+                                selectedTheme = AppThemes.Dark
+                            },
+                    ) {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(
+                                modifier = Modifier
+                                    .weight(1f)
+                                    .padding(horizontal = 15.dp),
+                                text = "Темная"
+                            )
                             RadioButton(
                                 selected = selectedTheme == AppThemes.Dark,
                                 onClick = { selectedTheme = AppThemes.Dark }
                             )
                         }
                     }
-                    ElevatedCard {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Text(modifier = Modifier.weight(1f), text = "Системная")
+                    ElevatedCard(
+                        modifier = Modifier
+                            .padding(3.dp)
+                            .clickable {
+                                selectedTheme = AppThemes.System
+                            },
+                    ) {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(
+                                modifier = Modifier
+                                    .weight(1f)
+                                    .padding(horizontal = 15.dp),
+                                text = "Системная"
+                            )
                             RadioButton(
                                 selected = selectedTheme == AppThemes.System,
                                 onClick = { selectedTheme = AppThemes.System }
@@ -216,7 +256,7 @@ object AppComponents {
                 }
             },
             onDismissRequest = onDismiss,
-            confirmButton = { ElevatedButton(onClick = { onConfirmClick(selectedTheme) }) { Text("Confirm") } },
+            confirmButton = { ElevatedButton(onClick = { onConfirmClick(selectedTheme) }) { Text("Обновить") } },
         )
     }
 

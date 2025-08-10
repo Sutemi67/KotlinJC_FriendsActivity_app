@@ -12,6 +12,7 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -84,7 +85,7 @@ fun PermittedUi(
                         text = "$stepCount"
                     )
                     Text(
-                        text = "Шагов за сегодня:",
+                        text = "Твой результат",
                         style = MaterialTheme.typography.bodyMedium,
                     )
                 }
@@ -163,13 +164,17 @@ private fun kkalCalc(userStepLength: Double, stepCount: Int): IntRange {
 @Composable
 private fun Preview() {
     KotlinJC_FriendsActivity_appTheme {
-        PermittedUi(
-            true,
-            stepCount = 454345,
-            isServiceRunning = true,
-            userStepLength = 0.4,
-            onTrueCallback = {},
-            onFalseCallback = {}
-        )
+        Surface(
+            tonalElevation = 1.dp
+        ) {
+            PermittedUi(
+                true,
+                stepCount = 454345,
+                isServiceRunning = true,
+                userStepLength = 0.4,
+                onTrueCallback = {},
+                onFalseCallback = {}
+            )
+        }
     }
 }

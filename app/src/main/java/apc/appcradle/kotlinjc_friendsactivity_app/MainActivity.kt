@@ -6,10 +6,12 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
 import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import apc.appcradle.kotlinjc_friendsactivity_app.domain.model.AppThemes
 import apc.appcradle.kotlinjc_friendsactivity_app.ui.screens.NavigationHost
@@ -35,13 +37,11 @@ class MainActivity : ComponentActivity() {
                 },
                 windowSizeClass = windowSizeClass
             ) {
-                LaunchedEffect(state) {
-                    Log.e(
-                        "theme",
-                        "main activity theme changed to ${state.currentTheme}"
-                    )
+                Surface(
+                    tonalElevation = 5.dp
+                ) {
+                    NavigationHost(viewModel, state)
                 }
-                NavigationHost(viewModel, state)
             }
         }
     }
