@@ -19,7 +19,6 @@ import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -28,10 +27,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import apc.appcradle.kotlinjc_friendsactivity_app.MainViewModel
+import apc.appcradle.kotlinjc_friendsactivity_app.domain.model.DataTransferState
 import apc.appcradle.kotlinjc_friendsactivity_app.nonScaledSp
 import apc.appcradle.kotlinjc_friendsactivity_app.ui.app_components.AppComponents
+import apc.appcradle.kotlinjc_friendsactivity_app.ui.theme.KotlinJC_FriendsActivity_appTheme
 
 private enum class FieldState {
     Login, Password
@@ -39,12 +40,14 @@ private enum class FieldState {
 
 @Composable
 fun AuthScreen(
-    viewModel: MainViewModel, onRegisterClick: () -> Unit
+    sendLoginData: (String, String) -> Unit,
+    transferState: DataTransferState,
+    onRegisterClick: () -> Unit,
+    onOfflineUseClick: () -> Unit
 ) {
     var fieldState by rememberSaveable { mutableStateOf(FieldState.Login) }
     var loginText by rememberSaveable { mutableStateOf("") }
     var passwordText by rememberSaveable { mutableStateOf("") }
-    val transferState = viewModel.transferState.collectAsState().value
 
     Scaffold { paddingValues ->
         Box(
@@ -86,7 +89,7 @@ fun AuthScreen(
                         onValueChange = { passwordText = it },
                         trailingIcon = if (passwordText.isNotBlank()) Icons.Default.PlayArrow else null,
                         onIconClick = {
-                            viewModel.sendLoginData(loginText, passwordText)
+                            sendLoginData(loginText, passwordText)
                         },
                         needLeadingBackIcon = true,
                         onLeadingIconClick = { fieldState = FieldState.Login })
@@ -97,11 +100,17 @@ fun AuthScreen(
                     }
                 }
                 ElevatedButton(
-                    modifier = Modifier.width(200.dp), onClick = onRegisterClick
-                ) { Text("Create an account", fontSize = nonScaledSp(15)) }
+                    modifier = Modifier.width(260.dp), onClick = onRegisterClick
+                ) { Text("Создать аккаунт", fontSize = nonScaledSp(15)) }
+                ElevatedButton(
+                    modifier = Modifier.width(260.dp), onClick = onOfflineUseClick
+                ) { Text("Пользоваться без интернета", fontSize = nonScaledSp(15)) }
                 Box(Modifier.height(30.dp)) {
                     if (transferState.errorMessage != null) {
-                        Text(text = transferState.errorMessage, color = Color.Red)
+                        Text(
+                            text = transferState.errorMessage,
+                            color = Color.Red,
+                        )
                     }
                 }
             }
@@ -109,10 +118,15 @@ fun AuthScreen(
     }
 }
 
-//@Preview
-//@Composable
-//private fun Preview() {
-//    KotlinJC_FriendsActivity_appTheme {
-//        AuthScreen(sendLoginData = { log, pass -> {} }, onRegisterClick = {})
-//    }
-//}
+@Preview
+@Composable
+private fun Preview() {
+    KotlinJC_FriendsActivity_appTheme {
+        AuthScreen(
+            sendLoginData = { log, pass -> {} },
+            onRegisterClick = {},
+            transferState = DataTransferState(),
+            onOfflineUseClick = {}
+        )
+    }
+}

@@ -35,15 +35,17 @@ import apc.appcradle.kotlinjc_friendsactivity_app.ui.theme.KotlinJC_FriendsActiv
 fun SettingsScreen(
     userLogin: String? = "Alex",
     userStepLength: Double,
+    userScale: Float,
     onLogoutClick: () -> Unit,
     onStepDistanceClick: (Double) -> Unit,
     onNicknameClick: () -> Unit = {},
-    onScaleClick: () -> Unit = {},
+    onScaleClick: (Float) -> Unit,
     currentTheme: AppThemes,
     onThemeClick: (AppThemes) -> Unit,
 ) {
     var isThemeDialogVisible by remember { mutableStateOf(false) }
     var isStepDialogVisible by remember { mutableStateOf(false) }
+    var isScaleDialogVisible by remember { mutableStateOf(false) }
     var stepLength by remember { mutableDoubleStateOf(userStepLength) }
 
     LaunchedEffect(currentTheme) {
@@ -127,11 +129,16 @@ fun SettingsScreen(
             ) {
                 Text("Масштаб шрифтов:")
                 Card(
-                    modifier = Modifier.clickable { onScaleClick() }
+                    modifier = Modifier.clickable { isScaleDialogVisible = true }
                 ) {
                     Text(
                         modifier = Modifier.padding(vertical = 10.dp, horizontal = 20.dp),
-                        text = "2"
+                        text = when (userScale) {
+                            0.5f -> "50%"
+                            1.0f -> "100%"
+                            1.5f -> "150%"
+                            else -> "-"
+                        }
                     )
                 }
             }
@@ -177,6 +184,15 @@ fun SettingsScreen(
             onConfirmClick = { newStep -> onStepDistanceClick(newStep) },
             onDismiss = { isStepDialogVisible = false }
         )
+    if (isScaleDialogVisible)
+        AppComponents.ScaleDialog(
+            initialValue = userScale,
+            onConfirm = { newValue ->
+                onScaleClick(newValue)
+                Log.i("scale", "new scale is $newValue")
+            },
+            onDismiss = { isScaleDialogVisible = false }
+        )
 }
 
 @ThemePreviews
@@ -188,7 +204,9 @@ private fun Preview() {
             userStepLength = 0.3,
             onStepDistanceClick = {},
             onThemeClick = {},
-            currentTheme = AppThemes.Light
+            currentTheme = AppThemes.Light,
+            userScale = 1f,
+            onScaleClick = {}
         )
     }
 }

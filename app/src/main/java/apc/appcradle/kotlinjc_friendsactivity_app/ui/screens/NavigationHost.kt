@@ -10,6 +10,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
@@ -41,10 +42,15 @@ fun NavigationHost(
     val navController = rememberNavController()
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val noAuthDestinations =
-        Destinations.entries.filter { it != Destinations.AUTH && it != Destinations.REGISTER }
+        if (state.userLogin == null) {
+            Destinations.entries.filter { it != Destinations.AUTH && it != Destinations.REGISTER && it != Destinations.RATINGS }
+        } else {
+            Destinations.entries.filter { it != Destinations.AUTH && it != Destinations.REGISTER }
+        }
 
     val sensorManager: AppSensorsManager = koinInject<AppSensorsManager>()
     val context = LocalContext.current
+    val transferState by viewModel.transferState.collectAsState()
 
     LaunchedEffect(Unit) {
         viewModel.isServiceRunning(context)
@@ -96,8 +102,10 @@ fun NavigationHost(
                 startDestination = startDestination
             ) {
                 authScreen(
-                    viewModel = viewModel,
-                    toRegisterScreen = { navController.toRegisterScreen() }
+                    toRegisterScreen = { navController.toRegisterScreen() },
+                    transferState = transferState,
+                    sendLoginData = { login, password -> viewModel.sendLoginData(login, password) },
+                    onOfflineUseClick = { viewModel.goOfflineUse() }
                 )
                 registerScreen(
                     viewModel = viewModel,
@@ -113,10 +121,12 @@ fun NavigationHost(
                     onLogoutClick = { viewModel.logout() },
                     userLogin = state.userLogin,
                     userStepLength = state.userStepLength,
+                    userScale = state.userScale,
                     onThemeClick = { viewModel.changeTheme(it) },
                     onNickNameClick = {},
-                    onStepLengthClick = {viewModel.changeStepLength(it)},
-                    currentTheme = state.currentTheme
+                    onStepLengthClick = { viewModel.changeStepLength(it) },
+                    currentTheme = state.currentTheme,
+                    onScaleClick = { viewModel.changeScale(it) }
                 )
             }
         }

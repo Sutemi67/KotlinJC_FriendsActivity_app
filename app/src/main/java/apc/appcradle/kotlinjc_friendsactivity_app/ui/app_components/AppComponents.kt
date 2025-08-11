@@ -19,10 +19,12 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.RadioButton
+import androidx.compose.material3.Slider
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -165,11 +167,58 @@ object AppComponents {
             onDismissRequest = onDismiss,
             confirmButton = {
                 ElevatedButton(onClick = {
+                    //todo дописать донаты
                     onDismiss()
                 }) { Text("Почему бы и нет") }
             },
             dismissButton = {
                 ElevatedButton(onClick = onDismiss) { Text("В другой раз") }
+            },
+        )
+    }
+
+    @Composable
+    fun ScaleSlider(
+        initialValue: Float,
+        valueReturn: (Float) -> Unit
+    ) {
+        var sliderPosition by remember { mutableFloatStateOf(initialValue) }
+        Slider(
+            value = sliderPosition,
+            onValueChange = {
+                sliderPosition = it
+                valueReturn(sliderPosition)
+            },
+            valueRange = 0.5f..1.5f,
+            steps = 1
+        )
+    }
+
+    @Composable
+    fun ScaleDialog(
+        initialValue: (Float),
+        onConfirm: (Float) -> Unit,
+        onDismiss: () -> Unit,
+    ) {
+        var newValue by remember { mutableFloatStateOf(initialValue) }
+        AlertDialog(
+            title = { Text("Изменить масштаб") },
+            text = {
+                ScaleSlider(
+                    initialValue = initialValue,
+                    valueReturn = {
+                        newValue = it
+                    })
+            },
+            onDismissRequest = onDismiss,
+            confirmButton = {
+                ElevatedButton(onClick = {
+                    onConfirm(newValue)
+                    onDismiss()
+                }) { Text("Применить") }
+            },
+            dismissButton = {
+                ElevatedButton(onClick = onDismiss) { Text("Отмена") }
             },
         )
     }
@@ -326,6 +375,19 @@ private fun ThemeDialogPreview() {
             currentThemes = AppThemes.Dark,
             onConfirmClick = {},
             onDismiss = {}
+        )
+
+    }
+}
+
+@Preview
+@Composable
+private fun ScaleDialogPreview() {
+    KotlinJC_FriendsActivity_appTheme {
+        AppComponents.ScaleDialog(
+            onConfirm = {},
+            onDismiss = {},
+            initialValue = 1.0f
         )
     }
 }

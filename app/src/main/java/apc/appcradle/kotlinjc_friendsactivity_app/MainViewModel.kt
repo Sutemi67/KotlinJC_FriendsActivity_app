@@ -42,6 +42,7 @@ class MainViewModel(
             }
         }
         loadSettings()
+        Log.i("scale", "${state.value.userScale} loaded")
     }
 
     //region Service
@@ -87,20 +88,42 @@ class MainViewModel(
         _transferState.update { it.copy(isSuccessful = null, errorMessage = null) }
     }
 
+    fun goOfflineUse() {
+        tokenStorageImpl.saveOfflineToken()
+        _state.update {
+            it.copy(
+                isLoggedIn = true,
+                userLogin = null
+            )
+        }
+    }
+
     private fun checkPermanentAuth() {
         val token = tokenStorageImpl.getToken()
-
-        if (token != null) {
-            val login = tokenStorageImpl.getLogin()
-            _state.update {
-                it.copy(
-                    isLoggedIn = true,
-                    userLogin = login
-                )
+        when (token) {
+            "offline" -> {
+                _state.update {
+                    it.copy(
+                        isLoggedIn = true,
+                        userLogin = null
+                    )
+                }
             }
-            Log.d("dataTransfer", "Token is valid. Loading main screen for login: $login")
-        } else {
-            Log.d("dataTransfer", "Permanent token is not valid...")
+
+            null -> {
+                Log.d("dataTransfer", "Permanent token is not valid...")
+            }
+
+            else -> {
+                val login = tokenStorageImpl.getLogin()
+                _state.update {
+                    it.copy(
+                        isLoggedIn = true,
+                        userLogin = login
+                    )
+                }
+                Log.d("dataTransfer", "Token is valid. Loading main screen for login: $login")
+            }
         }
     }
 
@@ -173,6 +196,11 @@ class MainViewModel(
         _state.update { it.copy(currentTheme = currentTheme) }
         saveSettings()
         Log.d("theme", "viewModel theme is: ${state.value.currentTheme}")
+    }
+
+    fun changeScale(newValue: Float) {
+        _state.update { it.copy(userScale = newValue) }
+        saveSettings()
     }
 
     fun changeStepLength(newStepLength: Double) {
