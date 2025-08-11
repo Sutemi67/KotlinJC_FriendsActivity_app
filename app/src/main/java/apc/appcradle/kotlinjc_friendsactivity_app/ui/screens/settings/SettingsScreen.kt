@@ -10,11 +10,14 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Card
 import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
+import androidx.compose.material3.Typography
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -29,6 +32,7 @@ import androidx.compose.ui.unit.dp
 import apc.appcradle.kotlinjc_friendsactivity_app.ThemePreviews
 import apc.appcradle.kotlinjc_friendsactivity_app.domain.model.AppThemes
 import apc.appcradle.kotlinjc_friendsactivity_app.ui.app_components.AppComponents
+import apc.appcradle.kotlinjc_friendsactivity_app.ui.theme.ExpandedTypography
 import apc.appcradle.kotlinjc_friendsactivity_app.ui.theme.KotlinJC_FriendsActivity_appTheme
 
 @Composable
@@ -42,11 +46,11 @@ fun SettingsScreen(
     onScaleClick: (Float) -> Unit,
     currentTheme: AppThemes,
     onThemeClick: (AppThemes) -> Unit,
+    typo: Typography
 ) {
     var isThemeDialogVisible by remember { mutableStateOf(false) }
     var isStepDialogVisible by remember { mutableStateOf(false) }
     var isScaleDialogVisible by remember { mutableStateOf(false) }
-    var stepLength by remember { mutableDoubleStateOf(userStepLength) }
 
     LaunchedEffect(currentTheme) {
         Log.i("theme", "settings screen theme first start painted to: $currentTheme")
@@ -55,7 +59,8 @@ fun SettingsScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(horizontal = 20.dp),
+            .padding(horizontal = 20.dp)
+            .verticalScroll(rememberScrollState()),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
@@ -69,7 +74,10 @@ fun SettingsScreen(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text("Ваш логин:")
+                Text(
+                    text = "Ваш логин:",
+                    style = typo.bodyLarge
+                )
                 Card(
                     modifier = Modifier.clickable { onNicknameClick() }
                 ) {
@@ -206,7 +214,10 @@ private fun Preview() {
             onThemeClick = {},
             currentTheme = AppThemes.Light,
             userScale = 1f,
-            onScaleClick = {}
+            onScaleClick = {},
+//            typo = CompactTypography
+//            typo = MediumTypography
+            typo = ExpandedTypography
         )
     }
 }

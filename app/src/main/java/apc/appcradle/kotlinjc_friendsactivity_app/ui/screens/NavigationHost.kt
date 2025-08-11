@@ -34,6 +34,7 @@ import org.koin.compose.koinInject
 val LocalSensorManager =
     compositionLocalOf<AppSensorsManager> { error("No sensor manager provided") }
 
+
 @Composable
 fun NavigationHost(
     viewModel: MainViewModel,
@@ -61,7 +62,7 @@ fun NavigationHost(
     }
 
     CompositionLocalProvider(
-        LocalSensorManager provides sensorManager
+        LocalSensorManager provides sensorManager,
     ) {
         Scaffold(
             topBar = {
@@ -132,3 +133,4 @@ fun NavigationHost(
         }
     }
 }
+

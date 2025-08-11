@@ -15,19 +15,6 @@ val CompactTypography = Typography(
     headlineLarge = TextStyle(
         fontFamily = FontFamily.Default,
         fontWeight = FontWeight.Normal,
-        fontSize = 25.sp,
-    ),
-)
-
-val CompactHighDpiTypography = Typography(
-    bodyLarge = TextStyle(
-        fontFamily = FontFamily.Default,
-        fontWeight = FontWeight.ExtraLight, // More elegant on high-res screens
-        fontSize = 11.sp,
-    ),
-    headlineLarge = TextStyle(
-        fontFamily = FontFamily.Default,
-        fontWeight = FontWeight.Light, // More elegant on high-res screens
         fontSize = 20.sp,
     ),
 )
@@ -36,12 +23,12 @@ val MediumTypography = Typography(
     bodyLarge = TextStyle(
         fontFamily = FontFamily.Default,
         fontWeight = FontWeight.Normal,
-        fontSize = 25.sp,
+        fontSize = 17.sp,
     ),
     headlineLarge = TextStyle(
         fontFamily = FontFamily.Default,
         fontWeight = FontWeight.Normal,
-        fontSize = 27.sp,
+        fontSize = 23.sp,
     ),
 )
 
@@ -49,7 +36,7 @@ val ExpandedTypography = Typography(
     bodyLarge = TextStyle(
         fontFamily = FontFamily.Default,
         fontWeight = FontWeight.Normal,
-        fontSize = 23.sp,
+        fontSize = 20.sp,
     ),
     headlineLarge = TextStyle(
         fontFamily = FontFamily.Default,
