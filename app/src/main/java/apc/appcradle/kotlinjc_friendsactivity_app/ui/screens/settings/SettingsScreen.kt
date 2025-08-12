@@ -16,24 +16,26 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.Text
-import androidx.compose.material3.Typography
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableDoubleStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import apc.appcradle.kotlinjc_friendsactivity_app.ThemePreviews
+import apc.appcradle.kotlinjc_friendsactivity_app.LocalAppTypography
 import apc.appcradle.kotlinjc_friendsactivity_app.domain.model.AppThemes
 import apc.appcradle.kotlinjc_friendsactivity_app.ui.app_components.AppComponents
-import apc.appcradle.kotlinjc_friendsactivity_app.ui.theme.ExpandedTypography
+import apc.appcradle.kotlinjc_friendsactivity_app.ui.app_components.AppComponents.AppText
+import apc.appcradle.kotlinjc_friendsactivity_app.ui.theme.CompactText
+import apc.appcradle.kotlinjc_friendsactivity_app.ui.theme.ExpandedText
 import apc.appcradle.kotlinjc_friendsactivity_app.ui.theme.KotlinJC_FriendsActivity_appTheme
+import apc.appcradle.kotlinjc_friendsactivity_app.ui.theme.MediumText
 
 @Composable
 fun SettingsScreen(
@@ -46,7 +48,6 @@ fun SettingsScreen(
     onScaleClick: (Float) -> Unit,
     currentTheme: AppThemes,
     onThemeClick: (AppThemes) -> Unit,
-    typo: Typography
 ) {
     var isThemeDialogVisible by remember { mutableStateOf(false) }
     var isStepDialogVisible by remember { mutableStateOf(false) }
@@ -74,21 +75,20 @@ fun SettingsScreen(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(
+                AppText(
                     text = "Ваш логин:",
-                    style = typo.bodyLarge
                 )
                 Card(
                     modifier = Modifier.clickable { onNicknameClick() }
                 ) {
-                    Text(
+                    AppText(
                         modifier = Modifier.padding(vertical = 10.dp, horizontal = 20.dp),
-                        text = userLogin ?: "-"
+                        text = userLogin ?: "-",
                     )
                 }
             }
             HorizontalDivider(Modifier.padding(horizontal = 15.dp))
-            Text(
+            AppText(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(10.dp),
@@ -106,18 +106,19 @@ fun SettingsScreen(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text("Длина вашего шага:")
+                AppText(text = "Длина вашего шага:")
                 Card(
                     modifier = Modifier.clickable { isStepDialogVisible = true }
                 ) {
-                    Text(
+                    AppText(
                         modifier = Modifier.padding(vertical = 10.dp, horizontal = 20.dp),
-                        text = "$userStepLength m"
+                        text = "$userStepLength m",
+                        singleLine = true
                     )
                 }
             }
             HorizontalDivider(Modifier.padding(horizontal = 15.dp))
-            Text(
+            AppText(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(10.dp),
@@ -135,11 +136,11 @@ fun SettingsScreen(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text("Масштаб шрифтов:")
+                AppText(text = "Масштаб шрифтов:")
                 Card(
                     modifier = Modifier.clickable { isScaleDialogVisible = true }
                 ) {
-                    Text(
+                    AppText(
                         modifier = Modifier.padding(vertical = 10.dp, horizontal = 20.dp),
                         text = when (userScale) {
                             0.5f -> "50%"
@@ -151,7 +152,7 @@ fun SettingsScreen(
                 }
             }
             HorizontalDivider(Modifier.padding(horizontal = 15.dp))
-            Text(
+            AppText(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(10.dp),
@@ -166,7 +167,7 @@ fun SettingsScreen(
                 .padding(horizontal = 20.dp),
             onClick = onLogoutClick
         ) {
-            Text("Logout")
+            AppText(text = "Logout")
         }
         ElevatedButton(
             modifier = Modifier
@@ -174,7 +175,7 @@ fun SettingsScreen(
                 .padding(horizontal = 20.dp),
             onClick = { isThemeDialogVisible = true }
         ) {
-            Text("Change theme")
+            AppText(text = "Change theme")
         }
     }
 
@@ -203,21 +204,65 @@ fun SettingsScreen(
         )
 }
 
-@ThemePreviews
+@Preview
 @Composable
 private fun Preview() {
+
     KotlinJC_FriendsActivity_appTheme {
-        SettingsScreen(
-            onLogoutClick = {},
-            userStepLength = 0.3,
-            onStepDistanceClick = {},
-            onThemeClick = {},
-            currentTheme = AppThemes.Light,
-            userScale = 1f,
-            onScaleClick = {},
-//            typo = CompactTypography
-//            typo = MediumTypography
-            typo = ExpandedTypography
-        )
+        CompositionLocalProvider(
+            LocalAppTypography provides CompactText
+        ) {
+            SettingsScreen(
+                onLogoutClick = {},
+                userStepLength = 032.3,
+                onStepDistanceClick = {},
+                onThemeClick = {},
+                currentTheme = AppThemes.Light,
+                userScale = 1f,
+                onScaleClick = {},
+            )
+        }
+    }
+}
+
+@Preview
+@Composable
+private fun Preview2() {
+
+    KotlinJC_FriendsActivity_appTheme {
+        CompositionLocalProvider(
+            LocalAppTypography provides MediumText
+        ) {
+            SettingsScreen(
+                onLogoutClick = {},
+                userStepLength = 650.3,
+                onStepDistanceClick = {},
+                onThemeClick = {},
+                currentTheme = AppThemes.Light,
+                userScale = 1f,
+                onScaleClick = {},
+            )
+        }
+    }
+}
+
+@Preview
+@Composable
+private fun Preview3() {
+
+    KotlinJC_FriendsActivity_appTheme {
+        CompositionLocalProvider(
+            LocalAppTypography provides ExpandedText
+        ) {
+            SettingsScreen(
+                onLogoutClick = {},
+                userStepLength = 330.3,
+                onStepDistanceClick = {},
+                onThemeClick = {},
+                currentTheme = AppThemes.Light,
+                userScale = 1f,
+                onScaleClick = {},
+            )
+        }
     }
 }

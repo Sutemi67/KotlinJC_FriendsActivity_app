@@ -1,47 +1,60 @@
 package apc.appcradle.kotlinjc_friendsactivity_app.ui.theme
 
-import androidx.compose.material3.Typography
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 
-val CompactTypography = Typography(
-    bodyLarge = TextStyle(
+val CompactText = MyTypography(
+    header = TextStyle(
         fontFamily = FontFamily.Default,
         fontWeight = FontWeight.Normal,
-        fontSize = 14.sp,
+        fontSize = 14.sp
     ),
-    headlineLarge = TextStyle(
+    bodyText = TextStyle(
         fontFamily = FontFamily.Default,
         fontWeight = FontWeight.Normal,
-        fontSize = 20.sp,
+        fontSize = 10.sp
     ),
-)
-
-val MediumTypography = Typography(
-    bodyLarge = TextStyle(
+    labels = TextStyle(
         fontFamily = FontFamily.Default,
         fontWeight = FontWeight.Normal,
-        fontSize = 17.sp,
-    ),
-    headlineLarge = TextStyle(
-        fontFamily = FontFamily.Default,
-        fontWeight = FontWeight.Normal,
-        fontSize = 23.sp,
+        fontSize = 6.sp
     ),
 )
 
-val ExpandedTypography = Typography(
-    bodyLarge = TextStyle(
+val MediumText = MyTypography(
+    header = TextStyle(
         fontFamily = FontFamily.Default,
         fontWeight = FontWeight.Normal,
-        fontSize = 20.sp,
+        fontSize = 18.sp
     ),
-    headlineLarge = TextStyle(
+    bodyText = TextStyle(
         fontFamily = FontFamily.Default,
         fontWeight = FontWeight.Normal,
-        fontSize = 26.sp,
+        fontSize = 14.sp
+    ),
+    labels = TextStyle(
+        fontFamily = FontFamily.Default,
+        fontWeight = FontWeight.Normal,
+        fontSize = 8.sp
+    ),
+)
+val ExpandedText = MyTypography(
+    header = TextStyle(
+        fontFamily = FontFamily.Default,
+        fontWeight = FontWeight.Normal,
+        fontSize = 28.sp
+    ),
+    bodyText = TextStyle(
+        fontFamily = FontFamily.Default,
+        fontWeight = FontWeight.Normal,
+        fontSize = 24.sp
+    ),
+    labels = TextStyle(
+        fontFamily = FontFamily.Default,
+        fontWeight = FontWeight.Normal,
+        fontSize = 20.sp
     ),
 )
 

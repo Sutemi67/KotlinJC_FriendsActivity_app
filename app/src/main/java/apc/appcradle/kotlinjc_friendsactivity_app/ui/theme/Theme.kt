@@ -13,12 +13,13 @@ import androidx.compose.material3.lightColorScheme
 import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.SideEffect
-import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.unit.dp
 import androidx.core.view.WindowCompat
+import apc.appcradle.kotlinjc_friendsactivity_app.LocalAppTypography
 
 private val DarkColorScheme = darkColorScheme(
     primary = Purple80,
@@ -41,7 +42,6 @@ private val LightColorScheme = lightColorScheme(
     onSurface = Color(0xFF1C1B1F),
     */
 )
-
 
 
 @OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
@@ -90,15 +90,18 @@ fun KotlinJC_FriendsActivity_appTheme(
             insetsController.isAppearanceLightStatusBars = !darkTheme
         }
     }
-
-    MaterialTheme(
-        colorScheme = colorScheme,
-        typography = typography,
+    CompositionLocalProvider(
+        LocalAppTypography provides MediumText
     ) {
-        Surface(
-            tonalElevation = 5.dp
+        MaterialTheme(
+            colorScheme = colorScheme,
+            typography = typography,
         ) {
-            content()
+            Surface(
+                tonalElevation = 5.dp
+            ) {
+                content()
+            }
         }
     }
 }

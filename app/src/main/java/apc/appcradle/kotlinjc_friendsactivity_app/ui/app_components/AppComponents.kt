@@ -35,13 +35,15 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import apc.appcradle.kotlinjc_friendsactivity_app.LocalAppTypography
 import apc.appcradle.kotlinjc_friendsactivity_app.R
+import apc.appcradle.kotlinjc_friendsactivity_app.domain.model.AppTextStyles
 import apc.appcradle.kotlinjc_friendsactivity_app.domain.model.AppThemes
 import apc.appcradle.kotlinjc_friendsactivity_app.ui.screens.Destinations
 import apc.appcradle.kotlinjc_friendsactivity_app.ui.theme.KotlinJC_FriendsActivity_appTheme
@@ -83,7 +85,7 @@ object AppComponents {
                 }
             },
             isError = isError,
-            textStyle = TextStyle(textAlign = TextAlign.Center),
+            textStyle = LocalAppTypography.current.labels,
             leadingIcon = {
                 if (needLeadingBackIcon)
                     IconButton({ onLeadingIconClick() }) {
@@ -136,7 +138,7 @@ object AppComponents {
         TopAppBar(
             title = {
                 Crossfade(targetState = titleText) { text ->
-                    Text(text = text)
+                    AppText(text = text, appTextStyle = AppTextStyles.Header)
                 }
             },
             actions = {
@@ -195,6 +197,36 @@ object AppComponents {
     }
 
     @Composable
+    fun AppText(
+        modifier: Modifier = Modifier,
+        text: String,
+        singleLine: Boolean = false,
+        textAlign: TextAlign = TextAlign.Start,
+        appTextStyle: AppTextStyles = AppTextStyles.Body
+    ) {
+        Text(
+            modifier = modifier,
+            text = text,
+            overflow = TextOverflow.Ellipsis,
+            maxLines = if (singleLine) 1 else 200,
+            textAlign = textAlign,
+            style = when (appTextStyle) {
+                AppTextStyles.Header -> {
+                    LocalAppTypography.current.header
+                }
+
+                AppTextStyles.Body -> {
+                    LocalAppTypography.current.bodyText
+                }
+
+                AppTextStyles.Label -> {
+                    LocalAppTypography.current.labels
+                }
+            }
+        )
+    }
+
+    @Composable
     fun ScaleDialog(
         initialValue: (Float),
         onConfirm: (Float) -> Unit,
@@ -202,7 +234,12 @@ object AppComponents {
     ) {
         var newValue by remember { mutableFloatStateOf(initialValue) }
         AlertDialog(
-            title = { Text("Изменить масштаб") },
+            title = {
+                AppText(
+                    text = "Изменить масштаб",
+                    appTextStyle = AppTextStyles.Header
+                )
+            },
             text = {
                 ScaleSlider(
                     initialValue = initialValue,
@@ -215,10 +252,10 @@ object AppComponents {
                 ElevatedButton(onClick = {
                     onConfirm(newValue)
                     onDismiss()
-                }) { Text("Применить") }
+                }) { AppText(text = "Применить") }
             },
             dismissButton = {
-                ElevatedButton(onClick = onDismiss) { Text("Отмена") }
+                ElevatedButton(onClick = onDismiss) { AppText(text = "Отмена") }
             },
         )
     }
@@ -233,7 +270,7 @@ object AppComponents {
         var selectedTheme by remember { mutableStateOf(currentThemes) }
 
         AlertDialog(
-            title = { Text("Выбор темы") },
+            title = { AppText(text = "Выбор темы", appTextStyle = AppTextStyles.Header) },
             text = {
                 Column(Modifier.fillMaxWidth()) {
                     ElevatedCard(
@@ -246,7 +283,7 @@ object AppComponents {
                         Row(
                             verticalAlignment = Alignment.CenterVertically
                         ) {
-                            Text(
+                            AppText(
                                 modifier = Modifier
                                     .weight(1f)
                                     .padding(horizontal = 15.dp),
@@ -268,7 +305,7 @@ object AppComponents {
                         Row(
                             verticalAlignment = Alignment.CenterVertically
                         ) {
-                            Text(
+                            AppText(
                                 modifier = Modifier
                                     .weight(1f)
                                     .padding(horizontal = 15.dp),
@@ -290,7 +327,7 @@ object AppComponents {
                         Row(
                             verticalAlignment = Alignment.CenterVertically
                         ) {
-                            Text(
+                            AppText(
                                 modifier = Modifier
                                     .weight(1f)
                                     .padding(horizontal = 15.dp),
@@ -305,7 +342,13 @@ object AppComponents {
                 }
             },
             onDismissRequest = onDismiss,
-            confirmButton = { ElevatedButton(onClick = { onConfirmClick(selectedTheme) }) { Text("Обновить") } },
+            confirmButton = {
+                ElevatedButton(onClick = { onConfirmClick(selectedTheme) }) {
+                    AppText(
+                        text = "Обновить"
+                    )
+                }
+            },
         )
     }
 
@@ -318,16 +361,22 @@ object AppComponents {
         var isError by remember { mutableStateOf(false) }
 
         AlertDialog(
-            title = { Text("Новое значение") },
+            title = { AppText(text = "Новое значение", appTextStyle = AppTextStyles.Header) },
             text = {
                 OutlinedTextField(
                     keyboardOptions = KeyboardOptions(
                         imeAction = ImeAction.Done,
                         keyboardType = KeyboardType.Decimal
                     ),
+                    textStyle = LocalAppTypography.current.bodyText,
                     isError = isError,
                     shape = RoundedCornerShape(20.dp),
-                    label = { Text("введите новое значение") },
+                    label = {
+                        AppText(
+                            text = "введите новое значение",
+                            appTextStyle = AppTextStyles.Body
+                        )
+                    },
                     value = value,
                     onValueChange = {
                         isError = false
@@ -347,8 +396,8 @@ object AppComponents {
                         Log.d("inputValue", "Ошибка ввода, ${e.message}")
                     }
                 }) {
-                    Text(
-                        "Confirm"
+                    AppText(
+                        text = "Confirm"
                     )
                 }
             },
