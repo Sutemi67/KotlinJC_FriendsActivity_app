@@ -6,6 +6,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 
 val CompactText = MyTypography(
+    mainStepCounter = TextStyle(
+        fontFamily = FontFamily.Default,
+        fontWeight = FontWeight.Normal,
+        fontSize = 20.sp
+    ),
     header = TextStyle(
         fontFamily = FontFamily.Default,
         fontWeight = FontWeight.Normal,
@@ -24,6 +29,11 @@ val CompactText = MyTypography(
 )
 
 val MediumText = MyTypography(
+    mainStepCounter = TextStyle(
+        fontFamily = FontFamily.Default,
+        fontWeight = FontWeight.Normal,
+        fontSize = 26.sp
+    ),
     header = TextStyle(
         fontFamily = FontFamily.Default,
         fontWeight = FontWeight.Normal,
@@ -41,6 +51,11 @@ val MediumText = MyTypography(
     ),
 )
 val ExpandedText = MyTypography(
+    mainStepCounter = TextStyle(
+        fontFamily = FontFamily.Default,
+        fontWeight = FontWeight.Normal,
+        fontSize = 34.sp
+    ),
     header = TextStyle(
         fontFamily = FontFamily.Default,
         fontWeight = FontWeight.Normal,
@@ -59,6 +74,7 @@ val ExpandedText = MyTypography(
 )
 
 data class MyTypography(
+    val mainStepCounter: TextStyle,
     val header: TextStyle,
     val bodyText: TextStyle,
     val labels: TextStyle,

@@ -1,24 +1,25 @@
 package apc.appcradle.kotlinjc_friendsactivity_app.ui.screens.main
 
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
+import apc.appcradle.kotlinjc_friendsactivity_app.domain.model.AppTextStyles
+import apc.appcradle.kotlinjc_friendsactivity_app.ui.app_components.AppComponents.AppText
 import apc.appcradle.kotlinjc_friendsactivity_app.ui.theme.KotlinJC_FriendsActivity_appTheme
 
 @Composable
 fun StatsColumn(
     overallDistanceKm: Double
 ) {
-    Column {
-        Text(
+    Column() {
+        AppText(
             modifier = Modifier.padding(10.dp),
             text = "Осталось только...",
-            fontSize = 18.sp
+            appTextStyle = AppTextStyles.Header
         )
         StatisticRow(Distances.Pivo, overallDistanceKm)
         StatisticRow(Distances.Marafon, overallDistanceKm)

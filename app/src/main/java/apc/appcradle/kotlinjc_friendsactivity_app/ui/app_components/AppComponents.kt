@@ -85,7 +85,7 @@ object AppComponents {
                 }
             },
             isError = isError,
-            textStyle = LocalAppTypography.current.labels,
+            textStyle = LocalAppTypography.current.bodyText,
             leadingIcon = {
                 if (needLeadingBackIcon)
                     IconButton({ onLeadingIconClick() }) {
@@ -99,14 +99,16 @@ object AppComponents {
             label = {
                 when (isError) {
                     true -> {
-                        Text(
+                        AppText(
                             text = "Can't be empty",
+                            appTextStyle = AppTextStyles.Label
                         )
                     }
 
                     false -> {
-                        Text(
+                        AppText(
                             text = label,
+                            appTextStyle = AppTextStyles.Label
                         )
                     }
                 }
@@ -221,6 +223,10 @@ object AppComponents {
 
                 AppTextStyles.Label -> {
                     LocalAppTypography.current.labels
+                }
+
+                AppTextStyles.MainCounter -> {
+                    LocalAppTypography.current.mainStepCounter
                 }
             }
         )

@@ -30,8 +30,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import apc.appcradle.kotlinjc_friendsactivity_app.domain.model.DataTransferState
-import apc.appcradle.kotlinjc_friendsactivity_app.nonScaledSp
 import apc.appcradle.kotlinjc_friendsactivity_app.ui.app_components.AppComponents
+import apc.appcradle.kotlinjc_friendsactivity_app.ui.app_components.AppComponents.AppText
 import apc.appcradle.kotlinjc_friendsactivity_app.ui.theme.KotlinJC_FriendsActivity_appTheme
 
 private enum class FieldState {
@@ -60,11 +60,10 @@ fun AuthScreen(
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Text(
+                AppText(
                     modifier = Modifier.padding(15.dp),
                     text = "Hello, user!\nPlease login or register",
                     textAlign = TextAlign.Center,
-                    fontSize = nonScaledSp(15)
                 )
                 AnimatedVisibility(
                     visible = fieldState == FieldState.Login,
@@ -101,10 +100,10 @@ fun AuthScreen(
                 }
                 ElevatedButton(
                     modifier = Modifier.width(260.dp), onClick = onRegisterClick
-                ) { Text("Создать аккаунт", fontSize = nonScaledSp(15)) }
+                ) { AppText(text = "Создать аккаунт") }
                 ElevatedButton(
                     modifier = Modifier.width(260.dp), onClick = onOfflineUseClick
-                ) { Text("Пользоваться без интернета", fontSize = nonScaledSp(15)) }
+                ) { AppText(text = "Пользоваться без интернета") }
                 Box(Modifier.height(30.dp)) {
                     if (transferState.errorMessage != null) {
                         Text(
