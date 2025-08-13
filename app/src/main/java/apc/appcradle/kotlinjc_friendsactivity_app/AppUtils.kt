@@ -1,6 +1,5 @@
 package apc.appcradle.kotlinjc_friendsactivity_app
 
-import android.app.ActivityManager
 import android.content.Context
 import android.content.Intent
 import android.content.res.Configuration
@@ -47,13 +46,6 @@ annotation class ThemePreviews
     device = "spec:width=1080px,height=2220px,dpi=480", name = "480dpi"
 )
 annotation class PreviewsDifferentSizes
-
-fun isServiceRunning(context: Context, serviceClass: Class<*>): Boolean {
-    val manager = context.getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
-    val runningServices = manager.getRunningServices(Integer.MAX_VALUE)
-
-    return runningServices.any { it.service.className == serviceClass.name }
-}
 
 fun isTodayMonday(): Boolean {
     val calendar = Calendar.getInstance()
