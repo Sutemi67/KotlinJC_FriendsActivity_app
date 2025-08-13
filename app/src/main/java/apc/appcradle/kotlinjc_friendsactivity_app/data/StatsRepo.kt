@@ -85,7 +85,7 @@ class StatsRepo(
             }
         }
         Log.e("dataTransfer", "summ of steps is $stepsSum")
-        return stepsSum * 0.35 / 1000
+        return stepsSum * 0.4 / 1000
     }
 
     private fun calcLeaderDiff(login: String?): Double {
@@ -93,7 +93,7 @@ class StatsRepo(
         if (playersList.isNotEmpty()) {
             val leader = playersList.first()
             val player = playersList.first { it.login == login }
-            diff = (leader.steps - player.steps) * 0.35 / 1000
+            diff = (leader.steps - player.steps) * 0.4 / 1000
         }
         return diff
     }

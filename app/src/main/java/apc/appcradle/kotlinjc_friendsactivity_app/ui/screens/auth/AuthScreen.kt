@@ -1,5 +1,6 @@
 package apc.appcradle.kotlinjc_friendsactivity_app.ui.screens.auth
 
+import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
@@ -17,7 +18,9 @@ import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -46,7 +49,11 @@ fun AuthScreen(
     var fieldState by rememberSaveable { mutableStateOf(FieldState.Login) }
     var loginText by rememberSaveable { mutableStateOf("") }
     var passwordText by rememberSaveable { mutableStateOf("") }
+//    val transferState by rememberSaveable { mutableStateOf(transferState) }
 
+    LaunchedEffect(transferState) {
+        Log.i("dataTransfer", "new paint: $transferState")
+    }
     Scaffold { paddingValues ->
         Box(
             modifier = Modifier
@@ -102,9 +109,10 @@ fun AuthScreen(
                 ElevatedButton(
                     modifier = Modifier.width(260.dp), onClick = onOfflineUseClick
                 ) { AppText(text = "Пользоваться без интернета") }
+
                 Box(Modifier.height(30.dp)) {
                     if (transferState.errorMessage != null) {
-                        AppText(
+                        Text(
                             text = transferState.errorMessage,
                         )
                     }
@@ -121,7 +129,7 @@ private fun Preview() {
         AuthScreen(
             sendLoginData = { log, pass -> {} },
             onRegisterClick = {},
-            transferState = DataTransferState(errorMessage = "sdfsdf"),
+            transferState = DataTransferState(),
             onOfflineUseClick = {}
         )
     }

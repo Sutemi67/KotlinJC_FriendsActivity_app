@@ -34,6 +34,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
@@ -45,6 +46,7 @@ import apc.appcradle.kotlinjc_friendsactivity_app.LocalAppTypography
 import apc.appcradle.kotlinjc_friendsactivity_app.R
 import apc.appcradle.kotlinjc_friendsactivity_app.domain.model.AppTextStyles
 import apc.appcradle.kotlinjc_friendsactivity_app.domain.model.AppThemes
+import apc.appcradle.kotlinjc_friendsactivity_app.openDonate
 import apc.appcradle.kotlinjc_friendsactivity_app.ui.screens.Destinations
 import apc.appcradle.kotlinjc_friendsactivity_app.ui.theme.KotlinJC_FriendsActivity_appTheme
 
@@ -122,7 +124,7 @@ object AppComponents {
     @Composable
     fun AppTopBar(
         login: String?,
-        screenRoute: String?
+        screenRoute: String?,
     ) {
         val titleText = when (screenRoute) {
             Destinations.MAIN.route -> {
@@ -136,7 +138,9 @@ object AppComponents {
         }
         var isDialogVisible by remember { mutableStateOf(false) }
         if (isDialogVisible)
-            AppDonationDialog(onDismiss = { isDialogVisible = false })
+            AppDonationDialog(
+                onDismiss = { isDialogVisible = false }
+            )
         TopAppBar(
             title = {
                 Crossfade(targetState = titleText) { text ->
@@ -159,9 +163,16 @@ object AppComponents {
     fun AppDonationDialog(
         onDismiss: () -> Unit,
     ) {
+        val context = LocalContext.current
         AlertDialog(
-            title = { Text("Поддержать разработчика") },
-            text = { Text("Приложение полностью бесплатное, без рекламы и рассчитано на удобное пользование. Если вы хотите поблагодарить разработчика и купить ему чашечку кофе, вы будете перенаправлены на страницу переводов.") },
+            title = {
+                AppText(
+                    "Поддержать разработчика",
+                    textAlign = TextAlign.Center,
+                    appTextStyle = AppTextStyles.Header
+                )
+            },
+            text = { AppText("Приложение полностью бесплатное, без рекламы и рассчитано на удобное пользование. Если вы хотите поблагодарить разработчика и купить ему чашечку кофе, вы будете перенаправлены на страницу переводов.") },
             icon = {
                 Icon(
                     painter = painterResource(R.drawable.outline_directions_run_24),
@@ -171,12 +182,12 @@ object AppComponents {
             onDismissRequest = onDismiss,
             confirmButton = {
                 ElevatedButton(onClick = {
-                    //todo дописать донаты
+                    openDonate(context)
                     onDismiss()
-                }) { Text("Почему бы и нет") }
+                }) { AppText("Почему бы и нет") }
             },
             dismissButton = {
-                ElevatedButton(onClick = onDismiss) { Text("В другой раз") }
+                ElevatedButton(onClick = onDismiss) { AppText("В другой раз") }
             },
         )
     }
@@ -200,8 +211,9 @@ object AppComponents {
 
     @Composable
     fun AppText(
-        modifier: Modifier = Modifier,
         text: String,
+        modifier: Modifier = Modifier,
+        color: Color = Color.Unspecified,
         singleLine: Boolean = false,
         textAlign: TextAlign = TextAlign.Start,
         appTextStyle: AppTextStyles = AppTextStyles.Body
@@ -209,6 +221,7 @@ object AppComponents {
         Text(
             modifier = modifier,
             text = text,
+            color = color,
             overflow = TextOverflow.Ellipsis,
             maxLines = if (singleLine) 1 else 200,
             textAlign = textAlign,

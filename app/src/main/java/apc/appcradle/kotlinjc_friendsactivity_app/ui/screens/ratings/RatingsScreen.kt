@@ -24,6 +24,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import apc.appcradle.kotlinjc_friendsactivity_app.domain.model.PlayerActivityData
 import apc.appcradle.kotlinjc_friendsactivity_app.domain.model.PlayersListSyncData
+import apc.appcradle.kotlinjc_friendsactivity_app.ui.app_components.AppComponents.AppText
 import apc.appcradle.kotlinjc_friendsactivity_app.ui.theme.KotlinJC_FriendsActivity_appTheme
 
 @Composable
@@ -82,7 +83,7 @@ fun RatingsScreen(
                 }
             }
         } else {
-            Text(
+            AppText(
                 color = Color.Red,
                 text = errorMessage!!
             )

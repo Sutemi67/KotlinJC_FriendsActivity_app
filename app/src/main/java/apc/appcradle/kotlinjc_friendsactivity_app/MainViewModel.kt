@@ -39,8 +39,6 @@ class MainViewModel(
     private var _transferState = MutableStateFlow(DataTransferState())
     val transferState: StateFlow<DataTransferState> = _transferState.asStateFlow()
 
-    private var syncData = PlayersListSyncData()
-
     init {
         checkPermanentAuth()
         viewModelScope.launch {
@@ -149,11 +147,11 @@ class MainViewModel(
                 }
                 _state.update {
                     it.copy(
-                        isLoggedIn = true, userLogin = login
+                        isLoggedIn = true,
+                        userLogin = login
                     )
                 }
             } else {
-                Log.e("dataTransfer", "viewModel transfer not successful")
                 _transferState.update {
                     it.copy(
                         isLoading = false,
@@ -161,6 +159,7 @@ class MainViewModel(
                         errorMessage = result.errorMessage
                     )
                 }
+                Log.e("dataTransfer", "viewModel transfer not successfu\n${result.errorMessage}")
             }
         }
     }

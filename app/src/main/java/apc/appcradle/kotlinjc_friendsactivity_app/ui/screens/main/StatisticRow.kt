@@ -41,8 +41,15 @@ fun StatisticRow(
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Text(modifier = Modifier.weight(1f), text = stepsTarget.destination, style = textStyle)
-        Text(text = "${stepsTarget.distance.toInt()} км", style = textStyle)
+        Text(
+            modifier = Modifier.weight(1f),
+            text = stepsTarget.destination,
+            style = textStyle
+        )
+        Text(
+            text = "${stepsTarget.distance.toInt()} км",
+            style = textStyle
+        )
     }
 }
 

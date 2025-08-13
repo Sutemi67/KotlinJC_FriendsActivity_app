@@ -1,9 +1,9 @@
 package apc.appcradle.kotlinjc_friendsactivity_app.ui.screens.auth
 
+import androidx.compose.runtime.State
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
-import apc.appcradle.kotlinjc_friendsactivity_app.MainViewModel
 import apc.appcradle.kotlinjc_friendsactivity_app.domain.model.DataTransferState
 import apc.appcradle.kotlinjc_friendsactivity_app.ui.screens.Destinations
 

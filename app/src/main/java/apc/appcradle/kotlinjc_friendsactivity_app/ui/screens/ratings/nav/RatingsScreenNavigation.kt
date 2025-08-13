@@ -16,7 +16,6 @@ fun NavGraphBuilder.ratingsScreen(
     login: String?,
     stepCount: Int,
     isSynced: Boolean,
-//    playersList: List<PlayerActivityData>,
     syncFun: suspend (String, Int) -> PlayersListSyncData
 ) {
     composable(Destinations.RATINGS.route) {
@@ -24,7 +23,6 @@ fun NavGraphBuilder.ratingsScreen(
             login = login,
             stepCount = stepCount,
             isSynced = isSynced,
-//            playersList = playersList,
             syncFun = syncFun
         )
     }

@@ -53,16 +53,13 @@ fun NavigationHost(
     val statsRepository = koinInject<StatsRepo>()
 
     val context = LocalContext.current
-    val transferState by viewModel.transferState.collectAsState()
-    val stepCount by sensorManager.stepsData.collectAsState()
-    val isSynced by statsRepository.syncStatus.collectAsState()
+    val transferState = viewModel.transferState.collectAsState().value
+    val stepCount = sensorManager.stepsData.collectAsState().value
+    val isSynced = statsRepository.syncStatus.collectAsState().value
 
     LaunchedEffect(Unit) {
         viewModel.isServiceRunning(context)
         Log.d("sensors", sensorManager.isStepSensorAvailable.toString())
-    }
-    LaunchedEffect(key1 = state) {
-        Log.d("theme", "theme in nav host changed: ${state.currentTheme}")
     }
 
     CompositionLocalProvider(
