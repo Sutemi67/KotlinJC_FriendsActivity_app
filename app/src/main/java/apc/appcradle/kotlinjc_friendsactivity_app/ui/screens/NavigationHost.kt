@@ -19,6 +19,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import apc.appcradle.kotlinjc_friendsactivity_app.MainViewModel
+import apc.appcradle.kotlinjc_friendsactivity_app.data.StatsRepo
 import apc.appcradle.kotlinjc_friendsactivity_app.domain.model.AppState
 import apc.appcradle.kotlinjc_friendsactivity_app.sensors.AppSensorsManager
 import apc.appcradle.kotlinjc_friendsactivity_app.ui.app_components.AppComponents
@@ -33,7 +34,6 @@ import org.koin.compose.koinInject
 
 val LocalSensorManager =
     compositionLocalOf<AppSensorsManager> { error("No sensor manager provided") }
-
 
 @Composable
 fun NavigationHost(
@@ -50,8 +50,12 @@ fun NavigationHost(
         }
 
     val sensorManager: AppSensorsManager = koinInject<AppSensorsManager>()
+    val statsRepository = koinInject<StatsRepo>()
+
     val context = LocalContext.current
     val transferState by viewModel.transferState.collectAsState()
+    val stepCount by sensorManager.stepsData.collectAsState()
+    val isSynced by statsRepository.syncStatus.collectAsState()
 
     LaunchedEffect(Unit) {
         viewModel.isServiceRunning(context)
@@ -116,7 +120,10 @@ fun NavigationHost(
                     viewModel = viewModel
                 )
                 ratingsScreen(
-                    login = state.userLogin
+                    login = state.userLogin,
+                    stepCount = stepCount,
+                    isSynced = isSynced,
+                    syncFun = { login, steps -> viewModel.syncData(login, steps) }
                 )
                 settingsScreen(
                     onLogoutClick = { viewModel.logout() },

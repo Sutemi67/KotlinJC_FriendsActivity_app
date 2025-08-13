@@ -11,66 +11,48 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableDoubleStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import apc.appcradle.kotlinjc_friendsactivity_app.LocalAppTypography
-import apc.appcradle.kotlinjc_friendsactivity_app.ThemePreviewsNoUi
-import apc.appcradle.kotlinjc_friendsactivity_app.data.StatsRepo
 import apc.appcradle.kotlinjc_friendsactivity_app.domain.model.PlayerActivityData
-import apc.appcradle.kotlinjc_friendsactivity_app.sensors.AppSensorsManager
+import apc.appcradle.kotlinjc_friendsactivity_app.domain.model.PlayersListSyncData
 import apc.appcradle.kotlinjc_friendsactivity_app.ui.theme.KotlinJC_FriendsActivity_appTheme
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
-import kotlinx.coroutines.withContext
-import org.koin.compose.koinInject
 
 @Composable
 fun RatingsScreen(
     login: String?,
+    stepCount: Int,
+    isSynced: Boolean,
+    syncFun: suspend (String, Int) -> PlayersListSyncData,
 ) {
-    val sensorManager = koinInject<AppSensorsManager>()
-    val statsRepository = koinInject<StatsRepo>()
-
     var errorMessage: String? by remember { mutableStateOf("") }
     var summaryKm by remember { mutableDoubleStateOf(0.0) }
     var leaderDifference by remember { mutableDoubleStateOf(0.0) }
     var list by remember { mutableStateOf<List<PlayerActivityData>>(emptyList()) }
 
-    val scope = rememberCoroutineScope()
-
-    val isSynced = statsRepository.syncStatus.collectAsState().value
-    val stepCount = sensorManager.stepsData.collectAsState().value
-
     LaunchedEffect(Unit) {
         if (login != null) {
             Log.d("dataTransfer", "Current stepCount before sync: $stepCount")
             try {
-                val sync = scope.async(Dispatchers.IO) {
-                    statsRepository.syncData(login = login, steps = stepCount)
-                }
-                errorMessage = sync.await()
-                list = statsRepository.playersList
-
-                Log.d("dataTransfer", "data synced, user=$login, steps=$stepCount")
-//                summaryKm = withContext(Dispatchers.Default) { calcSumSteps(list) }
-//                leaderDifference = withContext(Dispatchers.Default) { calcLeaderDiff(list, login) }
-                withContext(Dispatchers.Default) {
-                    summaryKm = calcSumSteps(list)
-                    leaderDifference = calcLeaderDiff(list, login)
-                }
+                val response = syncFun(login, stepCount)
+                errorMessage = response.errorMessage
+                summaryKm = response.summaryKm
+                leaderDifference = response.leaderDifferenceKm
+                list = response.playersList
+                Log.d(
+                    "dataTransfer",
+                    "RatingsScreen data synced, user=$login, steps=$stepCount, playerslist=$list"
+                )
             } catch (e: Exception) {
-                Log.e("dataTransfer", "Error syncing data: ${e.message}")
+                Log.e("dataTransfer", "RatingsScreen: error syncing data: ${e.message}")
                 errorMessage = "${e.message}"
             }
         } else {
@@ -108,30 +90,22 @@ fun RatingsScreen(
     }
 }
 
-private fun calcSumSteps(list: List<PlayerActivityData>): Double {
-    var stepsSum = 0
-    if (list.isNotEmpty()) {
-        list.forEach { player ->
-            stepsSum += player.steps
-        }
-    }
-    return stepsSum * 0.35 / 1000
-}
-
-private fun calcLeaderDiff(list: List<PlayerActivityData>, login: String?): Double {
-    var diff = 0.0
-    if (list.isNotEmpty()) {
-        val leader = list.first()
-        val player = list.first { it.login == login }
-        diff = (leader.steps - player.steps) * 0.35 / 1000
-    }
-    return diff
-}
-
-@ThemePreviewsNoUi
+@Preview
 @Composable
 private fun Preview2() {
     KotlinJC_FriendsActivity_appTheme {
-        RatingsScreen("AlexMagnuss")
+        RatingsScreen(
+            login = "AlexMagnuss",
+            stepCount = 2333,
+            isSynced = true,
+            syncFun = { _, _ ->
+                PlayersListSyncData(
+                    playersList = listOf(PlayerActivityData("Alex", 33, 23f)),
+                    summaryKm = 33.0,
+                    leaderDifferenceKm = 22.3,
+                    errorMessage = "ssss"
+                )
+            },
+        )
     }
 }

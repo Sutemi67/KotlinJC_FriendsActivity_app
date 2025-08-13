@@ -101,14 +101,14 @@ object AppComponents {
                     true -> {
                         AppText(
                             text = "Can't be empty",
-                            appTextStyle = AppTextStyles.Label
+                            appTextStyle = AppTextStyles.Body
                         )
                     }
 
                     false -> {
                         AppText(
                             text = label,
-                            appTextStyle = AppTextStyles.Label
+                            appTextStyle = AppTextStyles.Body
                         )
                     }
                 }

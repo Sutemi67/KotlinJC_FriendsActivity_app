@@ -17,7 +17,6 @@ import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -25,7 +24,6 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -106,9 +104,8 @@ fun AuthScreen(
                 ) { AppText(text = "Пользоваться без интернета") }
                 Box(Modifier.height(30.dp)) {
                     if (transferState.errorMessage != null) {
-                        Text(
+                        AppText(
                             text = transferState.errorMessage,
-                            color = Color.Red,
                         )
                     }
                 }
@@ -124,7 +121,7 @@ private fun Preview() {
         AuthScreen(
             sendLoginData = { log, pass -> {} },
             onRegisterClick = {},
-            transferState = DataTransferState(),
+            transferState = DataTransferState(errorMessage = "sdfsdf"),
             onOfflineUseClick = {}
         )
     }

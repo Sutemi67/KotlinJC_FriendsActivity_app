@@ -7,25 +7,30 @@ import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import apc.appcradle.kotlinjc_friendsactivity_app.data.SettingsStorageImpl
+import apc.appcradle.kotlinjc_friendsactivity_app.data.StatsRepo
 import apc.appcradle.kotlinjc_friendsactivity_app.data.TokenStorageImpl
 import apc.appcradle.kotlinjc_friendsactivity_app.domain.NetworkClient
 import apc.appcradle.kotlinjc_friendsactivity_app.domain.model.AppSavedSettingsData
 import apc.appcradle.kotlinjc_friendsactivity_app.domain.model.AppState
 import apc.appcradle.kotlinjc_friendsactivity_app.domain.model.AppThemes
 import apc.appcradle.kotlinjc_friendsactivity_app.domain.model.DataTransferState
+import apc.appcradle.kotlinjc_friendsactivity_app.domain.model.PlayersListSyncData
 import apc.appcradle.kotlinjc_friendsactivity_app.permissions.PermissionManager
 import apc.appcradle.kotlinjc_friendsactivity_app.sensors.StepCounterService
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class MainViewModel(
     private val permissionManager: PermissionManager,
     private val networkClient: NetworkClient,
     private val tokenStorageImpl: TokenStorageImpl,
-    private val settingsPreferencesImpl: SettingsStorageImpl
+    private val settingsPreferencesImpl: SettingsStorageImpl,
+    private val statsRepository: StatsRepo
 ) : ViewModel() {
 
     private var _state = MutableStateFlow(AppState())
@@ -33,6 +38,8 @@ class MainViewModel(
 
     private var _transferState = MutableStateFlow(DataTransferState())
     val transferState: StateFlow<DataTransferState> = _transferState.asStateFlow()
+
+    private var syncData = PlayersListSyncData()
 
     init {
         checkPermanentAuth()
@@ -229,4 +236,15 @@ class MainViewModel(
         }
     }
     //endregion
+
+    //region Sync Data
+
+    suspend fun syncData(login: String, steps: Int): PlayersListSyncData {
+        return withContext(Dispatchers.IO) {
+            val result = statsRepository.syncData(login, steps)
+            Log.e("dataTransfer", "ViewModel sync result: $result")
+            result
+        }
+    }
+//endregion
 }
