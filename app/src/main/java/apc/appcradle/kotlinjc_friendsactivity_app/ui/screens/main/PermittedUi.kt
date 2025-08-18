@@ -1,5 +1,6 @@
 package apc.appcradle.kotlinjc_friendsactivity_app.ui.screens.main
 
+import android.icu.text.DecimalFormat
 import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -80,7 +81,7 @@ fun PermittedUi(
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     AppText(
-                        text = "$stepCount",
+                        text = format(stepCount),
                         appTextStyle = AppTextStyles.MainCounter
                     )
                     AppText(
@@ -100,7 +101,7 @@ fun PermittedUi(
                     modifier = Modifier.width(150.dp),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    AppText(text = "$km")
+                    AppText(text = format(km))
                     AppText(text = "Километров")
                 }
                 Column(
@@ -147,6 +148,16 @@ fun PermittedUi(
             }
         }
     }
+}
+
+private fun format(text: Int): String {
+    val ddd = DecimalFormat("###,###.##")
+    return ddd.format(text)
+}
+
+private fun format(text: Double): String {
+    val ddd = DecimalFormat("###,###.##")
+    return ddd.format(text)
 }
 
 private fun kkalCalc(userStepLength: Double, stepCount: Int): IntRange {
