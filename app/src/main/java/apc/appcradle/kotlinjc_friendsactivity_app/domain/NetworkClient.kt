@@ -20,6 +20,7 @@ import io.ktor.http.isSuccess
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
+import java.net.ConnectException
 import java.net.SocketTimeoutException
 
 class NetworkClient(
@@ -171,7 +172,7 @@ class NetworkClient(
                 UserActivityResponse(response.friendsList, null)
             } else {
                 Log.e("dataTransfer", "${request.body<String?>()}")
-                UserActivityResponse(mutableListOf(), "${request.body<String?>()}")
+                UserActivityResponse(mutableListOf(), "Не удалось связаться с сервером}")
             }
         } catch (e: SocketTimeoutException) {
             Log.e("dataTransfer", "not successful getting protected data in network client", e)
@@ -185,9 +186,18 @@ class NetworkClient(
                 mutableListOf(),
                 "За требуемое время сервер не ответил. Повторите попытку позже."
             )
+        } catch (e: ConnectException) {
+            Log.e("dataTransfer", "not successful getting protected data in network client", e)
+            UserActivityResponse(
+                mutableListOf(),
+                "Проблема связи. Возможно нет интернета."
+            )
         } catch (e: Exception) {
             Log.e("dataTransfer", "not successful getting protected data in network client", e)
-            UserActivityResponse(mutableListOf(), "Connection error: ${e.message}")
+            UserActivityResponse(
+                mutableListOf(),
+                "Connection error: ${e.message}"
+            )
         }
     }
 }

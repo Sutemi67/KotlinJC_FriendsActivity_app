@@ -1,64 +1,80 @@
 package apc.appcradle.kotlinjc_friendsactivity_app.ui.theme
 
-import androidx.compose.material3.Typography
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 
-val CompactTypography = Typography(
-    bodyLarge = TextStyle(
+val CompactText = MyTypography(
+    mainStepCounter = TextStyle(
         fontFamily = FontFamily.Default,
         fontWeight = FontWeight.Normal,
-        fontSize = 14.sp,
+        fontSize = 20.sp
     ),
-    headlineLarge = TextStyle(
+    header = TextStyle(
         fontFamily = FontFamily.Default,
         fontWeight = FontWeight.Normal,
-        fontSize = 25.sp,
+        fontSize = 14.sp
+    ),
+    bodyText = TextStyle(
+        fontFamily = FontFamily.Default,
+        fontWeight = FontWeight.Normal,
+        fontSize = 10.sp
+    ),
+    labels = TextStyle(
+        fontFamily = FontFamily.Default,
+        fontWeight = FontWeight.Normal,
+        fontSize = 6.sp
     ),
 )
 
-val CompactHighDpiTypography = Typography(
-    bodyLarge = TextStyle(
+val MediumText = MyTypography(
+    mainStepCounter = TextStyle(
         fontFamily = FontFamily.Default,
-        fontWeight = FontWeight.ExtraLight, // More elegant on high-res screens
-        fontSize = 11.sp,
+        fontWeight = FontWeight.Normal,
+        fontSize = 26.sp
     ),
-    headlineLarge = TextStyle(
+    header = TextStyle(
         fontFamily = FontFamily.Default,
-        fontWeight = FontWeight.Light, // More elegant on high-res screens
-        fontSize = 20.sp,
+        fontWeight = FontWeight.Normal,
+        fontSize = 18.sp
+    ),
+    bodyText = TextStyle(
+        fontFamily = FontFamily.Default,
+        fontWeight = FontWeight.Normal,
+        fontSize = 14.sp
+    ),
+    labels = TextStyle(
+        fontFamily = FontFamily.Default,
+        fontWeight = FontWeight.Normal,
+        fontSize = 8.sp
     ),
 )
-
-val MediumTypography = Typography(
-    bodyLarge = TextStyle(
+val ExpandedText = MyTypography(
+    mainStepCounter = TextStyle(
         fontFamily = FontFamily.Default,
         fontWeight = FontWeight.Normal,
-        fontSize = 25.sp,
+        fontSize = 34.sp
     ),
-    headlineLarge = TextStyle(
+    header = TextStyle(
         fontFamily = FontFamily.Default,
         fontWeight = FontWeight.Normal,
-        fontSize = 27.sp,
+        fontSize = 28.sp
     ),
-)
-
-val ExpandedTypography = Typography(
-    bodyLarge = TextStyle(
+    bodyText = TextStyle(
         fontFamily = FontFamily.Default,
         fontWeight = FontWeight.Normal,
-        fontSize = 23.sp,
+        fontSize = 24.sp
     ),
-    headlineLarge = TextStyle(
+    labels = TextStyle(
         fontFamily = FontFamily.Default,
         fontWeight = FontWeight.Normal,
-        fontSize = 26.sp,
+        fontSize = 20.sp
     ),
 )
 
 data class MyTypography(
+    val mainStepCounter: TextStyle,
     val header: TextStyle,
     val bodyText: TextStyle,
     val labels: TextStyle,

@@ -5,14 +5,14 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.MaterialTheme.typography
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import apc.appcradle.kotlinjc_friendsactivity_app.PreviewsDifferentSizes
+import apc.appcradle.kotlinjc_friendsactivity_app.ui.app_components.AppComponents.AppText
 import apc.appcradle.kotlinjc_friendsactivity_app.ui.theme.KotlinJC_FriendsActivity_appTheme
 
 @Composable
@@ -20,8 +20,6 @@ fun StatsTable(
     distance: Double,
     leaderDifference: Double
 ) {
-    val textSize = typography.bodyLarge
-
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -33,25 +31,31 @@ fun StatsTable(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            Text("Чемпион прошлой недели:", style = textSize)
-            Text("конечно же ты <3", style = textSize)
+            AppText(text = "Чемпион прошлой недели:", modifier = Modifier.weight(1f))
+            AppText(text = "конечно же ты <3", singleLine = true)
         }
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            Text("В общем пройдено:", style = textSize)
-            Text("${distance.toInt()} км.", style = textSize)
+            AppText("В общем пройдено:")
+            AppText("${distance.toInt()} км.")
         }
         HorizontalDivider(Modifier.padding(10.dp))
         Row(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            Text("Текущее отставание от лидера: ", style = textSize)
-            Text(
-                text = if (leaderDifference != 0.0) "${leaderDifference.toInt()} км."
-                else "-", style = textSize
+            AppText(
+                text = "Текущее отставание от лидера: ",
+                modifier = Modifier.weight(1f)
+            )
+            AppText(
+                text = if (leaderDifference != 0.0)
+                    "${leaderDifference.toInt()} км."
+                else "-",
+                modifier = Modifier.wrapContentWidth()
             )
         }
     }

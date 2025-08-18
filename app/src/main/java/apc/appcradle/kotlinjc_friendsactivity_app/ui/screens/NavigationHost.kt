@@ -10,6 +10,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
@@ -18,6 +19,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import apc.appcradle.kotlinjc_friendsactivity_app.MainViewModel
+import apc.appcradle.kotlinjc_friendsactivity_app.data.StatsRepo
 import apc.appcradle.kotlinjc_friendsactivity_app.domain.model.AppState
 import apc.appcradle.kotlinjc_friendsactivity_app.sensors.AppSensorsManager
 import apc.appcradle.kotlinjc_friendsactivity_app.ui.app_components.AppComponents
@@ -41,21 +43,27 @@ fun NavigationHost(
     val navController = rememberNavController()
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val noAuthDestinations =
-        Destinations.entries.filter { it != Destinations.AUTH && it != Destinations.REGISTER }
+        if (state.userLogin == null) {
+            Destinations.entries.filter { it != Destinations.AUTH && it != Destinations.REGISTER && it != Destinations.RATINGS }
+        } else {
+            Destinations.entries.filter { it != Destinations.AUTH && it != Destinations.REGISTER }
+        }
 
     val sensorManager: AppSensorsManager = koinInject<AppSensorsManager>()
+    val statsRepository = koinInject<StatsRepo>()
+
     val context = LocalContext.current
+    val transferState = viewModel.transferState.collectAsState().value
+    val stepCount = sensorManager.stepsData.collectAsState().value
+    val isSynced = statsRepository.syncStatus.collectAsState().value
 
     LaunchedEffect(Unit) {
         viewModel.isServiceRunning(context)
         Log.d("sensors", sensorManager.isStepSensorAvailable.toString())
     }
-    LaunchedEffect(key1 = state) {
-        Log.d("theme", "theme in nav host changed: ${state.currentTheme}")
-    }
 
     CompositionLocalProvider(
-        LocalSensorManager provides sensorManager
+        LocalSensorManager provides sensorManager,
     ) {
         Scaffold(
             topBar = {
@@ -96,8 +104,10 @@ fun NavigationHost(
                 startDestination = startDestination
             ) {
                 authScreen(
-                    viewModel = viewModel,
-                    toRegisterScreen = { navController.toRegisterScreen() }
+                    toRegisterScreen = { navController.toRegisterScreen() },
+                    transferState = transferState,
+                    sendLoginData = { login, password -> viewModel.sendLoginData(login, password) },
+                    onOfflineUseClick = { viewModel.goOfflineUse() }
                 )
                 registerScreen(
                     viewModel = viewModel,
@@ -107,18 +117,24 @@ fun NavigationHost(
                     viewModel = viewModel
                 )
                 ratingsScreen(
-                    login = state.userLogin
+                    login = state.userLogin,
+                    stepCount = stepCount,
+                    isSynced = isSynced,
+                    syncFun = { login, steps -> viewModel.syncData(login, steps) }
                 )
                 settingsScreen(
                     onLogoutClick = { viewModel.logout() },
                     userLogin = state.userLogin,
                     userStepLength = state.userStepLength,
+                    userScale = state.userScale,
                     onThemeClick = { viewModel.changeTheme(it) },
                     onNickNameClick = {},
-                    onStepLengthClick = {viewModel.changeStepLength(it)},
-                    currentTheme = state.currentTheme
+                    onStepLengthClick = { viewModel.changeStepLength(it) },
+                    currentTheme = state.currentTheme,
+                    onScaleClick = { viewModel.changeScale(it) }
                 )
             }
         }
     }
 }
+

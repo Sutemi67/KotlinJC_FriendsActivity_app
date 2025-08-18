@@ -10,21 +10,25 @@ import apc.appcradle.kotlinjc_friendsactivity_app.ui.screens.settings.SettingsSc
 fun NavGraphBuilder.settingsScreen(
     userLogin: String?,
     userStepLength: Double,
+    userScale: Float,
     onLogoutClick: () -> Unit,
     onThemeClick: (AppThemes) -> Unit,
     onStepLengthClick: (Double) -> Unit,
     onNickNameClick: () -> Unit,
+    onScaleClick: (Float) -> Unit,
     currentTheme: AppThemes
 ) {
     composable(Destinations.SETTINGS.route) {
         SettingsScreen(
             userLogin = userLogin,
             userStepLength = userStepLength,
+            userScale = userScale,
             onLogoutClick = onLogoutClick,
             onThemeClick = onThemeClick,
             onStepDistanceClick = onStepLengthClick,
             onNicknameClick = onNickNameClick,
-            currentTheme = currentTheme
+            currentTheme = currentTheme,
+            onScaleClick = onScaleClick
         )
     }
 }

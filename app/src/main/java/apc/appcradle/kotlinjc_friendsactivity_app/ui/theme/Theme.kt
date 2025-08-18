@@ -2,28 +2,24 @@ package apc.appcradle.kotlinjc_friendsactivity_app.ui.theme
 
 import android.app.Activity
 import android.os.Build
-import android.util.Log
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Typography
+import androidx.compose.material3.MaterialTheme.typography
+import androidx.compose.material3.Surface
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
-import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.SideEffect
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.toArgb
-import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalView
-import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import androidx.core.view.WindowCompat
+import apc.appcradle.kotlinjc_friendsactivity_app.LocalAppTypography
 
 private val DarkColorScheme = darkColorScheme(
     primary = Purple80,
@@ -47,6 +43,7 @@ private val LightColorScheme = lightColorScheme(
     */
 )
 
+
 @OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
 @Composable
 fun KotlinJC_FriendsActivity_appTheme(
@@ -65,24 +62,25 @@ fun KotlinJC_FriendsActivity_appTheme(
         darkTheme -> DarkColorScheme
         else -> LightColorScheme
     }
-    val currentWindowSizeClass = windowSizeClass ?: WindowSizeClass.calculateFromSize(
-        DpSize(
-            LocalConfiguration.current.screenWidthDp.dp,
-            LocalConfiguration.current.screenHeightDp.dp
-        )
-    )
 
-    val density = LocalDensity.current.density
-    Log.d("density", "$density")
-    val typography: Typography = when (currentWindowSizeClass.widthSizeClass) {
-        WindowWidthSizeClass.Expanded -> ExpandedTypography
-        WindowWidthSizeClass.Medium -> MediumTypography
-        else -> when {
-            density >= 3.1f -> CompactHighDpiTypography
-            density >= 2.5f -> CompactTypography
-            else -> CompactTypography
-        }
-    }
+//    val currentWindowSizeClass = windowSizeClass ?: WindowSizeClass.calculateFromSize(
+//        DpSize(
+//            LocalConfiguration.current.screenWidthDp.dp,
+//            LocalConfiguration.current.screenHeightDp.dp
+//        )
+//    )
+
+//    val density = LocalDensity.current.density
+//    Log.d("density", "$density")
+//    val typography: Typography = when (currentWindowSizeClass.widthSizeClass) {
+//        WindowWidthSizeClass.Expanded -> ExpandedTypography
+//        WindowWidthSizeClass.Medium -> MediumTypography
+//        else -> when {
+//            density >= 3.1f -> CompactHighDpiTypography
+//            density >= 2.5f -> CompactTypography
+//            else -> CompactTypography
+//        }
+//    }
 
     val view = LocalView.current
     if (!view.isInEditMode) {
@@ -92,10 +90,18 @@ fun KotlinJC_FriendsActivity_appTheme(
             insetsController.isAppearanceLightStatusBars = !darkTheme
         }
     }
-
-    MaterialTheme(
-        colorScheme = colorScheme,
-        typography = typography,
-        content = content
-    )
+    CompositionLocalProvider(
+        LocalAppTypography provides MediumText
+    ) {
+        MaterialTheme(
+            colorScheme = colorScheme,
+            typography = typography,
+        ) {
+            Surface(
+                tonalElevation = 5.dp
+            ) {
+                content()
+            }
+        }
+    }
 }

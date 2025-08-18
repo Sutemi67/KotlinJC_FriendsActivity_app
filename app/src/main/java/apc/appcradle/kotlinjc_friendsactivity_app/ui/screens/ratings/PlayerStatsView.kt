@@ -13,14 +13,13 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import apc.appcradle.kotlinjc_friendsactivity_app.PreviewsDifferentSizes
 import apc.appcradle.kotlinjc_friendsactivity_app.domain.model.PlayerActivityData
+import apc.appcradle.kotlinjc_friendsactivity_app.ui.app_components.AppComponents.AppText
 import apc.appcradle.kotlinjc_friendsactivity_app.ui.theme.KotlinJC_FriendsActivity_appTheme
 
 @Composable
@@ -57,15 +56,13 @@ fun PlayerStatsView(
                     .padding(horizontal = 15.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(
+                AppText(
                     modifier = Modifier
                         .weight(1f),
-                    style = MaterialTheme.typography.bodyLarge,
                     color = MaterialTheme.colorScheme.onSurface,
                     text = "${index + 1}. ${playerActivityData.login}"
                 )
-                Text(
-                    style = MaterialTheme.typography.bodyLarge,
+                AppText(
                     color = MaterialTheme.colorScheme.onSurface,
                     text = "${playerActivityData.steps}"
                 )

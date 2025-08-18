@@ -4,8 +4,6 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -32,28 +30,24 @@ fun MainUserScreen(
         permissionManager.onPermissionResult(allGranted)
     }
 
-    Scaffold { paddingValues ->
-        Box(
-            modifier = Modifier
-                .padding(paddingValues)
-                .fillMaxSize()
-        ) {
-            if (!state.isPermissionsGet) {
-                UnpermittedUi(
-                    onGetPermissionsClick = {
-                        permissionLauncher.launch(permissionManager.requiredPermissions.toTypedArray())
-                    }
-                )
-            } else {
-                PermittedUi(
-                    isStepSensorsAvailable = sensorsManager.isStepSensorAvailable,
-                    stepCount = sensorsManager.stepsData.collectAsState().value,
-                    isServiceRunning = state.isServiceRunning,
-                    onTrueCallback = { viewModel.startService(context) },
-                    onFalseCallback = { viewModel.stopService(context) },
-                    userStepLength = state.userStepLength
-                )
-            }
+    Box(
+        modifier = Modifier.fillMaxSize()
+    ) {
+        if (!state.isPermissionsGet) {
+            UnpermittedUi(
+                onGetPermissionsClick = {
+                    permissionLauncher.launch(permissionManager.requiredPermissions.toTypedArray())
+                }
+            )
+        } else {
+            PermittedUi(
+                isStepSensorsAvailable = sensorsManager.isStepSensorAvailable,
+                stepCount = sensorsManager.stepsData.collectAsState().value,
+                isServiceRunning = state.isServiceRunning,
+                onTrueCallback = { viewModel.startService(context) },
+                onFalseCallback = { viewModel.stopService(context) },
+                userStepLength = state.userStepLength
+            )
         }
     }
 }

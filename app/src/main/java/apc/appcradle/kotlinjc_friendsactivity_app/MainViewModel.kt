@@ -7,25 +7,30 @@ import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import apc.appcradle.kotlinjc_friendsactivity_app.data.SettingsStorageImpl
+import apc.appcradle.kotlinjc_friendsactivity_app.data.StatsRepo
 import apc.appcradle.kotlinjc_friendsactivity_app.data.TokenStorageImpl
 import apc.appcradle.kotlinjc_friendsactivity_app.domain.NetworkClient
 import apc.appcradle.kotlinjc_friendsactivity_app.domain.model.AppSavedSettingsData
 import apc.appcradle.kotlinjc_friendsactivity_app.domain.model.AppState
 import apc.appcradle.kotlinjc_friendsactivity_app.domain.model.AppThemes
 import apc.appcradle.kotlinjc_friendsactivity_app.domain.model.DataTransferState
+import apc.appcradle.kotlinjc_friendsactivity_app.domain.model.PlayersListSyncData
 import apc.appcradle.kotlinjc_friendsactivity_app.permissions.PermissionManager
 import apc.appcradle.kotlinjc_friendsactivity_app.sensors.StepCounterService
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class MainViewModel(
     private val permissionManager: PermissionManager,
     private val networkClient: NetworkClient,
     private val tokenStorageImpl: TokenStorageImpl,
-    private val settingsPreferencesImpl: SettingsStorageImpl
+    private val settingsPreferencesImpl: SettingsStorageImpl,
+    private val statsRepository: StatsRepo
 ) : ViewModel() {
 
     private var _state = MutableStateFlow(AppState())
@@ -42,6 +47,7 @@ class MainViewModel(
             }
         }
         loadSettings()
+        Log.i("scale", "${state.value.userScale} loaded")
     }
 
     //region Service
@@ -87,20 +93,42 @@ class MainViewModel(
         _transferState.update { it.copy(isSuccessful = null, errorMessage = null) }
     }
 
+    fun goOfflineUse() {
+        tokenStorageImpl.saveOfflineToken()
+        _state.update {
+            it.copy(
+                isLoggedIn = true,
+                userLogin = null
+            )
+        }
+    }
+
     private fun checkPermanentAuth() {
         val token = tokenStorageImpl.getToken()
-
-        if (token != null) {
-            val login = tokenStorageImpl.getLogin()
-            _state.update {
-                it.copy(
-                    isLoggedIn = true,
-                    userLogin = login
-                )
+        when (token) {
+            "offline" -> {
+                _state.update {
+                    it.copy(
+                        isLoggedIn = true,
+                        userLogin = null
+                    )
+                }
             }
-            Log.d("dataTransfer", "Token is valid. Loading main screen for login: $login")
-        } else {
-            Log.d("dataTransfer", "Permanent token is not valid...")
+
+            null -> {
+                Log.d("dataTransfer", "Permanent token is not valid...")
+            }
+
+            else -> {
+                val login = tokenStorageImpl.getLogin()
+                _state.update {
+                    it.copy(
+                        isLoggedIn = true,
+                        userLogin = login
+                    )
+                }
+                Log.d("dataTransfer", "Token is valid. Loading main screen for login: $login")
+            }
         }
     }
 
@@ -119,11 +147,11 @@ class MainViewModel(
                 }
                 _state.update {
                     it.copy(
-                        isLoggedIn = true, userLogin = login
+                        isLoggedIn = true,
+                        userLogin = login
                     )
                 }
             } else {
-                Log.e("dataTransfer", "viewModel transfer not successful")
                 _transferState.update {
                     it.copy(
                         isLoading = false,
@@ -131,6 +159,7 @@ class MainViewModel(
                         errorMessage = result.errorMessage
                     )
                 }
+                Log.e("dataTransfer", "viewModel transfer not successfu\n${result.errorMessage}")
             }
         }
     }
@@ -175,6 +204,11 @@ class MainViewModel(
         Log.d("theme", "viewModel theme is: ${state.value.currentTheme}")
     }
 
+    fun changeScale(newValue: Float) {
+        _state.update { it.copy(userScale = newValue) }
+        saveSettings()
+    }
+
     fun changeStepLength(newStepLength: Double) {
         _state.update { it.copy(userStepLength = newStepLength) }
         saveSettings()
@@ -201,4 +235,15 @@ class MainViewModel(
         }
     }
     //endregion
+
+    //region Sync Data
+
+    suspend fun syncData(login: String, steps: Int): PlayersListSyncData {
+        return withContext(Dispatchers.IO) {
+            val result = statsRepository.syncData(login, steps)
+            Log.e("dataTransfer", "ViewModel sync result: $result")
+            result
+        }
+    }
+//endregion
 }
