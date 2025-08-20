@@ -21,4 +21,4 @@ dependencyResolutionManagement {
 
 rootProject.name = "KotlinJC_FriendsActivity_app"
 include(":app")
- 
+include(":shared")
