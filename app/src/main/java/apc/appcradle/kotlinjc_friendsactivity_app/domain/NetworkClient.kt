@@ -61,6 +61,12 @@ class NetworkClient(
             val friendsList: MutableList<UserActivity>,
             val errorMessage: String?
         )
+
+        @Serializable
+        data class LoginChange(
+            val login: String,
+            val newLogin: String
+        )
     }
 
     private val networkService = HttpClient(engineFactory = Android) {
@@ -200,5 +206,26 @@ class NetworkClient(
             )
         }
     }
-}
 
+    suspend fun changeUserLogin(login: String, newLogin: String): Boolean {
+        val body = LoginChange(login, newLogin)
+        try {
+            val response = networkService.post(urlString = "$serverUrl/login_update") {
+                contentType(ContentType.Application.Json)
+                setBody(body)
+            }
+            if (response.status.isSuccess()) {
+                Log.d(
+                    "dataTransfer",
+                    "network client -> login change successful, ${response.status}"
+                )
+                return true
+            }
+            Log.e("dataTransfer", "network client -> login change unsuccessful, ${response.status}")
+            return false
+        } catch (e: Exception) {
+            Log.e("dataTransfer", "network client -> not successful sending", e)
+            return false
+        }
+    }
+}

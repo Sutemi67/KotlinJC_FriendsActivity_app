@@ -14,14 +14,12 @@ fun NavController.toRatingsScreen() {
 
 fun NavGraphBuilder.ratingsScreen(
     login: String?,
-    stepCount: Int,
     isSynced: Boolean,
-    syncFun: suspend (String, Int) -> PlayersListSyncData
+    syncFun: suspend () -> PlayersListSyncData
 ) {
     composable(Destinations.RATINGS.route) {
         RatingsScreen(
             login = login,
-            stepCount = stepCount,
             isSynced = isSynced,
             syncFun = syncFun
         )

@@ -14,7 +14,7 @@ fun NavGraphBuilder.settingsScreen(
     onLogoutClick: () -> Unit,
     onThemeClick: (AppThemes) -> Unit,
     onStepLengthClick: (Double) -> Unit,
-    onNickNameClick: () -> Unit,
+    onNickNameClick: (String,String) -> Unit,
     onScaleClick: (Float) -> Unit,
     currentTheme: AppThemes
 ) {

@@ -10,6 +10,7 @@ import apc.appcradle.kotlinjc_friendsactivity_app.data.SettingsStorageImpl
 import apc.appcradle.kotlinjc_friendsactivity_app.data.StatsRepo
 import apc.appcradle.kotlinjc_friendsactivity_app.data.TokenStorageImpl
 import apc.appcradle.kotlinjc_friendsactivity_app.domain.NetworkClient
+import apc.appcradle.kotlinjc_friendsactivity_app.domain.SettingsStorage
 import apc.appcradle.kotlinjc_friendsactivity_app.domain.model.AppSavedSettingsData
 import apc.appcradle.kotlinjc_friendsactivity_app.domain.model.AppState
 import apc.appcradle.kotlinjc_friendsactivity_app.domain.model.AppThemes
@@ -29,7 +30,7 @@ class MainViewModel(
     private val permissionManager: PermissionManager,
     private val networkClient: NetworkClient,
     private val tokenStorageImpl: TokenStorageImpl,
-    private val settingsPreferencesImpl: SettingsStorageImpl,
+    private val settingsPreferencesImpl: SettingsStorage,
     private val statsRepository: StatsRepo
 ) : ViewModel() {
 
@@ -193,6 +194,18 @@ class MainViewModel(
                     )
                 }
             }
+        }
+    }
+
+    fun changeLogin(login: String, newLogin: String) {
+        viewModelScope.launch {
+            if (networkClient.changeUserLogin(login, newLogin)) {
+                Log.i("dataTransfer", "смена ника - ${true}")
+                _state.update { it.copy(userLogin = newLogin) }
+                tokenStorageImpl.saveNewLogin(newLogin)
+                return@launch
+            }
+            Log.e("dataTransfer", "смена ника - ${false}")
         }
     }
     //endregion

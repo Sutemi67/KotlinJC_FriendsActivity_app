@@ -42,7 +42,8 @@ fun MainUserScreen(
         } else {
             PermittedUi(
                 isStepSensorsAvailable = sensorsManager.isStepSensorAvailable,
-                stepCount = sensorsManager.stepsData.collectAsState().value,
+                summarySteps = sensorsManager.summaryStepsData.collectAsState().value,
+                dailySteps = sensorsManager.dailyStepsData.collectAsState().value,
                 isServiceRunning = state.isServiceRunning,
                 onTrueCallback = { viewModel.startService(context) },
                 onFalseCallback = { viewModel.stopService(context) },

@@ -8,4 +8,5 @@ interface TokenStorage {
     fun getToken(): String?
 
     fun clearToken()
+    fun saveNewLogin(newLogin: String)
 }

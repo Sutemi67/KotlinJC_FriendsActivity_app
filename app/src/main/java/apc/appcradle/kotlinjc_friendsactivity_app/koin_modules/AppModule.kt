@@ -7,6 +7,7 @@ import apc.appcradle.kotlinjc_friendsactivity_app.data.SettingsStorageImpl
 import apc.appcradle.kotlinjc_friendsactivity_app.data.StatsRepo
 import apc.appcradle.kotlinjc_friendsactivity_app.data.TokenStorageImpl
 import apc.appcradle.kotlinjc_friendsactivity_app.domain.NetworkClient
+import apc.appcradle.kotlinjc_friendsactivity_app.domain.SettingsStorage
 import apc.appcradle.kotlinjc_friendsactivity_app.permissions.PermissionManager
 import apc.appcradle.kotlinjc_friendsactivity_app.sensors.AppSensorsManager
 import org.koin.android.ext.koin.androidContext
@@ -20,11 +21,15 @@ val appModule = module {
     singleOf(::TokenStorageImpl)
     singleOf(::NetworkClient)
     singleOf(::StatsRepo)
-    singleOf(::SettingsStorageImpl)
+
+    single<SettingsStorage> { SettingsStorageImpl(get()) }
 
     viewModelOf(::MainViewModel)
 
     single<SharedPreferences> {
-        androidContext().getSharedPreferences("settings", Context.MODE_PRIVATE)
+        androidContext().getSharedPreferences(
+            "settings",
+            Context.MODE_PRIVATE
+        )
     }
 }

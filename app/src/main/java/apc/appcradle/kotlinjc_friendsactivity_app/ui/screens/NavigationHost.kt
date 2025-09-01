@@ -54,7 +54,7 @@ fun NavigationHost(
 
     val context = LocalContext.current
     val transferState = viewModel.transferState.collectAsState().value
-    val stepCount = sensorManager.stepsData.collectAsState().value
+    val stepCount = sensorManager.summaryStepsData.collectAsState().value
     val isSynced = statsRepository.syncStatus.collectAsState().value
 
     LaunchedEffect(Unit) {
@@ -118,9 +118,8 @@ fun NavigationHost(
                 )
                 ratingsScreen(
                     login = state.userLogin,
-                    stepCount = stepCount,
                     isSynced = isSynced,
-                    syncFun = { login, steps -> viewModel.syncData(login, steps) }
+                    syncFun = { viewModel.syncData(state.userLogin!!, stepCount) }
                 )
                 settingsScreen(
                     onLogoutClick = { viewModel.logout() },
@@ -128,7 +127,7 @@ fun NavigationHost(
                     userStepLength = state.userStepLength,
                     userScale = state.userScale,
                     onThemeClick = { viewModel.changeTheme(it) },
-                    onNickNameClick = {},
+                    onNickNameClick = { login, newLogin -> viewModel.changeLogin(login, newLogin) },
                     onStepLengthClick = { viewModel.changeStepLength(it) },
                     currentTheme = state.currentTheme,
                     onScaleClick = { viewModel.changeScale(it) }

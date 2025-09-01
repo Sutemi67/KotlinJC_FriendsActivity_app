@@ -29,9 +29,8 @@ import apc.appcradle.kotlinjc_friendsactivity_app.ui.theme.KotlinJC_FriendsActiv
 @Composable
 fun RatingsScreen(
     login: String?,
-    stepCount: Int,
     isSynced: Boolean,
-    syncFun: suspend (String, Int) -> PlayersListSyncData,
+    syncFun: suspend () -> PlayersListSyncData,
 ) {
     var errorMessage: String? by remember { mutableStateOf("") }
     var summaryKm by remember { mutableDoubleStateOf(0.0) }
@@ -40,17 +39,12 @@ fun RatingsScreen(
 
     LaunchedEffect(Unit) {
         if (login != null) {
-            Log.d("dataTransfer", "Current stepCount before sync: $stepCount")
             try {
-                val response = syncFun(login, stepCount)
+                val response = syncFun()
                 errorMessage = response.errorMessage
                 summaryKm = response.summaryKm
                 leaderDifference = response.leaderDifferenceKm
                 list = response.playersList
-                Log.d(
-                    "dataTransfer",
-                    "RatingsScreen data synced, user=$login, steps=$stepCount, playerslist=$list"
-                )
             } catch (e: Exception) {
                 Log.e("dataTransfer", "RatingsScreen: error syncing data: ${e.message}")
                 errorMessage = "${e.message}"
@@ -96,9 +90,8 @@ private fun Preview2() {
     KotlinJC_FriendsActivity_appTheme {
         RatingsScreen(
             login = "AlexMagnuss",
-            stepCount = 2333,
             isSynced = true,
-            syncFun = { _, _ ->
+            syncFun = {
                 PlayersListSyncData(
                     playersList = listOf(PlayerActivityData("Alex", 33, 23f)),
                     summaryKm = 33.0,

@@ -34,7 +34,8 @@ import kotlin.math.roundToInt
 @Composable
 fun PermittedUi(
     isStepSensorsAvailable: Boolean,
-    stepCount: Int,
+    summarySteps: Int,
+    dailySteps: Int = 0,
     userStepLength: Double,
     isServiceRunning: Boolean,
     onTrueCallback: () -> Unit,
@@ -43,9 +44,9 @@ fun PermittedUi(
     var km by remember { mutableDoubleStateOf(0.0) }
     var kkal by remember { mutableStateOf(IntRange(1, 2)) }
 
-    LaunchedEffect(stepCount) {
-        km = (stepCount * userStepLength / 1000 * 100.0).roundToInt() / 100.0
-        kkal = kkalCalc(userStepLength, stepCount)
+    LaunchedEffect(summarySteps) {
+        km = (summarySteps * userStepLength / 1000 * 100.0).roundToInt() / 100.0
+        kkal = kkalCalc(userStepLength, summarySteps)
         Log.d("mainScreen", "Launched effect on stepCount")
     }
 
@@ -81,11 +82,15 @@ fun PermittedUi(
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     AppText(
-                        text = format(stepCount),
+                        text = format(summarySteps),
                         appTextStyle = AppTextStyles.MainCounter
                     )
                     AppText(
                         text = "Твой результат",
+                    )
+                    AppText(
+                        text = format(summarySteps),
+                        appTextStyle = AppTextStyles.MainCounter
                     )
                 }
             }
@@ -172,7 +177,7 @@ private fun Preview() {
     KotlinJC_FriendsActivity_appTheme {
         PermittedUi(
             true,
-            stepCount = 454345,
+            summarySteps = 454345,
             isServiceRunning = true,
             userStepLength = 30.4,
             onTrueCallback = {},

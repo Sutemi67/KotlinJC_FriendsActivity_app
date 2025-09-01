@@ -422,6 +422,67 @@ object AppComponents {
             },
         )
     }
+
+    @Composable
+    fun LoginChangeDialog(
+        onConfirmClick: (String) -> Unit,
+        onDismiss: () -> Unit
+    ) {
+        var value by remember { mutableStateOf("") }
+        var isError by remember { mutableStateOf(false) }
+
+        AlertDialog(
+            title = { AppText(text = "Введите новый логин", appTextStyle = AppTextStyles.Header) },
+            text = {
+                OutlinedTextField(
+                    keyboardOptions = KeyboardOptions(
+                        imeAction = ImeAction.Done,
+                        keyboardType = KeyboardType.Text
+                    ),
+                    textStyle = LocalAppTypography.current.bodyText,
+                    isError = isError,
+                    shape = RoundedCornerShape(20.dp),
+                    label = {
+                        AppText(
+                            text = "новый ник",
+                            appTextStyle = AppTextStyles.Body
+                        )
+                    },
+                    value = value,
+                    onValueChange = {
+                        isError = false
+                        value = it
+                    }
+                )
+            },
+            onDismissRequest = onDismiss,
+            confirmButton = {
+                ElevatedButton(onClick = {
+                    try {
+                        onConfirmClick(value)
+                        onDismiss()
+                    } catch (e: Exception) {
+                        isError = true
+                        value = ""
+                        Log.d("inputValue", "Ошибка ввода, ${e.message}")
+                    }
+                }) {
+                    AppText(
+                        text = "Принять"
+                    )
+                }
+            },
+            dismissButton = {
+                ElevatedButton(onClick = {
+                    onDismiss()
+                }) {
+                    AppText(
+                        text = "Отмена"
+                    )
+                }
+            }
+        )
+    }
 }
 
 @Preview

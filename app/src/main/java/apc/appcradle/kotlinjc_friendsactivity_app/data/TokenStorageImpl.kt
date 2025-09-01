@@ -19,6 +19,12 @@ class TokenStorageImpl(
         }
     }
 
+    override fun saveNewLogin(newLogin: String) {
+        sharedPreferences.edit {
+            putString(LOGIN_ID, newLogin)
+        }
+    }
+
     override fun saveOfflineToken() {
         sharedPreferences.edit { putString(AUTH_ID, "offline") }
     }

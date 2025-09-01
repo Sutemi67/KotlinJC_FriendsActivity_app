@@ -16,8 +16,8 @@ data class AppState(
     //Settings
     val userStepLength: Double = 0.4,
     val currentTheme: AppThemes = AppThemes.System,
-    val userScale: Float = 1.0f
+    val userScale: Float = 1.0f,
 
-    //Steps
-//    val weeklySteps: Long = 0
+    //UserData
+    
 )

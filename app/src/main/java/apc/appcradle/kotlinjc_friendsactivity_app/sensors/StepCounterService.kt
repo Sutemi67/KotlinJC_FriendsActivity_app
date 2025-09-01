@@ -23,7 +23,7 @@ class StepCounterService : Service() {
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         createNotificationChannel()
         startServiceInForeground()
-        sensorManager.startCounting()
+        sensorManager.registerSensors()
         Log.e("service", "Started")
         return START_STICKY
     }
@@ -91,12 +91,12 @@ class StepCounterService : Service() {
             )
         )
         .setPriority(NotificationCompat.PRIORITY_LOW)
-//        .setOngoing(true)
+        .setOngoing(true)
         .build()
 
     override fun onDestroy() {
         super.onDestroy()
-        sensorManager.stopCounting()
+        sensorManager.unregisterSensors()
         Log.e("service", "destroyed")
     }
 }
