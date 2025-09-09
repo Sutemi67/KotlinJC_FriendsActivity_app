@@ -1,0 +1,32 @@
+package apc.appcradle.kotlinjc_friendsactivity_app.data
+
+import android.content.Context
+import android.util.Log
+import androidx.work.CoroutineWorker
+import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.WorkerParameters
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
+import java.util.concurrent.TimeUnit
+
+const val WORKER_TAG = "trancate"
+
+class TrancateWorker(
+    context: Context,
+    workerParams: WorkerParameters
+) : CoroutineWorker(
+    context, workerParams
+), KoinComponent {
+    private val repository: StatsRepository by inject()
+
+    override suspend fun doWork(): Result {
+        repository.trancate()
+        Log.i("worker", "worker -> work complete")
+        return Result.success()
+    }
+}
+
+fun trancateStepsRequest(delay: Long) = OneTimeWorkRequestBuilder<TrancateWorker>()
+    .setInitialDelay(duration = delay, timeUnit = TimeUnit.MILLISECONDS)
+    .addTag(WORKER_TAG)
+    .build()

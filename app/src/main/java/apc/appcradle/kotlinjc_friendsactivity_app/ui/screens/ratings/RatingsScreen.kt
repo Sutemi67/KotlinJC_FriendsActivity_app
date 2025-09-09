@@ -33,7 +33,7 @@ fun RatingsScreen(
     syncFun: suspend () -> PlayersListSyncData,
 ) {
     var errorMessage: String? by remember { mutableStateOf("") }
-    var summaryKm by remember { mutableDoubleStateOf(0.0) }
+    var kmWeekly by remember { mutableDoubleStateOf(0.0) }
     var leaderDifference by remember { mutableDoubleStateOf(0.0) }
     var list by remember { mutableStateOf<List<PlayerActivityData>>(emptyList()) }
 
@@ -42,7 +42,7 @@ fun RatingsScreen(
             try {
                 val response = syncFun()
                 errorMessage = response.errorMessage
-                summaryKm = response.summaryKm
+                kmWeekly = response.summaryKm
                 leaderDifference = response.leaderDifferenceKm
                 list = response.playersList
             } catch (e: Exception) {
@@ -51,7 +51,7 @@ fun RatingsScreen(
             }
         } else {
             list = emptyList()
-            summaryKm = 0.0
+            kmWeekly = 0.0
         }
     }
 
@@ -63,7 +63,7 @@ fun RatingsScreen(
             if (isSynced)
                 LinearProgressIndicator()
         }
-        StatsTable(summaryKm, leaderDifference)
+        StatsTable(kmWeekly, leaderDifference)
         if (errorMessage == null) {
             LazyColumn(
                 modifier = Modifier.fillMaxWidth()
@@ -93,10 +93,23 @@ private fun Preview2() {
             isSynced = true,
             syncFun = {
                 PlayersListSyncData(
-                    playersList = listOf(PlayerActivityData("Alex", 33, 23f)),
+                    playersList = listOf(
+                        PlayerActivityData(
+                            "Alex",
+                            33,
+                            2333,
+                            .63f,
+                        ),
+                        PlayerActivityData(
+                            "Alex",
+                            333,
+                            2333,
+                            .3f,
+                        )
+                    ),
                     summaryKm = 33.0,
                     leaderDifferenceKm = 22.3,
-                    errorMessage = "ssss"
+                    errorMessage = null
                 )
             },
         )

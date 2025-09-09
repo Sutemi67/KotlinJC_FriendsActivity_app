@@ -50,7 +50,7 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
-    implementation("androidx.compose.material3:material3-window-size-class")
+    implementation(libs.androidx.compose.material3.window.size.class1)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -58,22 +58,17 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
-
     //Koin
     implementation(libs.koin.androidx.compose)
     implementation(libs.koin.androidx.compose.navigation)
     implementation(libs.koin.ktor)
     testImplementation(libs.koin.test.junit4)
-
     // WorkManager
     implementation(libs.androidx.work.runtime.ktx)
-
     //Navigation
     implementation(libs.androidx.navigation.compose)
-
     //Kotlin Serialization
     implementation(libs.kotlinx.serialization.json)
-
     //Ktor-Client
     implementation(libs.ktor.client.core)
     implementation(libs.ktor.client.cio)
@@ -82,10 +77,8 @@ dependencies {
     implementation(libs.ktor.serialization.kotlinx.json)
     implementation(libs.kotlinx.serialization.json.v160)
     implementation(libs.ktor.client.auth)
-
     // Security
     implementation(libs.androidx.security.crypto)
-
     //Gson
     implementation(libs.gson)
 }

@@ -2,10 +2,13 @@ package apc.appcradle.kotlinjc_friendsactivity_app.koin_modules
 
 import android.content.Context
 import android.content.SharedPreferences
+import android.util.Log
+import androidx.work.WorkManager
 import apc.appcradle.kotlinjc_friendsactivity_app.MainViewModel
 import apc.appcradle.kotlinjc_friendsactivity_app.data.SettingsStorageImpl
-import apc.appcradle.kotlinjc_friendsactivity_app.data.StatsRepo
+import apc.appcradle.kotlinjc_friendsactivity_app.data.StatsRepository
 import apc.appcradle.kotlinjc_friendsactivity_app.data.TokenStorageImpl
+import apc.appcradle.kotlinjc_friendsactivity_app.data.TrancateWorker
 import apc.appcradle.kotlinjc_friendsactivity_app.domain.NetworkClient
 import apc.appcradle.kotlinjc_friendsactivity_app.domain.SettingsStorage
 import apc.appcradle.kotlinjc_friendsactivity_app.permissions.PermissionManager
@@ -20,9 +23,15 @@ val appModule = module {
     singleOf(::PermissionManager)
     singleOf(::TokenStorageImpl)
     singleOf(::NetworkClient)
-    singleOf(::StatsRepo)
+    singleOf(::StatsRepository)
+//    singleOf(::TrancateWorker)
 
     single<SettingsStorage> { SettingsStorageImpl(get()) }
+
+    single<WorkManager> {
+        Log.i("worker", "work manager created")
+        WorkManager.getInstance(get())
+    }
 
     viewModelOf(::MainViewModel)
 

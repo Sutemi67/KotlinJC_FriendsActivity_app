@@ -77,7 +77,12 @@ private fun Preview() {
     KotlinJC_FriendsActivity_appTheme {
         PlayerStatsView(
             index = 1,
-            playerActivityData = PlayerActivityData("Alexander", 3423, 0.3f),
+            playerActivityData = PlayerActivityData(
+                "Alexander",
+                3423,
+                weeklySteps = 22,
+                .3f
+            ),
         )
     }
 }

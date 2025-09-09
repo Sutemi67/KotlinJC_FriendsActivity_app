@@ -47,9 +47,18 @@ annotation class ThemePreviews
 )
 annotation class PreviewsDifferentSizes
 
-fun isTodayMonday(): Boolean {
-    val calendar = Calendar.getInstance()
-    return calendar.get(Calendar.DAY_OF_WEEK) == Calendar.MONDAY
+fun whenNextMonday(): Long {
+    val now = Calendar.getInstance()
+    val target = now.clone() as Calendar
+    target.apply {
+        set(Calendar.DAY_OF_WEEK, Calendar.MONDAY)
+        set(Calendar.HOUR_OF_DAY, 0)
+        set(Calendar.MINUTE, 0)
+        set(Calendar.SECOND, 0)
+        set(Calendar.MILLISECOND, 0)
+        if (before(now)) add(Calendar.WEEK_OF_YEAR, 1)
+    }
+    return target.timeInMillis - now.timeInMillis
 }
 
 //fun Activity.installSplashScreen() {
@@ -66,7 +75,6 @@ fun nonScaledSp(size: Int): TextUnit {
 
 fun openDonate(context: Context) {
     val url = "https://pay.cloudtips.ru/p/2d71d3e5"
-//    val url = "https://yoomoney.ru/to/410017351998063"
     val intent = Intent(Intent.ACTION_VIEW, url.toUri())
     context.startActivity(intent)
 }

@@ -19,7 +19,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import apc.appcradle.kotlinjc_friendsactivity_app.MainViewModel
-import apc.appcradle.kotlinjc_friendsactivity_app.data.StatsRepo
+import apc.appcradle.kotlinjc_friendsactivity_app.data.StatsRepository
 import apc.appcradle.kotlinjc_friendsactivity_app.domain.model.AppState
 import apc.appcradle.kotlinjc_friendsactivity_app.sensors.AppSensorsManager
 import apc.appcradle.kotlinjc_friendsactivity_app.ui.app_components.AppComponents
@@ -50,11 +50,11 @@ fun NavigationHost(
         }
 
     val sensorManager: AppSensorsManager = koinInject<AppSensorsManager>()
-    val statsRepository = koinInject<StatsRepo>()
+    val statsRepository = koinInject<StatsRepository>()
 
     val context = LocalContext.current
     val transferState = viewModel.transferState.collectAsState().value
-    val stepCount = sensorManager.summaryStepsData.collectAsState().value
+    val stepCount = sensorManager.allSteps.collectAsState().value
     val isSynced = statsRepository.syncStatus.collectAsState().value
 
     LaunchedEffect(Unit) {
@@ -119,7 +119,13 @@ fun NavigationHost(
                 ratingsScreen(
                     login = state.userLogin,
                     isSynced = isSynced,
-                    syncFun = { viewModel.syncData(state.userLogin!!, stepCount) }
+                    syncFun = {
+                        viewModel.syncData(
+                            login = state.userLogin!!,
+                            steps = stepCount,
+                            weeklySteps = state.userWeeklySteps
+                        )
+                    }
                 )
                 settingsScreen(
                     onLogoutClick = { viewModel.logout() },

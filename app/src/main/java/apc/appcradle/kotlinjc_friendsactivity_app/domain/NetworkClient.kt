@@ -53,7 +53,8 @@ class NetworkClient(
         @Serializable
         data class UserActivity(
             val login: String,
-            val steps: Int
+            val steps: Int,
+            val weeklySteps: Int
         )
 
         @Serializable
@@ -103,6 +104,7 @@ class NetworkClient(
     }
 
     private val serverUrl = "http://212.3.131.67:6655/"
+//    private val serverUrl = "http://192.168.0.12:6655/"
 
     private fun saveToken(login: String, token: String) {
         tokenStorageImpl.saveToken(login = login, token = token)
@@ -165,8 +167,12 @@ class NetworkClient(
         }
     }
 
-    suspend fun postUserDataAndSyncFriendsData(login: String, steps: Int): UserActivityResponse {
-        val body = UserActivity(login, steps)
+    suspend fun postUserDataAndSyncFriendsData(
+        login: String,
+        steps: Int,
+        weeklySteps: Int
+    ): UserActivityResponse {
+        val body = UserActivity(login = login, steps = steps, weeklySteps = weeklySteps)
         return try {
             val request = networkService.post(urlString = "$serverUrl/post_activity") {
                 contentType(ContentType.Application.Json)
@@ -178,7 +184,7 @@ class NetworkClient(
                 UserActivityResponse(response.friendsList, null)
             } else {
                 Log.e("dataTransfer", "${request.body<String?>()}")
-                UserActivityResponse(mutableListOf(), "Не удалось связаться с сервером}")
+                UserActivityResponse(mutableListOf(), "Не удалось связаться с сервером")
             }
         } catch (e: SocketTimeoutException) {
             Log.e("dataTransfer", "not successful getting protected data in network client", e)

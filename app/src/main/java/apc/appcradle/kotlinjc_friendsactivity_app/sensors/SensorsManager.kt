@@ -7,8 +7,8 @@ import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
 import android.hardware.SensorManager
 import android.util.Log
-import apc.appcradle.kotlinjc_friendsactivity_app.data.SettingsStorageImpl
-import apc.appcradle.kotlinjc_friendsactivity_app.domain.SettingsStorage
+import apc.appcradle.kotlinjc_friendsactivity_app.data.StatsRepository
+import apc.appcradle.kotlinjc_friendsactivity_app.domain.model.Steps
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -18,7 +18,7 @@ import kotlinx.coroutines.launch
 
 class AppSensorsManager(
     context: Context,
-    private val settingsPreferencesImpl: SettingsStorage,
+    private val statsRepository: StatsRepository
 ) : SensorEventListener {
 
     private val sensorManager = context.getSystemService(SENSOR_SERVICE) as SensorManager
@@ -30,18 +30,21 @@ class AppSensorsManager(
     var isStepSensorAvailable: Boolean = (stepCounterSensor != null || stepDetectorSensor != null)
         private set
 
-    private var _summaryStepsData = MutableStateFlow(0)
-    val summaryStepsData = _summaryStepsData.asStateFlow()
+    private var _allSteps = MutableStateFlow(0)
+    val allSteps = _allSteps.asStateFlow()
 
-    private var _dailyStepsData = MutableStateFlow(0)
-    val dailyStepsData = _dailyStepsData.asStateFlow()
+    private var _weeklySteps = MutableStateFlow(0)
+    val weeklySteps = _weeklySteps.asStateFlow()
 
-
-    private var stepsInitial = loadSteps()
+    private var stepsInitialWeekly: Int = 0
     private var currentSteps = 0
     private var stepsWithoutChecking = 0
     private var isFirstStart = true
     private var isSaved = false
+
+    init {
+        loadSteps()
+    }
 
     fun registerSensors() {
         if (stepCounterSensor != null) {
@@ -71,7 +74,12 @@ class AppSensorsManager(
         stepDetectorSensor?.let { sensor ->
             sensorManager.unregisterListener(this, sensor)
         }
-        settingsPreferencesImpl.saveSteps(currentSteps)
+        statsRepository.saveAllSteps(
+            Steps(
+                allSteps = allSteps.value,
+                weeklySteps = weeklySteps.value
+            )
+        )
     }
 
     private fun periodicalSaving() {
@@ -79,21 +87,22 @@ class AppSensorsManager(
             CoroutineScope(Dispatchers.IO).launch {
                 isSaved = true
                 delay(60000)
-                settingsPreferencesImpl.saveSteps(currentSteps)
+                statsRepository.saveAllSteps(
+                    Steps(
+                        allSteps = allSteps.value,
+                        weeklySteps = weeklySteps.value
+                    )
+                )
                 isSaved = false
             }
         }
     }
 
-    private fun loadSteps(): Int {
-        val loadedSteps = settingsPreferencesImpl.getSteps()
-        _summaryStepsData.value = loadedSteps
-        return loadedSteps
-    }
-
-    private fun resetSteps() {
-        stepsInitial = 0
-        _summaryStepsData.value = 0
+    private fun loadSteps() {
+        val loadedSteps = statsRepository.loadSteps()
+        _allSteps.value = loadedSteps.allSteps
+        _weeklySteps.value = loadedSteps.weeklySteps
+        stepsInitialWeekly = loadedSteps.weeklySteps
     }
 
     override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) {}
@@ -103,7 +112,7 @@ class AppSensorsManager(
                 Sensor.TYPE_STEP_COUNTER -> {
                     val totalSensorSteps = sensorEvent.values[0].toInt()
                     if (isFirstStart && totalSensorSteps > 0) {
-                        stepsWithoutChecking = totalSensorSteps - stepsInitial
+                        stepsWithoutChecking = totalSensorSteps - stepsInitialWeekly
                         isFirstStart = false
                     }
                     if (!isFirstStart) {
@@ -113,8 +122,8 @@ class AppSensorsManager(
 
                 Sensor.TYPE_STEP_DETECTOR -> {
                     currentSteps += 1
-                    _summaryStepsData.value = currentSteps
-                    _dailyStepsData.value++
+                    _allSteps.value = currentSteps
+                    _weeklySteps.value++
                     periodicalSaving()
                 }
             }
@@ -123,8 +132,8 @@ class AppSensorsManager(
 
     private fun stepsCounter(totalSensorSteps: Int) {
         currentSteps = totalSensorSteps - stepsWithoutChecking
-        _summaryStepsData.value = currentSteps
-        _dailyStepsData.value++
+        _allSteps.value = currentSteps
+        _weeklySteps.value++
         periodicalSaving()
     }
 }

@@ -42,8 +42,8 @@ fun MainUserScreen(
         } else {
             PermittedUi(
                 isStepSensorsAvailable = sensorsManager.isStepSensorAvailable,
-                summarySteps = sensorsManager.summaryStepsData.collectAsState().value,
-                dailySteps = sensorsManager.dailyStepsData.collectAsState().value,
+                summarySteps = sensorsManager.allSteps.collectAsState().value,
+                weeklySteps = sensorsManager.weeklySteps.collectAsState().value,
                 isServiceRunning = state.isServiceRunning,
                 onTrueCallback = { viewModel.startService(context) },
                 onFalseCallback = { viewModel.stopService(context) },

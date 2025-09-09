@@ -12,19 +12,10 @@ class SettingsStorageImpl(
 ) : SettingsStorage {
 
     companion object {
-        const val STEPS_PREFS_ID = "steps_id"
         const val SETTINGS_PREFS_ID = "settings_id"
     }
 
     private val gson = Gson()
-
-    override fun saveSteps(steps: Int) {
-        sharedPreferences.edit { putInt(STEPS_PREFS_ID, steps) }
-    }
-
-    override fun getSteps(): Int {
-        return sharedPreferences.getInt(STEPS_PREFS_ID, 0)
-    }
 
     override fun saveSettingsData(currentSettingsData: AppSavedSettingsData) {
         val json = gson.toJson(currentSettingsData)

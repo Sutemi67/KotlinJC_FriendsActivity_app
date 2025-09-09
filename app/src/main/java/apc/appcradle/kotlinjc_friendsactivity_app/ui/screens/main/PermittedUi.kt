@@ -12,9 +12,11 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Card
+import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Switch
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -24,8 +26,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import apc.appcradle.kotlinjc_friendsactivity_app.ThemePreviews
 import apc.appcradle.kotlinjc_friendsactivity_app.domain.model.AppTextStyles
 import apc.appcradle.kotlinjc_friendsactivity_app.ui.app_components.AppComponents.AppText
 import apc.appcradle.kotlinjc_friendsactivity_app.ui.theme.KotlinJC_FriendsActivity_appTheme
@@ -35,18 +37,20 @@ import kotlin.math.roundToInt
 fun PermittedUi(
     isStepSensorsAvailable: Boolean,
     summarySteps: Int,
-    dailySteps: Int = 0,
+    weeklySteps: Int = 0,
     userStepLength: Double,
     isServiceRunning: Boolean,
     onTrueCallback: () -> Unit,
     onFalseCallback: () -> Unit,
 ) {
-    var km by remember { mutableDoubleStateOf(0.0) }
+    var kmWeekly by remember { mutableDoubleStateOf(0.0) }
+    var kmAll by remember { mutableDoubleStateOf(0.0) }
     var kkal by remember { mutableStateOf(IntRange(1, 2)) }
 
     LaunchedEffect(summarySteps) {
-        km = (summarySteps * userStepLength / 1000 * 100.0).roundToInt() / 100.0
-        kkal = kkalCalc(userStepLength, summarySteps)
+        kmWeekly = (weeklySteps * userStepLength / 1000 * 100.0).roundToInt() / 100.0
+        kmAll = (summarySteps * userStepLength / 1000 * 100.0).roundToInt() / 100.0
+        kkal = kkalCalc(userStepLength, weeklySteps)
         Log.d("mainScreen", "Launched effect on stepCount")
     }
 
@@ -82,19 +86,14 @@ fun PermittedUi(
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     AppText(
-                        text = format(summarySteps),
+                        text = format(weeklySteps),
                         appTextStyle = AppTextStyles.MainCounter
                     )
                     AppText(
-                        text = "Твой результат",
-                    )
-                    AppText(
-                        text = format(summarySteps),
-                        appTextStyle = AppTextStyles.MainCounter
+                        text = "Твой результат на этой неделе",
                     )
                 }
             }
-
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -106,7 +105,7 @@ fun PermittedUi(
                     modifier = Modifier.width(150.dp),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    AppText(text = format(km))
+                    AppText(text = format(kmWeekly))
                     AppText(text = "Километров")
                 }
                 Column(
@@ -117,16 +116,12 @@ fun PermittedUi(
                     AppText(text = "Калорий")
                 }
             }
-            HorizontalDivider(
-                Modifier
-                    .padding(5.dp)
-                    .padding(horizontal = 30.dp)
-            )
-            StatsColumn(km)
+            HorizontalDivider(Modifier
+                .padding(5.dp)
+                .padding(horizontal = 30.dp))
+            StatsColumn(kmAll)
         }
-        Column(
-            modifier = Modifier.padding(20.dp),
-        ) {
+        Column(modifier = Modifier.padding(20.dp)) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically,
@@ -152,10 +147,11 @@ fun PermittedUi(
                 )
             }
         }
+        ElevatedButton(onClick = {}) { Text("Обнулить результаты") }
     }
 }
 
-private fun format(text: Int): String {
+private fun format (text: Int): String {
     val ddd = DecimalFormat("###,###.##")
     return ddd.format(text)
 }
@@ -171,13 +167,14 @@ private fun kkalCalc(userStepLength: Double, stepCount: Int): IntRange {
     return IntRange(firstValue, secondValue)
 }
 
-@ThemePreviews
+@Preview
 @Composable
 private fun Preview() {
     KotlinJC_FriendsActivity_appTheme {
         PermittedUi(
             true,
             summarySteps = 454345,
+            weeklySteps = 4433,
             isServiceRunning = true,
             userStepLength = 30.4,
             onTrueCallback = {},

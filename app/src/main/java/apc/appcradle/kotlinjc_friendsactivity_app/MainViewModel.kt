@@ -6,9 +6,10 @@ import android.util.Log
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import apc.appcradle.kotlinjc_friendsactivity_app.data.SettingsStorageImpl
-import apc.appcradle.kotlinjc_friendsactivity_app.data.StatsRepo
+import androidx.work.WorkManager
+import apc.appcradle.kotlinjc_friendsactivity_app.data.StatsRepository
 import apc.appcradle.kotlinjc_friendsactivity_app.data.TokenStorageImpl
+import apc.appcradle.kotlinjc_friendsactivity_app.data.WORKER_TAG
 import apc.appcradle.kotlinjc_friendsactivity_app.domain.NetworkClient
 import apc.appcradle.kotlinjc_friendsactivity_app.domain.SettingsStorage
 import apc.appcradle.kotlinjc_friendsactivity_app.domain.model.AppSavedSettingsData
@@ -31,7 +32,8 @@ class MainViewModel(
     private val networkClient: NetworkClient,
     private val tokenStorageImpl: TokenStorageImpl,
     private val settingsPreferencesImpl: SettingsStorage,
-    private val statsRepository: StatsRepo
+    private val statsRepository: StatsRepository,
+    private val workManager: WorkManager
 ) : ViewModel() {
 
     private var _state = MutableStateFlow(AppState())
@@ -42,11 +44,20 @@ class MainViewModel(
 
     init {
         checkPermanentAuth()
+
+        viewModelScope.launch {
+            workManager.pruneWork()
+            workManager.getWorkInfosByTagFlow(WORKER_TAG).collect {
+                Log.i("worker", "statRepo,workerInfoAsync -> $it")
+            }
+        }
+
         viewModelScope.launch {
             permissionManager.permissionsGranted.collect { isGranted ->
                 _state.update { it.copy(isPermissionsGet = isGranted) }
             }
         }
+
         loadSettings()
         Log.i("scale", "${state.value.userScale} loaded")
     }
@@ -251,10 +262,10 @@ class MainViewModel(
 
     //region Sync Data
 
-    suspend fun syncData(login: String, steps: Int): PlayersListSyncData {
+    suspend fun syncData(login: String, steps: Int, weeklySteps: Int): PlayersListSyncData {
         return withContext(Dispatchers.IO) {
-            val result = statsRepository.syncData(login, steps)
-            Log.e("dataTransfer", "ViewModel sync result: $result")
+            val result = statsRepository.syncData(login, steps, weeklySteps)
+            Log.i("dataTransfer", "ViewModel sync result: $result")
             result
         }
     }
