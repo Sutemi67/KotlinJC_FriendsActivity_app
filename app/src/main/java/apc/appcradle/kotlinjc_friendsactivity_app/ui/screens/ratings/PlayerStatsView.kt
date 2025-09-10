@@ -29,6 +29,7 @@ import apc.appcradle.kotlinjc_friendsactivity_app.ui.theme.KotlinJC_FriendsActiv
 fun PlayerStatsView(
     modifier: Modifier = Modifier,
     index: Int,
+    login: String? = null,
     playerActivityData: PlayerActivityData,
 ) {
     val percentageAnimate = animateFloatAsState(
@@ -47,7 +48,7 @@ fun PlayerStatsView(
             Box(
                 modifier = Modifier
                     .background(
-                        color = MaterialTheme.colorScheme.secondaryContainer,
+                        color = if (login == playerActivityData.login) MaterialTheme.colorScheme.errorContainer else MaterialTheme.colorScheme.secondaryContainer,
                         shape = RoundedCornerShape(20.dp)
                     )
                     .fillMaxWidth(percentageAnimate.value)
@@ -64,11 +65,11 @@ fun PlayerStatsView(
                 ) {
                     AppText(
                         color = MaterialTheme.colorScheme.onSurface,
-                        text = "${index + 1}. ${playerActivityData.login}"
+                        text = playerActivityData.login
                     )
                     AppText(
                         color = MaterialTheme.colorScheme.onSurface,
-                        text = getDistanceByValue(playerActivityData.steps*0.4/1000).destination,
+                        text = getDistanceByValue(playerActivityData.steps * 0.4 / 1000).destination,
                         appTextStyle = AppTextStyles.Label
                     )
                 }
