@@ -5,6 +5,7 @@ import android.util.Log
 import androidx.work.CoroutineWorker
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkerParameters
+import apc.appcradle.kotlinjc_friendsactivity_app.sensors.AppSensorsManager
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import java.util.concurrent.TimeUnit
@@ -17,10 +18,10 @@ class TrancateWorker(
 ) : CoroutineWorker(
     context, workerParams
 ), KoinComponent {
-    private val repository: StatsRepository by inject()
+    private val sensorsManager: AppSensorsManager by inject()
 
     override suspend fun doWork(): Result {
-        repository.trancate()
+        sensorsManager.trancate()
         Log.i("worker", "worker -> work complete")
         return Result.success()
     }

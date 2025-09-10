@@ -21,6 +21,7 @@ class StatsRepository(
 ) {
     private val _syncStatus = MutableStateFlow(false)
     val syncStatus: StateFlow<Boolean> = _syncStatus.asStateFlow()
+
     private var playersList = mutableListOf<PlayerActivityData>()
     private var isFirstAppStart = true
 
@@ -99,7 +100,9 @@ class StatsRepository(
         return diff
     }
 
+
     init {
+//        workManager.cancelAllWork()
         isFirstStartCheck()
         planningTrancateSteps()
     }
@@ -129,7 +132,8 @@ class StatsRepository(
         if (isFirstAppStart) {
             isFirstAppStart = false
             sharedPreferences.edit { putBoolean(FIRST_START_ID, false) }
-//            workManager.enqueue(trancateStepsRequest(5000))
+//            workManager.enqueue(trancateStepsRequest(10000))
+//            workManager.enqueue(trancateStepsRequest(whenNextDayModern()))
             workManager.enqueue(trancateStepsRequest(whenNextMonday()))
             Log.d("worker", "statRepo,planningTrancateSteps -> ${whenNextMonday()}")
         }
@@ -141,7 +145,6 @@ class StatsRepository(
             putInt(STEPS_WEEKLY_ID, 0)
             putBoolean(FIRST_START_ID, true)
         }
-
     }
 
     companion object {

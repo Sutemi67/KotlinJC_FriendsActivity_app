@@ -3,12 +3,16 @@ package apc.appcradle.kotlinjc_friendsactivity_app
 import android.content.Context
 import android.content.Intent
 import android.content.res.Configuration
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.sp
 import androidx.core.net.toUri
+import java.time.ZonedDateTime
+import java.time.temporal.ChronoUnit
 import java.util.Calendar
 
 @Preview(uiMode = Configuration.UI_MODE_TYPE_NORMAL)
@@ -59,6 +63,15 @@ fun whenNextMonday(): Long {
         if (before(now)) add(Calendar.WEEK_OF_YEAR, 1)
     }
     return target.timeInMillis - now.timeInMillis
+}
+
+@RequiresApi(Build.VERSION_CODES.O)
+fun whenNextDayModern(): Long {
+    val now = ZonedDateTime.now()
+    val nextDay = now.toLocalDate()
+        .plusDays(1)
+        .atStartOfDay(now.zone)
+    return ChronoUnit.MILLIS.between(now, nextDay)
 }
 
 //fun Activity.installSplashScreen() {

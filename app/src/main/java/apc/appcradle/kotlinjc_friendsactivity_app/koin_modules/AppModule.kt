@@ -8,7 +8,6 @@ import apc.appcradle.kotlinjc_friendsactivity_app.MainViewModel
 import apc.appcradle.kotlinjc_friendsactivity_app.data.SettingsStorageImpl
 import apc.appcradle.kotlinjc_friendsactivity_app.data.StatsRepository
 import apc.appcradle.kotlinjc_friendsactivity_app.data.TokenStorageImpl
-import apc.appcradle.kotlinjc_friendsactivity_app.data.TrancateWorker
 import apc.appcradle.kotlinjc_friendsactivity_app.domain.NetworkClient
 import apc.appcradle.kotlinjc_friendsactivity_app.domain.SettingsStorage
 import apc.appcradle.kotlinjc_friendsactivity_app.permissions.PermissionManager
@@ -24,7 +23,6 @@ val appModule = module {
     singleOf(::TokenStorageImpl)
     singleOf(::NetworkClient)
     singleOf(::StatsRepository)
-//    singleOf(::TrancateWorker)
 
     single<SettingsStorage> { SettingsStorageImpl(get()) }
 
@@ -37,7 +35,7 @@ val appModule = module {
 
     single<SharedPreferences> {
         androidContext().getSharedPreferences(
-            "settings",
+            "saving_data",
             Context.MODE_PRIVATE
         )
     }

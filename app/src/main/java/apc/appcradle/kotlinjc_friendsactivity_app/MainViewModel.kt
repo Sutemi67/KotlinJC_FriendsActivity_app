@@ -48,7 +48,12 @@ class MainViewModel(
         viewModelScope.launch {
             workManager.pruneWork()
             workManager.getWorkInfosByTagFlow(WORKER_TAG).collect {
-                Log.i("worker", "statRepo,workerInfoAsync -> $it")
+                it.forEach { element ->
+                    Log.i(
+                        "worker",
+                        "statRepo,workerInfoAsync -> ${element.id}, ${element.state}, ${element.initialDelayMillis}"
+                    )
+                }
             }
         }
 

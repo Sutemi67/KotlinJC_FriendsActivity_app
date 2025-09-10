@@ -98,6 +98,11 @@ class AppSensorsManager(
         }
     }
 
+    fun trancate() {
+        statsRepository.trancate()
+        loadSteps()
+    }
+
     private fun loadSteps() {
         val loadedSteps = statsRepository.loadSteps()
         _allSteps.value = loadedSteps.allSteps
