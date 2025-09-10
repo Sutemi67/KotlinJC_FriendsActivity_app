@@ -12,11 +12,9 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Card
-import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Switch
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -116,9 +114,11 @@ fun PermittedUi(
                     AppText(text = "Калорий")
                 }
             }
-            HorizontalDivider(Modifier
-                .padding(5.dp)
-                .padding(horizontal = 30.dp))
+            HorizontalDivider(
+                Modifier
+                    .padding(5.dp)
+                    .padding(horizontal = 30.dp)
+            )
             StatsColumn(kmAll)
         }
         Column(modifier = Modifier.padding(20.dp)) {
@@ -150,7 +150,7 @@ fun PermittedUi(
     }
 }
 
-private fun format (text: Int): String {
+private fun format(text: Int): String {
     val ddd = DecimalFormat("###,###.##")
     return ddd.format(text)
 }

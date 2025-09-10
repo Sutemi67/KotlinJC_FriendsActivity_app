@@ -68,7 +68,7 @@ fun PlayerStatsView(
                     )
                     AppText(
                         color = MaterialTheme.colorScheme.onSurface,
-                        text = getDistanceByValue(playerActivityData.steps*0.35/1000).destination,
+                        text = getDistanceByValue(playerActivityData.steps*0.4/1000).destination,
                         appTextStyle = AppTextStyles.Label
                     )
                 }
