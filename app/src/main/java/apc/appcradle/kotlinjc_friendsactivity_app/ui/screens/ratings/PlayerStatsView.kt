@@ -4,6 +4,7 @@ import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
@@ -18,6 +19,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import apc.appcradle.kotlinjc_friendsactivity_app.domain.model.AppTextStyles
+import apc.appcradle.kotlinjc_friendsactivity_app.domain.model.Distances
 import apc.appcradle.kotlinjc_friendsactivity_app.domain.model.PlayerActivityData
 import apc.appcradle.kotlinjc_friendsactivity_app.ui.app_components.AppComponents.AppText
 import apc.appcradle.kotlinjc_friendsactivity_app.ui.theme.KotlinJC_FriendsActivity_appTheme
@@ -56,12 +59,19 @@ fun PlayerStatsView(
                     .padding(horizontal = 15.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                AppText(
-                    modifier = Modifier
-                        .weight(1f),
-                    color = MaterialTheme.colorScheme.onSurface,
-                    text = "${index + 1}. ${playerActivityData.login}"
-                )
+                Column(
+                    modifier = Modifier.weight(1f)
+                ) {
+                    AppText(
+                        color = MaterialTheme.colorScheme.onSurface,
+                        text = "${index + 1}. ${playerActivityData.login}"
+                    )
+                    AppText(
+                        color = MaterialTheme.colorScheme.onSurface,
+                        text = getDistanceByValue(playerActivityData.steps*0.35/1000).destination,
+                        appTextStyle = AppTextStyles.Label
+                    )
+                }
                 AppText(
                     color = MaterialTheme.colorScheme.onSurface,
                     text = "${playerActivityData.steps}"
@@ -69,6 +79,11 @@ fun PlayerStatsView(
             }
         }
     }
+}
+
+private fun getDistanceByValue(value: Double): Distances {
+    return Distances.entries.toTypedArray().lastOrNull { value in it.range }
+        ?: Distances.entries.last()
 }
 
 @Preview

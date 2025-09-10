@@ -102,7 +102,7 @@ private fun Preview2() {
                         ),
                         PlayerActivityData(
                             "Alex",
-                            333,
+                            33333,
                             2333,
                             .3f,
                         )

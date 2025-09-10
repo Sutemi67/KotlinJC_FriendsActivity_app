@@ -147,7 +147,6 @@ fun PermittedUi(
                 )
             }
         }
-        ElevatedButton(onClick = {}) { Text("Обнулить результаты") }
     }
 }
 

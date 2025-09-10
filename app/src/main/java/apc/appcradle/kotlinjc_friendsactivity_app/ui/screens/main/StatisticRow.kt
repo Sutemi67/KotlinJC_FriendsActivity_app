@@ -14,6 +14,7 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import apc.appcradle.kotlinjc_friendsactivity_app.LocalAppTypography
 import apc.appcradle.kotlinjc_friendsactivity_app.ThemePreviewsNoUi
+import apc.appcradle.kotlinjc_friendsactivity_app.domain.model.Distances
 import apc.appcradle.kotlinjc_friendsactivity_app.ui.theme.KotlinJC_FriendsActivity_appTheme
 
 @Composable

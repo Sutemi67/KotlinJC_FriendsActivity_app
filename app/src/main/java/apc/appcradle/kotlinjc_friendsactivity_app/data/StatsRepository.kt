@@ -100,9 +100,7 @@ class StatsRepository(
         return diff
     }
 
-
     init {
-//        workManager.cancelAllWork()
         isFirstStartCheck()
         planningTrancateSteps()
     }
