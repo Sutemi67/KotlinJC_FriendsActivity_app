@@ -269,7 +269,9 @@ class MainViewModel(
 
     suspend fun syncData(login: String, steps: Int, weeklySteps: Int): PlayersListSyncData {
         return withContext(Dispatchers.IO) {
-            val result = statsRepository.syncData(login, steps, weeklySteps)
+            val result = statsRepository.syncData(
+                login = login, steps = steps, weeklySteps = weeklySteps
+            )
             Log.i("dataTransfer", "ViewModel sync result: $result")
             result
         }

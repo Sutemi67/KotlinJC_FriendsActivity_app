@@ -184,7 +184,7 @@ class NetworkClient(
                 UserActivityResponse(response.friendsList, null)
             } else {
                 Log.e("dataTransfer", "${request.body<String?>()}")
-                UserActivityResponse(mutableListOf(), "Не удалось связаться с сервером")
+                UserActivityResponse(mutableListOf(), "Запрос ушел, но ответ не пришел")
             }
         } catch (e: SocketTimeoutException) {
             Log.e("dataTransfer", "not successful getting protected data in network client", e)

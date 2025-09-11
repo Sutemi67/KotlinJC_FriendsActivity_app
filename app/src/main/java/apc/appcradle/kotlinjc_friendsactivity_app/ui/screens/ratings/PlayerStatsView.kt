@@ -1,5 +1,6 @@
 package apc.appcradle.kotlinjc_friendsactivity_app.ui.screens.ratings
 
+import android.util.Log
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
@@ -15,6 +16,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
@@ -28,14 +30,16 @@ import apc.appcradle.kotlinjc_friendsactivity_app.ui.theme.KotlinJC_FriendsActiv
 @Composable
 fun PlayerStatsView(
     modifier: Modifier = Modifier,
-    index: Int,
-    login: String? = null,
+    login: String?,
     playerActivityData: PlayerActivityData,
 ) {
     val percentageAnimate = animateFloatAsState(
         targetValue = playerActivityData.percentage,
         animationSpec = tween(durationMillis = 3000)
     )
+    LaunchedEffect(playerActivityData) {
+        Log.i("debug", "$login, ${playerActivityData.login}, ${playerActivityData.percentage}")
+    }
     ElevatedCard(
         modifier = modifier
             .height(60.dp)
@@ -48,7 +52,7 @@ fun PlayerStatsView(
             Box(
                 modifier = Modifier
                     .background(
-                        color = if (login == playerActivityData.login) MaterialTheme.colorScheme.errorContainer else MaterialTheme.colorScheme.secondaryContainer,
+                        color = if (login == playerActivityData.login) MaterialTheme.colorScheme.tertiaryContainer else MaterialTheme.colorScheme.secondaryContainer,
                         shape = RoundedCornerShape(20.dp)
                     )
                     .fillMaxWidth(percentageAnimate.value)
@@ -92,7 +96,7 @@ private fun getDistanceByValue(value: Double): Distances {
 private fun Preview() {
     KotlinJC_FriendsActivity_appTheme {
         PlayerStatsView(
-            index = 1,
+            login = "Alexander",
             playerActivityData = PlayerActivityData(
                 "Alexander",
                 3423,

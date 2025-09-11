@@ -42,7 +42,7 @@ class StatsRepository(
     suspend fun syncData(login: String, steps: Int, weeklySteps: Int): PlayersListSyncData {
         _syncStatus.update { true }
         try {
-            Log.d("dataTransfer", "StatsRepo syncData called with steps: $steps")
+            Log.d("dataTransfer", "StatsRepo syncData called with steps: $steps, $weeklySteps")
             val data = networkClient.postUserDataAndSyncFriendsData(
                 login = login,
                 steps = steps,

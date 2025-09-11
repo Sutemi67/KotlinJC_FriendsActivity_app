@@ -70,7 +70,6 @@ fun RatingsScreen(
             ) {
                 itemsIndexed(list) { index, item ->
                     PlayerStatsView(
-                        index = index,
                         login = login,
                         playerActivityData = item
                     )
