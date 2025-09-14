@@ -104,7 +104,7 @@ class NetworkClient(
     }
 
     private val serverUrl = "http://212.3.131.67:6655/"
-//    private val serverUrl = "http://192.168.0.12:6655/"
+    private val serverHomeUrl = "http://192.168.1.103:6655/"
 
     private fun saveToken(login: String, token: String) {
         tokenStorageImpl.saveToken(login = login, token = token)
@@ -187,11 +187,26 @@ class NetworkClient(
                 UserActivityResponse(mutableListOf(), "Запрос ушел, но ответ не пришел")
             }
         } catch (e: SocketTimeoutException) {
-            Log.e("dataTransfer", "not successful getting protected data in network client", e)
-            UserActivityResponse(
-                mutableListOf(),
-                "Не удалось подключиться к серверу. Проблема соединения."
-            )
+            try {
+                val request = networkService.post(urlString = "$serverHomeUrl/post_activity") {
+                    contentType(ContentType.Application.Json)
+                    setBody(body)
+                }
+                if (request.status.isSuccess()) {
+                    val response = request.body<UserActivityResponse>()
+                    Log.i("dataTransfer", "success: $response")
+                    UserActivityResponse(response.friendsList, null)
+                } else {
+                    Log.e("dataTransfer", "${request.body<String?>()}")
+                    UserActivityResponse(mutableListOf(), "${e.message}")
+                }
+            } catch (e: Exception) {
+                Log.e("dataTransfer", "not successful getting protected data in network client", e)
+                UserActivityResponse(
+                    mutableListOf(),
+                    "Не удалось подключиться к серверу. Проблема соединения."
+                )
+            }
         } catch (e: HttpRequestTimeoutException) {
             Log.e("dataTransfer", "not successful getting protected data in network client", e)
             UserActivityResponse(

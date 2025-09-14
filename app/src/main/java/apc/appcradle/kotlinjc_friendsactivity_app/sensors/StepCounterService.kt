@@ -3,6 +3,7 @@ package apc.appcradle.kotlinjc_friendsactivity_app.sensors
 import android.app.ForegroundServiceStartNotAllowedException
 import android.app.NotificationChannel
 import android.app.NotificationManager
+import android.app.PendingIntent
 import android.app.Service
 import android.content.Intent
 import android.content.pm.ServiceInfo
@@ -11,6 +12,7 @@ import android.os.Build
 import android.os.IBinder
 import android.util.Log
 import androidx.core.app.NotificationCompat
+import apc.appcradle.kotlinjc_friendsactivity_app.MainActivity
 import org.koin.android.ext.android.inject
 
 class StepCounterService : Service() {
@@ -92,6 +94,16 @@ class StepCounterService : Service() {
         )
         .setPriority(NotificationCompat.PRIORITY_LOW)
         .setOngoing(true)
+        .setContentIntent(
+            PendingIntent.getActivity(
+                this,
+                0,
+                Intent(this, MainActivity::class.java).apply {
+                    flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                },
+                PendingIntent.FLAG_IMMUTABLE
+            )
+        )
         .build()
 
     override fun onDestroy() {
