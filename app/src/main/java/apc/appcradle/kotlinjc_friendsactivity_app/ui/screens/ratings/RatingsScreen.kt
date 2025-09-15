@@ -103,10 +103,10 @@ private fun Preview2() {
                         PlayerActivityData(
                             "AlexMagnus",
                             33333,
-                            2333,
+                            23373,
                             .3f,
                         )
-                    ),
+                    ).sortedByDescending { it.weeklySteps },
                     summaryKm = 33.0,
                     leaderDifferenceKm = 22.3,
                     errorMessage = null

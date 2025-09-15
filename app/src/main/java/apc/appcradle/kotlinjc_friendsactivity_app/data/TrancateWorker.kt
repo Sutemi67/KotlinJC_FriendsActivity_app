@@ -1,10 +1,10 @@
 package apc.appcradle.kotlinjc_friendsactivity_app.data
 
 import android.content.Context
-import android.util.Log
 import androidx.work.CoroutineWorker
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkerParameters
+import apc.appcradle.kotlinjc_friendsactivity_app.domain.NetworkClient
 import apc.appcradle.kotlinjc_friendsactivity_app.sensors.AppSensorsManager
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
@@ -22,7 +22,6 @@ class TrancateWorker(
 
     override suspend fun doWork(): Result {
         sensorsManager.trancate()
-        Log.i("worker", "worker -> work complete")
         return Result.success()
     }
 }

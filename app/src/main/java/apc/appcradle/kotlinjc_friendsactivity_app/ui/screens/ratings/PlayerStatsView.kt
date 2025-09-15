@@ -79,7 +79,7 @@ fun PlayerStatsView(
                 }
                 AppText(
                     color = MaterialTheme.colorScheme.onSurface,
-                    text = "${playerActivityData.steps}"
+                    text = "${playerActivityData.weeklySteps}"
                 )
             }
         }
