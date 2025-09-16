@@ -74,6 +74,7 @@ object AppDialogs {
         )
     }
 
+
     @Composable
     fun ScaleDialog(
         initialValue: (Float),
