@@ -24,10 +24,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import apc.appcradle.kotlinjc_friendsactivity_app.MainViewModel
-import apc.appcradle.kotlinjc_friendsactivity_app.ThemePreviewsNoUi
 import apc.appcradle.kotlinjc_friendsactivity_app.domain.model.DataTransferState
 import apc.appcradle.kotlinjc_friendsactivity_app.ui.app_components.AppComponents
-import apc.appcradle.kotlinjc_friendsactivity_app.ui.theme.KotlinJC_FriendsActivity_appTheme
 
 @Composable
 fun RegistrationScreen(
@@ -108,13 +106,5 @@ fun RegistrationScreen(
                 }
             }
         }
-    }
-}
-
-@ThemePreviewsNoUi
-@Composable
-private fun Preview() {
-    KotlinJC_FriendsActivity_appTheme {
-//        RegistrationScreen() {}
     }
 }

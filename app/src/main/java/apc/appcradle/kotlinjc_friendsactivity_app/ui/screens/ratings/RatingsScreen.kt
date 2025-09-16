@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.LinearProgressIndicator
@@ -33,6 +34,7 @@ fun RatingsScreen(
     syncFun: suspend () -> PlayersListSyncData,
 ) {
     var errorMessage: String? by remember { mutableStateOf("") }
+    var leader: String? by remember { mutableStateOf("") }
     var kmWeekly by remember { mutableDoubleStateOf(0.0) }
     var leaderDifference by remember { mutableDoubleStateOf(0.0) }
     var list by remember { mutableStateOf<List<PlayerActivityData>>(emptyList()) }
@@ -45,6 +47,7 @@ fun RatingsScreen(
                 kmWeekly = response.summaryKm
                 leaderDifference = response.leaderDifferenceKm
                 list = response.playersList
+                leader = response.leader
             } catch (e: Exception) {
                 Log.e("dataTransfer", "RatingsScreen: error syncing data: ${e.message}")
                 errorMessage = "${e.message}"
@@ -63,7 +66,7 @@ fun RatingsScreen(
             if (isSynced)
                 LinearProgressIndicator()
         }
-        StatsTable(kmWeekly, leaderDifference)
+        StatsTable(kmWeekly, leaderDifference, leader)
         if (errorMessage == null) {
             LazyColumn(
                 modifier = Modifier.fillMaxWidth()
@@ -77,6 +80,7 @@ fun RatingsScreen(
             }
         } else {
             AppText(
+                modifier = Modifier.padding(20.dp),
                 color = Color.Red,
                 text = errorMessage!!
             )

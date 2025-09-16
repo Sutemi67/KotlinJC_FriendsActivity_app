@@ -105,7 +105,7 @@ class NetworkClient(
     }
 
     private val serverUrl = "http://212.3.131.67:6655/"
-    private val serverHomeUrl = "http://192.168.1.103:6655/"
+    private val serverHomeUrl = "http://192.168.1.100:6655/"
 
     private fun saveToken(login: String, token: String) {
         tokenStorageImpl.saveToken(login = login, token = token)

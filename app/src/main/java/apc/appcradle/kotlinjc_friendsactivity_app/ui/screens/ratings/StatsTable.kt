@@ -10,15 +10,16 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import apc.appcradle.kotlinjc_friendsactivity_app.PreviewsDifferentSizes
 import apc.appcradle.kotlinjc_friendsactivity_app.ui.app_components.AppComponents.AppText
 import apc.appcradle.kotlinjc_friendsactivity_app.ui.theme.KotlinJC_FriendsActivity_appTheme
 
 @Composable
 fun StatsTable(
     distance: Double,
-    leaderDifference: Double
+    leaderDifference: Double,
+    leader: String?
 ) {
     Column(
         modifier = Modifier
@@ -32,13 +33,13 @@ fun StatsTable(
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             AppText(text = "Чемпион прошлой недели:", modifier = Modifier.weight(1f))
-            AppText(text = "конечно же ты <3", singleLine = true)
+            AppText(text = leader ?: "конечно же ты <3", singleLine = true)
         }
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            AppText("В общем пройдено:")
+            AppText("Всеми пройдено:")
             AppText("${distance.toInt()} км.")
         }
         HorizontalDivider(Modifier.padding(10.dp))
@@ -61,10 +62,10 @@ fun StatsTable(
     }
 }
 
-@PreviewsDifferentSizes
+@Preview
 @Composable
 private fun Preview() {
     KotlinJC_FriendsActivity_appTheme {
-        StatsTable(4334.3, leaderDifference = 0.0)
+        StatsTable(4334.3, leaderDifference = 0.0, leader = null)
     }
 }

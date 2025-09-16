@@ -5,6 +5,6 @@
         <domain includeSubdomains="true">212.3.131.67</domain>
         //тест с компа до сервака
         <domain includeSubdomains="true">192.168.0.12</domain>
-        <domain includeSubdomains="true">192.168.1.103</domain>
+        <domain includeSubdomains="true">192.168.1.100</domain>
     </domain-config>
 </network-security-config> 

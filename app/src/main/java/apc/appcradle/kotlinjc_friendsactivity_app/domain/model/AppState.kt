@@ -1,5 +1,6 @@
 package apc.appcradle.kotlinjc_friendsactivity_app.domain.model
 
+import apc.appcradle.kotlinjc_friendsactivity_app.ui.USER_STEP_DEFAULT
 import apc.appcradle.kotlinjc_friendsactivity_app.ui.screens.Destinations
 
 data class AppState(
@@ -14,7 +15,7 @@ data class AppState(
     val currentDestination: String = Destinations.AUTH.route,
 
     //Settings
-    val userStepLength: Double = 0.4,
+    val userStepLength: Double = USER_STEP_DEFAULT,
     val currentTheme: AppThemes = AppThemes.System,
     val userScale: Float = 1.0f,
 

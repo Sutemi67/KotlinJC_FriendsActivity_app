@@ -60,17 +60,16 @@ class StatsRepository(
                 )
             }
             playersList = newPlayersList
-            Log.i("dataTransfer", "StatsRepo players list: $playersList")
             percentageMax()
             val sumKm = calcSumKm()
             val difference = calcLeaderDiff(login)
             _syncStatus.update { false }
-            Log.i("dataTransfer", "StatsRepo error: ${data.errorMessage}")
             return PlayersListSyncData(
                 playersList = playersList,
                 summaryKm = sumKm,
                 leaderDifferenceKm = difference,
-                errorMessage = data.errorMessage
+                errorMessage = data.errorMessage,
+                leader = data.leader
             )
         } catch (e: Exception) {
             return PlayersListSyncData(
@@ -95,7 +94,7 @@ class StatsRepository(
         if (playersList.isNotEmpty()) {
             val leader = playersList.first()
             val player = playersList.first { it.login == login }
-            diff = (leader.steps - player.steps) * 0.4 / 1000
+            diff = (leader.weeklySteps - player.weeklySteps) * 0.5 / 1000
         }
         return diff
     }

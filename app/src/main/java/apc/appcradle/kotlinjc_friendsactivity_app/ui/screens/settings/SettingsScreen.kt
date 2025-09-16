@@ -32,8 +32,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import apc.appcradle.kotlinjc_friendsactivity_app.LocalAppTypography
 import apc.appcradle.kotlinjc_friendsactivity_app.domain.model.AppThemes
-import apc.appcradle.kotlinjc_friendsactivity_app.ui.app_components.AppComponents
 import apc.appcradle.kotlinjc_friendsactivity_app.ui.app_components.AppComponents.AppText
+import apc.appcradle.kotlinjc_friendsactivity_app.ui.app_components.AppDialogs
 import apc.appcradle.kotlinjc_friendsactivity_app.ui.theme.CompactText
 import apc.appcradle.kotlinjc_friendsactivity_app.ui.theme.ExpandedText
 import apc.appcradle.kotlinjc_friendsactivity_app.ui.theme.KotlinJC_FriendsActivity_appTheme
@@ -186,7 +186,7 @@ fun SettingsScreen(
     }
 
     if (isThemeDialogVisible)
-        AppComponents.ThemeDialog(
+        AppDialogs.ThemeDialog(
             currentThemes = currentTheme,
             onConfirmClick = { newTheme ->
                 onThemeClick(newTheme)
@@ -195,12 +195,12 @@ fun SettingsScreen(
             onDismiss = { isThemeDialogVisible = false }
         )
     if (isStepDialogVisible)
-        AppComponents.NewStepValueDialog(
+        AppDialogs.NewStepValueDialog(
             onConfirmClick = { newStep -> onStepDistanceClick(newStep) },
             onDismiss = { isStepDialogVisible = false }
         )
     if (isScaleDialogVisible)
-        AppComponents.ScaleDialog(
+        AppDialogs.ScaleDialog(
             initialValue = userScale,
             onConfirm = { newValue ->
                 onScaleClick(newValue)
@@ -219,7 +219,7 @@ fun SettingsScreen(
             }
 
             else -> {
-                AppComponents.LoginChangeDialog(
+                AppDialogs.LoginChangeDialog(
                     onConfirmClick = { newLogin -> onNicknameClick(userLogin, newLogin) },
                     onDismiss = { isLoginDialogVisible = false }
                 )
