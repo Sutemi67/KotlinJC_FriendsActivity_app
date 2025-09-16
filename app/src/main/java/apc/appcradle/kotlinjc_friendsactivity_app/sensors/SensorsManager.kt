@@ -127,8 +127,8 @@ class AppSensorsManager(
 
                 Sensor.TYPE_STEP_DETECTOR -> {
                     currentSteps += 1
-                    _allSteps.value = currentSteps
-                    _weeklySteps.value++
+                    _weeklySteps.value = currentSteps
+                    _allSteps.value++
                     periodicalSaving()
                 }
             }
@@ -137,8 +137,8 @@ class AppSensorsManager(
 
     private fun stepsCounter(totalSensorSteps: Int) {
         currentSteps = totalSensorSteps - stepsWithoutChecking
-        _allSteps.value = currentSteps
-        _weeklySteps.value++
+        _weeklySteps.value = currentSteps
+        _allSteps.value++
         periodicalSaving()
     }
 }

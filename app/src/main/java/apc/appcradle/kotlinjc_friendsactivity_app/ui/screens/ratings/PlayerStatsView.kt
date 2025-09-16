@@ -21,6 +21,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import apc.appcradle.kotlinjc_friendsactivity_app.USER_STEP_DEFAULT
 import apc.appcradle.kotlinjc_friendsactivity_app.domain.model.AppTextStyles
 import apc.appcradle.kotlinjc_friendsactivity_app.domain.model.Distances
 import apc.appcradle.kotlinjc_friendsactivity_app.domain.model.PlayerActivityData
@@ -73,7 +74,7 @@ fun PlayerStatsView(
                     )
                     AppText(
                         color = MaterialTheme.colorScheme.onSurface,
-                        text = getDistanceByValue(playerActivityData.steps * 0.4 / 1000).destination,
+                        text = getDistanceByValue(playerActivityData.steps * USER_STEP_DEFAULT / 1000).destination,
                         appTextStyle = AppTextStyles.Label
                     )
                 }
@@ -86,10 +87,8 @@ fun PlayerStatsView(
     }
 }
 
-private fun getDistanceByValue(value: Double): Distances {
-    return Distances.entries.toTypedArray().lastOrNull { value in it.range }
-        ?: Distances.entries.last()
-}
+private fun getDistanceByValue(value: Double): Distances =
+    Distances.entries.lastOrNull { value in it.range } ?: Distances.entries.last()
 
 @Preview
 @Composable
