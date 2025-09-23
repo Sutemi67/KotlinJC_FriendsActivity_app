@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="auth_screen_greeting">Привет, чемпион!\nЗалогинься или зарегистрируйся ниже.</string>
+    <string name="auth_screen_offline">Пользоваться без интернета</string>
+    <string name="register_screen_greeting">Придумайте свой логин, по которому также вас смогут найти ваши друзья</string>
+    <string name="auth_screen_login_placeholder">Твой логин</string>
+    <string name="auth_screen_password_placeholder">Твой пароль</string>
+    <string name="auth_screen_create">Создать аккаунт</string>
+</resources>

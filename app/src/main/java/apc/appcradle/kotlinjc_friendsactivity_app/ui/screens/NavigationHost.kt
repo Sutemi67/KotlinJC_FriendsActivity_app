@@ -111,7 +111,7 @@ fun NavigationHost(
                     onOfflineUseClick = { viewModel.goOfflineUse() }
                 )
                 registerScreen(
-                    viewModel = viewModel,
+//                    viewModel = viewModel,
                     toMainScreen = { navController.toMainScreen() }
                 )
                 mainScreen(

@@ -1,3 +1,9 @@
 <resources>
-    <string name="app_name">Friends Activity</string>
+    <string name="app_name" translatable="false">Friends Activity</string>
+    <string name="auth_screen_greeting">Hello, user!\nPlease login or register</string>
+    <string name="auth_screen_login_placeholder">Your login</string>
+    <string name="auth_screen_password_placeholder">Your password</string>
+    <string name="auth_screen_create">Create account</string>
+    <string name="auth_screen_offline">Go Offline</string>
+    <string name="register_screen_greeting">Please, enter your new login, which also can help your friends to find you</string>
 </resources>
