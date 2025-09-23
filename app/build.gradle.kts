@@ -8,7 +8,7 @@ plugins {
 android {
     signingConfigs {
         create("release") {
-            storeFile = file("friends_activity_key")
+            storeFile = file("friends_activity_key.jks")
             storePassword = System.getenv("KEYSTORE_PASSWORD")
             keyAlias = System.getenv("KEY_ALIAS")
             keyPassword = System.getenv("KEY_PASSWORD")
