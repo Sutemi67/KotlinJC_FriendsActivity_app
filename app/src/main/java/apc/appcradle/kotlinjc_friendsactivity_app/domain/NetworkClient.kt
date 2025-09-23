@@ -113,7 +113,6 @@ class NetworkClient(
 
     suspend fun sendRegistrationInfo(login: String, password: String): DataTransferState {
         val body = RegisterReceiveRemote(login = login, password = password)
-
         return try {
             val response = networkService.post(urlString = "$serverUrl/register") {
                 contentType(ContentType.Application.Json)
@@ -131,9 +130,28 @@ class NetworkClient(
                 Log.e("dataTransfer", "${response.body<String?>()}")
                 DataTransferState(isLoading = false, true, response.body<String?>())
             }
-        } catch (e: Exception) {
-            Log.e("dataTransfer", "not successful sending", e)
-            DataTransferState(isLoading = false, false, "${e.message}")
+        } catch (e: SocketTimeoutException) {
+            return try {
+                val response = networkService.post(urlString = "$serverHomeUrl/register") {
+                    contentType(ContentType.Application.Json)
+                    setBody(body)
+                }
+                if (response.status.isSuccess()) {
+                    val token = response.body<RegisterResponseRemote>().token
+                    saveToken(login = login, token = token)
+                    Log.d(
+                        "dataTransfer",
+                        "сохраненный токен: ${tokenStorageImpl.getToken()}\nвыданный токен: $token"
+                    )
+                    DataTransferState(isLoading = false, true)
+                } else {
+                    Log.e("dataTransfer", "${response.body<String?>()}")
+                    DataTransferState(isLoading = false, true, response.body<String?>())
+                }
+            } catch (e: Exception) {
+                Log.e("dataTransfer", "not successful sending", e)
+                DataTransferState(isLoading = false, false, "${e.message}")
+            }
         }
     }
 
@@ -157,8 +175,31 @@ class NetworkClient(
                 DataTransferState(isLoading = false, true, response.body<String?>())
             }
         } catch (e: SocketTimeoutException) {
-            Log.e("dataTransfer", "error is - ${e.message}")
-            DataTransferState(isLoading = false, false, "Connection error: server does not respond")
+            try {
+                val response = networkService.post(urlString = "$serverHomeUrl/login") {
+                    contentType(ContentType.Application.Json)
+                    setBody(body)
+                }
+                if (response.status.isSuccess()) {
+                    val token = response.body<LoginResponseRemote>().token
+                    saveToken(login = login, token = token)
+                    Log.d(
+                        "dataTransfer",
+                        "сохраненный токен: ${tokenStorageImpl.getToken()}\nвыданный токен: $token"
+                    )
+                    DataTransferState(isLoading = false, true, errorMessage = null)
+                } else {
+                    Log.e("dataTransfer", "${response.body<String?>()}")
+                    DataTransferState(isLoading = false, true, response.body<String?>())
+                }
+            } catch (e: Exception) {
+                Log.e("dataTransfer", "error is - ${e.message}")
+                DataTransferState(
+                    isLoading = false,
+                    false,
+                    "Connection error: server does not respond"
+                )
+            }
         } catch (e: HttpRequestTimeoutException) {
             Log.e("dataTransfer", "error is - ${e.message}")
             DataTransferState(isLoading = false, false, "Request timeout has expired")
@@ -181,11 +222,9 @@ class NetworkClient(
             }
             if (request.status.isSuccess()) {
                 val response = request.body<UserActivityResponse>()
-                Log.i("dataTransfer", "success: $response")
                 UserActivityResponse(response.friendsList, null, response.leader)
             } else {
-                Log.e("dataTransfer", "${request.body<String?>()}")
-                UserActivityResponse(mutableListOf(), "Запрос ушел, но ответ не пришел", null)
+                UserActivityResponse(mutableListOf(), request.body<String?>(), null)
             }
         } catch (e: SocketTimeoutException) {
             try {
@@ -195,39 +234,33 @@ class NetworkClient(
                 }
                 if (request.status.isSuccess()) {
                     val response = request.body<UserActivityResponse>()
-                    Log.i("dataTransfer", "success: $response")
                     UserActivityResponse(response.friendsList, null, response.leader)
                 } else {
-                    Log.e("dataTransfer", "${request.body<String?>()}")
-                    UserActivityResponse(mutableListOf(), "${e.message}", null)
+                    UserActivityResponse(mutableListOf(), request.body<String>(), null)
                 }
             } catch (e: Exception) {
-                Log.e("dataTransfer", "not successful getting protected data in network client", e)
                 UserActivityResponse(
                     mutableListOf(),
-                    "Не удалось подключиться к серверу. Проблема соединения.",
+                    "Не удалось подключиться к серверу. Проблема соединения.\n${e.message}",
                     null
                 )
             }
         } catch (e: HttpRequestTimeoutException) {
-            Log.e("dataTransfer", "not successful getting protected data in network client", e)
             UserActivityResponse(
                 mutableListOf(),
-                "За требуемое время сервер не ответил. Повторите попытку позже.",
+                "За требуемое время сервер не ответил. Повторите попытку позже.\n${e.message}",
                 null
             )
         } catch (e: ConnectException) {
-            Log.e("dataTransfer", "not successful getting protected data in network client", e)
             UserActivityResponse(
                 mutableListOf(),
-                "Проблема связи. Возможно нет интернета.",
+                "Проблема связи. Возможно нет интернета.\n${e.message}",
                 null
             )
         } catch (e: Exception) {
-            Log.e("dataTransfer", "not successful getting protected data in network client", e)
             UserActivityResponse(
                 mutableListOf(),
-                "Connection error: ${e.message}",
+                "Connection error:\n${e.message}",
                 null
             )
         }
@@ -247,7 +280,10 @@ class NetworkClient(
                 )
                 return true
             }
-            Log.e("dataTransfer", "network client -> login change unsuccessful, ${response.status}")
+            Log.e(
+                "dataTransfer",
+                "network client -> login change unsuccessful, ${response.status}"
+            )
             return false
         } catch (e: Exception) {
             Log.e("dataTransfer", "network client -> not successful sending", e)
