@@ -1,6 +1,5 @@
 package apc.appcradle.kotlinjc_friendsactivity_app.ui.screens.auth.registration
 
-import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -43,7 +42,6 @@ fun RegistrationScreen(
     LaunchedEffect(transferResult) {
         if (transferResult.isSuccessful == true && transferResult.errorMessage == null) {
             toMainScreen()
-            Log.d("dataTransfer", "go to main through launched Effect")
         }
     }
 

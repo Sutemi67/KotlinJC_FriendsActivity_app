@@ -21,7 +21,7 @@ fun StatsColumn(
             text = "Осталось только...",
             appTextStyle = AppTextStyles.Header
         )
-        StatisticRow(Distances.Pivo, overallDistanceKm)
+        StatisticRow(Distances.Beer, overallDistanceKm)
         StatisticRow(Distances.Marafon, overallDistanceKm)
         StatisticRow(Distances.Gran, overallDistanceKm)
         StatisticRow(Distances.Likiy, overallDistanceKm)

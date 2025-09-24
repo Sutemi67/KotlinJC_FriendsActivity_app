@@ -1,7 +1,6 @@
 package apc.appcradle.kotlinjc_friendsactivity_app.ui.screens.main
 
 import android.icu.text.DecimalFormat
-import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -10,7 +9,6 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -29,6 +27,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import apc.appcradle.kotlinjc_friendsactivity_app.R
@@ -55,7 +54,6 @@ fun PermittedUi(
         kmWeekly = (weeklySteps * userStepLength / 1000 * 100.0).roundToInt() / 100.0
         kmAll = (summarySteps * userStepLength / 1000 * 100.0).roundToInt() / 100.0
         kkal = kkalCalc(userStepLength, weeklySteps)
-        Log.d("mainScreen", "Launched effect on stepCount")
     }
 
     if (!isStepSensorsAvailable) {
@@ -67,7 +65,7 @@ fun PermittedUi(
             verticalArrangement = Arrangement.Center
         ) {
             AppText(
-                text = "Шагомер не поддерживается на этом устройстве",
+                text = stringResource(R.string.main_screen_not_support),
                 modifier = Modifier.padding(bottom = 16.dp)
             )
         }
@@ -104,7 +102,7 @@ fun PermittedUi(
                         )
                     }
                     AppText(
-                        text = "Твой результат на этой неделе",
+                        text = stringResource(R.string.main_screen_your_result),
                     )
                 }
             }
@@ -116,18 +114,22 @@ fun PermittedUi(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Column(
-                    modifier = Modifier.width(150.dp),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     AppText(text = format(kmWeekly))
-                    AppText(text = "Километров")
+                    AppText(text = stringResource(R.string.main_screen_km))
                 }
                 Column(
-                    modifier = Modifier.width(150.dp),
                     horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
-                    AppText(text = "от ${format(kkal.first)} до ${format(kkal.last)}")
-                    AppText(text = "Калорий")
+                    AppText(
+                        text = stringResource(
+                            R.string.main_screen_kkal_range,
+                            format(kkal.first),
+                            format(kkal.last)
+                        )
+                    )
+                    AppText(text = stringResource(R.string.main_screen_kkal))
                 }
             }
             HorizontalDivider(
@@ -144,7 +146,7 @@ fun PermittedUi(
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 AppText(
-                    text = "Включить счетчик",
+                    text = stringResource(R.string.main_screen_sensor_on),
                     appTextStyle = AppTextStyles.Header
                 )
                 Switch(
@@ -189,7 +191,7 @@ private fun Preview() {
         PermittedUi(
             true,
             summarySteps = 454345,
-            weeklySteps = 443333,
+            weeklySteps = 4433,
             isServiceRunning = true,
             userStepLength = 33.2,
             onTrueCallback = {},

@@ -1,9 +1,51 @@
 <resources>
+<!--    main-->
     <string name="app_name" translatable="false">Friends Activity</string>
+
+<!--    authentification and login screens-->
     <string name="auth_screen_greeting">Hello, user!\nPlease login or register</string>
     <string name="auth_screen_login_placeholder">Your login</string>
     <string name="auth_screen_password_placeholder">Your password</string>
     <string name="auth_screen_create">Create account</string>
     <string name="auth_screen_offline">Go Offline</string>
     <string name="register_screen_greeting">Please, enter your new login, which also can help your friends to find you</string>
+
+<!--    main screen-->
+    <string name="permissions_ask">Для работы шагомера требуются все разрешения</string>
+    <string name="permissions_asking">Для работы шагомера требуется разрешение на получение данных об активности.</string>
+    <string name="main_screen_not_support">Шагомер не поддерживается на этом устройстве</string>
+    <string name="main_screen_your_result">Твой результат на этой неделе</string>
+    <string name="main_screen_km">Километров</string>
+    <string name="main_screen_kkal">Kkal</string>
+    <string name="main_screen_sensor_on">Включить счетчик</string>
+    <string name="main_screen_kkal_range">from %s to %s</string>
+    <string name="main_screen_destination_progress">%s km</string>
+    <string name="destination_pivo">сходить за пивом</string>
+    <string name="destination_marafon">прошагать Марафонскую дистанцию</string>
+    <string name="destination_kanyon">пройти через Гранд-Каньон</string>
+    <string name="destination_likiy">пройти по Ликийской тропе</string>
+    <string name="destination_gobi">пересечь пустыню Гоби</string>
+    <string name="destination_earth">дойти до центра Земли</string>
+    <string name="destination_Russia">пересечь Россию</string>
+    <string name="destination_ocean">по дну через Тихий океан</string>
+    <string name="destination_equator">обогнуть Землю</string>
+    <string name="destination_moon">пешком до Луны</string>
+
+<!--    ratings screen-->
+    <string name="ratings_screen_champion">Чемпион прошлой недели:</string>
+    <string name="ratings_screen_of_course_you">конечно ты ❤️</string>
+    <string name="ratings_screen_all_distance">Всеми пройдено:️</string>
+    <string name="ratings_screen_leader_diff">Текущее отставание от лидера::️</string>
+
+<!--    settings screen-->
+    <string name="settings_screen_login_hint">Вы можете изменить свой логин:️</string>
+    <string name="settings_screen_your_step">Длина вашего шага:️</string>
+    <string name="settings_screen_your_step_in_meters">%s m:️</string>
+    <string name="settings_screen_step_length_hint">Если вы хотите указать более точное значение советую вам пройти известное расстояние (например, по карте) и разделить на число шагов:️</string>
+    <string name="settings_screen_type_scale">Масштаб шрифтов</string>
+    <string name="settings_screen_type_scale_hint">Позволяет уменьшить или увеличить шрифты в приложении.</string>
+    <string name="settings_screen_logout">Logout</string>
+    <string name="settings_screen_change_theme">Change theme</string>
+    <string name="settings_screen_offline_logout_warning">Нужно выйти из офлайн режима и зарегистрироваться</string>
+
 </resources>

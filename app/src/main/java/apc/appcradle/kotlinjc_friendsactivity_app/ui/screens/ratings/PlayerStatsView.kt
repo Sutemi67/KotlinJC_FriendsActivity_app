@@ -1,6 +1,5 @@
 package apc.appcradle.kotlinjc_friendsactivity_app.ui.screens.ratings
 
-import android.util.Log
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
@@ -16,9 +15,9 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import apc.appcradle.kotlinjc_friendsactivity_app.USER_STEP_DEFAULT
@@ -38,9 +37,6 @@ fun PlayerStatsView(
         targetValue = playerActivityData.percentage,
         animationSpec = tween(durationMillis = 3000)
     )
-    LaunchedEffect(playerActivityData) {
-        Log.i("debug", "$login, ${playerActivityData.login}, ${playerActivityData.percentage}")
-    }
     ElevatedCard(
         modifier = modifier
             .height(60.dp)
@@ -74,7 +70,7 @@ fun PlayerStatsView(
                     )
                     AppText(
                         color = MaterialTheme.colorScheme.onSurface,
-                        text = getDistanceByValue(playerActivityData.steps * USER_STEP_DEFAULT / 1000).destination,
+                        text = stringResource(getDistanceByValue(playerActivityData.steps * USER_STEP_DEFAULT / 1000).destination),
                         appTextStyle = AppTextStyles.Label
                     )
                 }
