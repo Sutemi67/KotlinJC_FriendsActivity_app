@@ -15,6 +15,7 @@ import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
@@ -86,10 +87,10 @@ fun NavigationHost(
                                 icon = {
                                     Icon(
                                         if (navBackStackEntry?.destination?.route == item.route) item.iconSelected else item.iconUnselected,
-                                        contentDescription = item.label,
+                                        contentDescription = stringResource(item.label),
                                     )
                                 },
-                                label = { Text(item.label) },
+                                label = { Text(stringResource(item.label)) },
                                 selected = navBackStackEntry?.destination?.route == item.route,
                                 onClick = { item.navigateOnClick(navController) },
                             )
@@ -111,7 +112,6 @@ fun NavigationHost(
                     onOfflineUseClick = { viewModel.goOfflineUse() }
                 )
                 registerScreen(
-//                    viewModel = viewModel,
                     toMainScreen = { navController.toMainScreen() }
                 )
                 mainScreen(

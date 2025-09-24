@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.MailOutline
 import androidx.compose.material.icons.filled.PlayArrow
@@ -29,12 +28,14 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
 import apc.appcradle.kotlinjc_friendsactivity_app.LocalAppTypography
+import apc.appcradle.kotlinjc_friendsactivity_app.R
 import apc.appcradle.kotlinjc_friendsactivity_app.domain.model.AppTextStyles
 import apc.appcradle.kotlinjc_friendsactivity_app.ui.app_components.AppDialogs.AppDonationDialog
 import apc.appcradle.kotlinjc_friendsactivity_app.ui.screens.Destinations
@@ -92,7 +93,7 @@ object AppComponents {
                 when (isError) {
                     true -> {
                         AppText(
-                            text = "Can't be empty",
+                            text = stringResource(R.string.components_inputs_labels_login_error),
                             appTextStyle = AppTextStyles.Body
                         )
                     }
@@ -119,12 +120,12 @@ object AppComponents {
         val context = LocalContext.current
         val titleText = when (screenRoute) {
             Destinations.MAIN.route -> {
-                if (login != null) "Хорошего дня, $login!"
-                else "Хорошего дня!"
+                if (login != null) stringResource(R.string.appbar_greeting_logged, login)
+                else stringResource(R.string.appbar_greeting_offline)
             }
 
-            Destinations.RATINGS.route -> "Недельная статистика"
-            Destinations.SETTINGS.route -> "Настройки"
+            Destinations.RATINGS.route -> stringResource(R.string.appbar_greeting_ratings)
+            Destinations.SETTINGS.route -> stringResource(R.string.appbar_greeting_settings)
             else -> ""
         }
         var isDialogVisible by remember { mutableStateOf(false) }

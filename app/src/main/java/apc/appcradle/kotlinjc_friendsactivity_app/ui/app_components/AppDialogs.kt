@@ -24,6 +24,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
@@ -48,13 +49,12 @@ object AppDialogs {
         AlertDialog(
             title = {
                 AppText(
-                    "Поддержать разработчика",
+                    stringResource(R.string.dialogs_titles_support),
                     textAlign = TextAlign.Center,
                     appTextStyle = AppTextStyles.Header
                 )
             },
-            text = { AppText("Приложение полностью бесплатное, без рекламы и заточено под ваш комфорт.\n" +
-                    "Если вдруг захотите отблагодарить разработчика — угостить кофе или помочь с развитием и поддержкой проекта — вы будете перенаправлены на страницу переводов.") },
+            text = { AppText(stringResource(R.string.dialogs_body_support)) },
             icon = {
                 Icon(
                     painter = painterResource(R.drawable.outline_directions_run_24),
@@ -66,10 +66,10 @@ object AppDialogs {
                 ElevatedButton(onClick = {
                     openDonate(context)
                     onDismiss()
-                }) { AppText("Почему бы и нет") }
+                }) { AppText(stringResource(R.string.dialogs_buttons_support_yes)) }
             },
             dismissButton = {
-                ElevatedButton(onClick = onDismiss) { AppText("В другой раз") }
+                ElevatedButton(onClick = onDismiss) { AppText(stringResource(R.string.dialogs_buttons_support_no)) }
             },
         )
     }
@@ -85,7 +85,7 @@ object AppDialogs {
         AlertDialog(
             title = {
                 AppText(
-                    text = "Изменить масштаб",
+                    text = stringResource(R.string.dialogs_titles_scale),
                     appTextStyle = AppTextStyles.Header
                 )
             },
@@ -101,10 +101,10 @@ object AppDialogs {
                 ElevatedButton(onClick = {
                     onConfirm(newValue)
                     onDismiss()
-                }) { AppText(text = "Применить") }
+                }) { AppText(text = stringResource(R.string.dialogs_buttons_scale_yes)) }
             },
             dismissButton = {
-                ElevatedButton(onClick = onDismiss) { AppText(text = "Отмена") }
+                ElevatedButton(onClick = onDismiss) { AppText(text = stringResource(R.string.dialogs_buttons_scale_no)) }
             },
         )
     }
@@ -119,7 +119,12 @@ object AppDialogs {
         var selectedTheme by remember { mutableStateOf(currentThemes) }
 
         AlertDialog(
-            title = { AppText(text = "Выбор темы", appTextStyle = AppTextStyles.Header) },
+            title = {
+                AppText(
+                    text = stringResource(R.string.dialogs_titles_theme),
+                    appTextStyle = AppTextStyles.Header
+                )
+            },
             text = {
                 Column(Modifier.fillMaxWidth()) {
                     ElevatedCard(
@@ -136,7 +141,7 @@ object AppDialogs {
                                 modifier = Modifier
                                     .weight(1f)
                                     .padding(horizontal = 15.dp),
-                                text = "Светлая"
+                                text = stringResource(R.string.dialogs_buttons_theme_light)
                             )
                             RadioButton(
                                 selected = selectedTheme == AppThemes.Light,
@@ -158,7 +163,7 @@ object AppDialogs {
                                 modifier = Modifier
                                     .weight(1f)
                                     .padding(horizontal = 15.dp),
-                                text = "Темная"
+                                text = stringResource(R.string.dialogs_buttons_theme_dark)
                             )
                             RadioButton(
                                 selected = selectedTheme == AppThemes.Dark,
@@ -180,7 +185,7 @@ object AppDialogs {
                                 modifier = Modifier
                                     .weight(1f)
                                     .padding(horizontal = 15.dp),
-                                text = "Системная"
+                                text = stringResource(R.string.dialogs_buttons_theme_system)
                             )
                             RadioButton(
                                 selected = selectedTheme == AppThemes.System,
@@ -194,7 +199,7 @@ object AppDialogs {
             confirmButton = {
                 ElevatedButton(onClick = { onConfirmClick(selectedTheme) }) {
                     AppText(
-                        text = "Обновить"
+                        text = stringResource(R.string.dialogs_buttons_theme_yes)
                     )
                 }
             },
@@ -210,7 +215,12 @@ object AppDialogs {
         var isError by remember { mutableStateOf(false) }
 
         AlertDialog(
-            title = { AppText(text = "Новое значение", appTextStyle = AppTextStyles.Header) },
+            title = {
+                AppText(
+                    text = stringResource(R.string.dialogs_titles_step_length),
+                    appTextStyle = AppTextStyles.Header
+                )
+            },
             text = {
                 OutlinedTextField(
                     keyboardOptions = KeyboardOptions(
@@ -220,12 +230,6 @@ object AppDialogs {
                     textStyle = LocalAppTypography.current.bodyText,
                     isError = isError,
                     shape = RoundedCornerShape(20.dp),
-                    label = {
-                        AppText(
-                            text = "введите новое значение",
-                            appTextStyle = AppTextStyles.Body
-                        )
-                    },
                     value = value,
                     onValueChange = {
                         isError = false
@@ -239,14 +243,13 @@ object AppDialogs {
                     try {
                         onConfirmClick(value.replace(",", ".").toDouble())
                         onDismiss()
-                    } catch (e: Exception) {
+                    } catch (_: Exception) {
                         isError = true
                         value = ""
-                        Log.d("inputValue", "Ошибка ввода, ${e.message}")
                     }
                 }) {
                     AppText(
-                        text = "Confirm"
+                        text = stringResource(R.string.dialogs_buttons_scale_yes)
                     )
                 }
             },
