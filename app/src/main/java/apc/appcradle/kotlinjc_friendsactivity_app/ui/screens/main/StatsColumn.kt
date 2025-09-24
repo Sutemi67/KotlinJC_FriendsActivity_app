@@ -22,9 +22,9 @@ fun StatsColumn(
             appTextStyle = AppTextStyles.Header
         )
         StatisticRow(Distances.Beer, overallDistanceKm)
-        StatisticRow(Distances.Marafon, overallDistanceKm)
+        StatisticRow(Distances.Marathon, overallDistanceKm)
         StatisticRow(Distances.Gran, overallDistanceKm)
-        StatisticRow(Distances.Likiy, overallDistanceKm)
+        StatisticRow(Distances.LycianWay, overallDistanceKm)
         StatisticRow(Distances.Gobi, overallDistanceKm)
         StatisticRow(Distances.EarthCenter, overallDistanceKm)
         StatisticRow(Distances.Russia, overallDistanceKm)

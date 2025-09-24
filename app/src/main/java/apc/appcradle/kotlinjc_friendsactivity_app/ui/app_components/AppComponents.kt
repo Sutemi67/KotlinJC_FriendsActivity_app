@@ -136,7 +136,7 @@ object AppComponents {
         TopAppBar(
             title = {
                 Crossfade(targetState = titleText) { text ->
-                    AppText(text = text, appTextStyle = AppTextStyles.Header)
+                    AppText(text = text, appTextStyle = AppTextStyles.AppBarTitle)
                 }
             },
             actions = {
@@ -194,21 +194,11 @@ object AppComponents {
             maxLines = if (singleLine) 1 else 200,
             textAlign = textAlign,
             style = when (appTextStyle) {
-                AppTextStyles.Header -> {
-                    LocalAppTypography.current.header
-                }
-
-                AppTextStyles.Body -> {
-                    LocalAppTypography.current.bodyText
-                }
-
-                AppTextStyles.Label -> {
-                    LocalAppTypography.current.labels
-                }
-
-                AppTextStyles.MainCounter -> {
-                    LocalAppTypography.current.mainStepCounter
-                }
+                AppTextStyles.Header -> LocalAppTypography.current.header
+                AppTextStyles.Body -> LocalAppTypography.current.bodyText
+                AppTextStyles.Label -> LocalAppTypography.current.labels
+                AppTextStyles.MainCounter -> LocalAppTypography.current.mainStepCounter
+                AppTextStyles.AppBarTitle -> LocalAppTypography.current.appBarTitle
             }
         )
     }

@@ -34,7 +34,7 @@ import apc.appcradle.kotlinjc_friendsactivity_app.LocalAppTypography
 import apc.appcradle.kotlinjc_friendsactivity_app.R
 import apc.appcradle.kotlinjc_friendsactivity_app.domain.model.AppTextStyles
 import apc.appcradle.kotlinjc_friendsactivity_app.domain.model.AppThemes
-import apc.appcradle.kotlinjc_friendsactivity_app.openDonate
+import apc.appcradle.kotlinjc_friendsactivity_app.utils.openDonate
 import apc.appcradle.kotlinjc_friendsactivity_app.ui.app_components.AppComponents.AppText
 import apc.appcradle.kotlinjc_friendsactivity_app.ui.app_components.AppComponents.ScaleSlider
 import apc.appcradle.kotlinjc_friendsactivity_app.ui.app_components.AppDialogs.AppDonationDialog

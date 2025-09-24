@@ -1,6 +1,6 @@
 package apc.appcradle.kotlinjc_friendsactivity_app.domain
 
-interface TokenStorage {
+interface TokenRepository {
     fun saveToken(login: String, token: String)
     fun saveOfflineToken()
     fun getLogin(): String?

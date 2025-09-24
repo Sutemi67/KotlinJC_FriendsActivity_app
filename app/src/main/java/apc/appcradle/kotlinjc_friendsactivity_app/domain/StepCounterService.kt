@@ -1,4 +1,4 @@
-package apc.appcradle.kotlinjc_friendsactivity_app.sensors
+package apc.appcradle.kotlinjc_friendsactivity_app.domain
 
 import android.app.ForegroundServiceStartNotAllowedException
 import android.app.NotificationChannel
@@ -13,6 +13,8 @@ import android.os.IBinder
 import android.util.Log
 import androidx.core.app.NotificationCompat
 import apc.appcradle.kotlinjc_friendsactivity_app.MainActivity
+import apc.appcradle.kotlinjc_friendsactivity_app.R
+import apc.appcradle.kotlinjc_friendsactivity_app.data.SensorsManager
 import org.koin.android.ext.android.inject
 
 class StepCounterService : Service() {
@@ -21,7 +23,7 @@ class StepCounterService : Service() {
         const val CHANNEL_ID = "StepCounterChannel"
     }
 
-    private val sensorManager: AppSensorsManager by inject()
+    private val sensorManager: SensorsManager by inject()
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         createNotificationChannel()
         startServiceInForeground()
@@ -85,11 +87,11 @@ class StepCounterService : Service() {
     private fun createNotification() = NotificationCompat.Builder(this, CHANNEL_ID)
         .setContentTitle("Friends Activity")
         .setContentText("Не сиди долго.")
-        .setSmallIcon(apc.appcradle.kotlinjc_friendsactivity_app.R.drawable.outline_directions_run_24)
+        .setSmallIcon(R.drawable.outline_directions_run_24)
         .setLargeIcon(
             BitmapFactory.decodeResource(
                 resources,
-                apc.appcradle.kotlinjc_friendsactivity_app.R.mipmap.ic_launcher
+                R.mipmap.ic_launcher
             )
         )
         .setPriority(NotificationCompat.PRIORITY_LOW)
@@ -99,7 +101,7 @@ class StepCounterService : Service() {
                 this,
                 0,
                 Intent(this, MainActivity::class.java).apply {
-                    flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                    Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
                 },
                 PendingIntent.FLAG_IMMUTABLE
             )

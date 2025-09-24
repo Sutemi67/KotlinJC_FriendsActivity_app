@@ -6,7 +6,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
@@ -22,7 +21,8 @@ import androidx.navigation.compose.rememberNavController
 import apc.appcradle.kotlinjc_friendsactivity_app.MainViewModel
 import apc.appcradle.kotlinjc_friendsactivity_app.data.StatsRepository
 import apc.appcradle.kotlinjc_friendsactivity_app.domain.model.AppState
-import apc.appcradle.kotlinjc_friendsactivity_app.sensors.AppSensorsManager
+import apc.appcradle.kotlinjc_friendsactivity_app.domain.model.AppTextStyles
+import apc.appcradle.kotlinjc_friendsactivity_app.data.SensorsManager
 import apc.appcradle.kotlinjc_friendsactivity_app.ui.app_components.AppComponents
 import apc.appcradle.kotlinjc_friendsactivity_app.ui.screens.auth.authScreen
 import apc.appcradle.kotlinjc_friendsactivity_app.ui.screens.auth.registration.nav.registerScreen
@@ -34,7 +34,7 @@ import apc.appcradle.kotlinjc_friendsactivity_app.ui.screens.settings.nav.settin
 import org.koin.compose.koinInject
 
 val LocalSensorManager =
-    compositionLocalOf<AppSensorsManager> { error("No sensor manager provided") }
+    compositionLocalOf<SensorsManager> { error("No sensor manager provided") }
 
 @Composable
 fun NavigationHost(
@@ -50,7 +50,7 @@ fun NavigationHost(
             Destinations.entries.filter { it != Destinations.AUTH && it != Destinations.REGISTER }
         }
 
-    val sensorManager: AppSensorsManager = koinInject<AppSensorsManager>()
+    val sensorManager: SensorsManager = koinInject<SensorsManager>()
     val statsRepository = koinInject<StatsRepository>()
 
     val context = LocalContext.current
@@ -86,11 +86,16 @@ fun NavigationHost(
                             NavigationBarItem(
                                 icon = {
                                     Icon(
-                                        if (navBackStackEntry?.destination?.route == item.route) item.iconSelected else item.iconUnselected,
+                                        imageVector = if (navBackStackEntry?.destination?.route == item.route) item.iconSelected else item.iconUnselected,
                                         contentDescription = stringResource(item.label),
                                     )
                                 },
-                                label = { Text(stringResource(item.label)) },
+                                label = {
+                                    AppComponents.AppText(
+                                        stringResource(item.label),
+                                        appTextStyle = AppTextStyles.Body
+                                    )
+                                },
                                 selected = navBackStackEntry?.destination?.route == item.route,
                                 onClick = { item.navigateOnClick(navController) },
                             )

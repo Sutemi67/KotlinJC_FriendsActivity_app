@@ -1,4 +1,4 @@
-package apc.appcradle.kotlinjc_friendsactivity_app.permissions
+package apc.appcradle.kotlinjc_friendsactivity_app.domain
 
 import android.Manifest
 import android.content.Context
@@ -52,4 +52,4 @@ class PermissionManager(private val context: Context) {
             ) == PackageManager.PERMISSION_GRANTED
         }
     }
-} 
+}

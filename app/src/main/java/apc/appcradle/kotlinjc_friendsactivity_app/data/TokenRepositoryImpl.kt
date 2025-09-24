@@ -2,11 +2,11 @@ package apc.appcradle.kotlinjc_friendsactivity_app.data
 
 import android.content.SharedPreferences
 import androidx.core.content.edit
-import apc.appcradle.kotlinjc_friendsactivity_app.domain.TokenStorage
+import apc.appcradle.kotlinjc_friendsactivity_app.domain.TokenRepository
 
-class TokenStorageImpl(
+class TokenRepositoryImpl(
     private val sharedPreferences: SharedPreferences
-) : TokenStorage {
+) : TokenRepository {
     companion object {
         const val AUTH_ID = "auth_token"
         const val LOGIN_ID = "login"

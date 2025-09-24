@@ -16,9 +16,9 @@
     <string name="main_screen_kkal_range">от %s до %s</string>
     <string name="main_screen_destination_progress">%s км</string>
     <string name="destination_pivo">сходить за пивом</string>
-    <string name="destination_marafon">прошагать Марафонскую дистанцию</string>
+    <string name="destination_marathon">прошагать Марафонскую дистанцию</string>
     <string name="destination_kanyon">пройти через Гранд-Каньон</string>
-    <string name="destination_likiy">пройти по Ликийской тропе</string>
+    <string name="destination_lycian_way">пройти по Ликийской тропе</string>
     <string name="destination_gobi">пересечь пустыню Гоби</string>
     <string name="destination_earth">дойти до центра Земли</string>
     <string name="destination_Russia">пересечь Россию</string>

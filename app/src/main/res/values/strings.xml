@@ -21,9 +21,9 @@
     <string name="main_screen_kkal_range">from %s to %s</string>
     <string name="main_screen_destination_progress">%s km</string>
     <string name="destination_pivo">go get a beer</string>
-    <string name="destination_marafon">walk the marathon distance</string>
+    <string name="destination_marathon">walk the marathon distance</string>
     <string name="destination_kanyon">walk through the Grand Canyon</string>
-    <string name="destination_likiy">walk the Lycian Way</string>
+    <string name="destination_lycian_way">walk the Lycian Way</string>
     <string name="destination_gobi">cross the Gobi Desert</string>
     <string name="destination_earth">reach the center of the Earth</string>
     <string name="destination_Russia">cross Russia</string>
@@ -66,7 +66,7 @@
     <string name="dialogs_buttons_scale_yes">Apply</string>
     <string name="dialogs_buttons_scale_no">Cancel</string>
     <string name="dialogs_buttons_support_yes">Yes, why not!</string>
-    <string name="dialogs_buttons_support_no">Next time...</string>
+    <string name="dialogs_buttons_support_no">Next time…</string>
     <string name="dialogs_buttons_theme_light">Light</string>
     <string name="dialogs_buttons_theme_dark">Dark</string>
     <string name="dialogs_buttons_theme_system">System</string>

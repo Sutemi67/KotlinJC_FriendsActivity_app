@@ -6,6 +6,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 
 val CompactText = MyTypography(
+    appBarTitle = TextStyle(
+        fontFamily = FontFamily.Default,
+        fontWeight = FontWeight.Normal,
+        fontSize = 24.sp
+    ),
     mainStepCounter = TextStyle(
         fontFamily = FontFamily.Default,
         fontWeight = FontWeight.Normal,
@@ -29,6 +34,11 @@ val CompactText = MyTypography(
 )
 
 val MediumText = MyTypography(
+    appBarTitle = TextStyle(
+        fontFamily = FontFamily.Default,
+        fontWeight = FontWeight.Normal,
+        fontSize = 28.sp
+    ),
     mainStepCounter = TextStyle(
         fontFamily = FontFamily.Default,
         fontWeight = FontWeight.Normal,
@@ -37,7 +47,7 @@ val MediumText = MyTypography(
     header = TextStyle(
         fontFamily = FontFamily.Default,
         fontWeight = FontWeight.Normal,
-        fontSize = 18.sp
+        fontSize = 20.sp
     ),
     bodyText = TextStyle(
         fontFamily = FontFamily.Default,
@@ -47,10 +57,15 @@ val MediumText = MyTypography(
     labels = TextStyle(
         fontFamily = FontFamily.Default,
         fontWeight = FontWeight.Normal,
-        fontSize = 8.sp
+        fontSize = 10.sp
     ),
 )
 val ExpandedText = MyTypography(
+    appBarTitle = TextStyle(
+        fontFamily = FontFamily.Default,
+        fontWeight = FontWeight.Normal,
+        fontSize = 35.sp
+    ),
     mainStepCounter = TextStyle(
         fontFamily = FontFamily.Default,
         fontWeight = FontWeight.Normal,
@@ -64,12 +79,12 @@ val ExpandedText = MyTypography(
     bodyText = TextStyle(
         fontFamily = FontFamily.Default,
         fontWeight = FontWeight.Normal,
-        fontSize = 24.sp
+        fontSize = 22.sp
     ),
     labels = TextStyle(
         fontFamily = FontFamily.Default,
         fontWeight = FontWeight.Normal,
-        fontSize = 20.sp
+        fontSize = 16.sp
     ),
 )
 
@@ -78,4 +93,5 @@ data class MyTypography(
     val header: TextStyle,
     val bodyText: TextStyle,
     val labels: TextStyle,
+    val appBarTitle:TextStyle
 )

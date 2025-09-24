@@ -3,13 +3,13 @@ package apc.appcradle.kotlinjc_friendsactivity_app.data
 import android.content.SharedPreferences
 import android.util.Log
 import androidx.core.content.edit
-import apc.appcradle.kotlinjc_friendsactivity_app.domain.SettingsStorage
-import apc.appcradle.kotlinjc_friendsactivity_app.domain.model.AppSavedSettingsData
+import apc.appcradle.kotlinjc_friendsactivity_app.domain.SettingsRepository
+import apc.appcradle.kotlinjc_friendsactivity_app.domain.model.SharedPreferencesData
 import com.google.gson.Gson
 
-class SettingsStorageImpl(
+class SettingsRepositoryImpl(
     private val sharedPreferences: SharedPreferences
-) : SettingsStorage {
+) : SettingsRepository {
 
     companion object {
         const val SETTINGS_PREFS_ID = "settings_id"
@@ -17,20 +17,20 @@ class SettingsStorageImpl(
 
     private val gson = Gson()
 
-    override fun saveSettingsData(currentSettingsData: AppSavedSettingsData) {
+    override fun saveSettingsData(currentSettingsData: SharedPreferencesData) {
         val json = gson.toJson(currentSettingsData)
         sharedPreferences.edit { putString(SETTINGS_PREFS_ID, json) }
         Log.i("theme", "saved:\n$json")
     }
 
-    override fun loadSettingsData(): AppSavedSettingsData {
+    override fun loadSettingsData(): SharedPreferencesData {
         val json: String? = sharedPreferences.getString(SETTINGS_PREFS_ID, null)
         return if (json != null) {
             Log.i("theme", "loaded:\n$json")
-            gson.fromJson(json, AppSavedSettingsData::class.java)
+            gson.fromJson(json, SharedPreferencesData::class.java)
         }
         else
-            AppSavedSettingsData()
+            SharedPreferencesData()
     }
 
 }

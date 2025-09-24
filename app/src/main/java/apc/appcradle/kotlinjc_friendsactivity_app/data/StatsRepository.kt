@@ -5,10 +5,10 @@ import android.util.Log
 import androidx.core.content.edit
 import androidx.work.WorkManager
 import apc.appcradle.kotlinjc_friendsactivity_app.domain.NetworkClient
-import apc.appcradle.kotlinjc_friendsactivity_app.domain.model.PlayerActivityData
-import apc.appcradle.kotlinjc_friendsactivity_app.domain.model.PlayersListSyncData
-import apc.appcradle.kotlinjc_friendsactivity_app.domain.model.Steps
-import apc.appcradle.kotlinjc_friendsactivity_app.whenNextMonday
+import apc.appcradle.kotlinjc_friendsactivity_app.domain.model.network.PlayerActivityData
+import apc.appcradle.kotlinjc_friendsactivity_app.domain.model.network.PlayersListSyncData
+import apc.appcradle.kotlinjc_friendsactivity_app.domain.model.network.Steps
+import apc.appcradle.kotlinjc_friendsactivity_app.utils.whenNextMonday
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow

@@ -45,7 +45,8 @@ fun StatsTable(
         }
         Row(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
         ) {
             AppText(stringResource(R.string.ratings_screen_all_distance))
             AppText(stringResource(R.string.main_screen_destination_progress, distance.toInt()))

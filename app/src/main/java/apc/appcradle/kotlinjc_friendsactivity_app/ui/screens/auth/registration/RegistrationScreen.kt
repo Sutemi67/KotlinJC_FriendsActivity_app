@@ -24,7 +24,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import apc.appcradle.kotlinjc_friendsactivity_app.R
-import apc.appcradle.kotlinjc_friendsactivity_app.domain.model.DataTransferState
+import apc.appcradle.kotlinjc_friendsactivity_app.domain.model.network.DataTransferState
 import apc.appcradle.kotlinjc_friendsactivity_app.ui.app_components.AppComponents
 import apc.appcradle.kotlinjc_friendsactivity_app.ui.theme.KotlinJC_FriendsActivity_appTheme
 

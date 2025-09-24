@@ -1,8 +1,8 @@
 package apc.appcradle.kotlinjc_friendsactivity_app.domain
 
 import android.util.Log
-import apc.appcradle.kotlinjc_friendsactivity_app.data.TokenStorageImpl
-import apc.appcradle.kotlinjc_friendsactivity_app.domain.model.DataTransferState
+import apc.appcradle.kotlinjc_friendsactivity_app.data.TokenRepositoryImpl
+import apc.appcradle.kotlinjc_friendsactivity_app.domain.model.network.DataTransferState
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.engine.android.Android
@@ -24,7 +24,7 @@ import java.net.ConnectException
 import java.net.SocketTimeoutException
 
 class NetworkClient(
-    private val tokenStorageImpl: TokenStorageImpl
+    private val tokenRepositoryImpl: TokenRepositoryImpl
 ) {
 
     companion object {
@@ -89,7 +89,7 @@ class NetworkClient(
         install(Auth) {
             bearer {
                 loadTokens {
-                    val token = tokenStorageImpl.getToken()
+                    val token = tokenRepositoryImpl.getToken()
                     if (token != null) {
                         BearerTokens(accessToken = token, refreshToken = "")
                     } else {
@@ -97,7 +97,7 @@ class NetworkClient(
                     }
                 }
                 refreshTokens {
-                    tokenStorageImpl.clearToken()
+                    tokenRepositoryImpl.clearToken()
                     null
                 }
             }
@@ -108,7 +108,7 @@ class NetworkClient(
     private val serverHomeUrl = "http://192.168.1.100:6655/"
 
     private fun saveToken(login: String, token: String) {
-        tokenStorageImpl.saveToken(login = login, token = token)
+        tokenRepositoryImpl.saveToken(login = login, token = token)
     }
 
     suspend fun sendRegistrationInfo(login: String, password: String): DataTransferState {
@@ -123,14 +123,14 @@ class NetworkClient(
                 saveToken(login = login, token = token)
                 Log.d(
                     "dataTransfer",
-                    "сохраненный токен: ${tokenStorageImpl.getToken()}\nвыданный токен: $token"
+                    "сохраненный токен: ${tokenRepositoryImpl.getToken()}\nвыданный токен: $token"
                 )
                 DataTransferState(isLoading = false, true)
             } else {
                 Log.e("dataTransfer", "${response.body<String?>()}")
                 DataTransferState(isLoading = false, true, response.body<String?>())
             }
-        } catch (e: SocketTimeoutException) {
+        } catch (_: SocketTimeoutException) {
             return try {
                 val response = networkService.post(urlString = "$serverHomeUrl/register") {
                     contentType(ContentType.Application.Json)
@@ -141,7 +141,7 @@ class NetworkClient(
                     saveToken(login = login, token = token)
                     Log.d(
                         "dataTransfer",
-                        "сохраненный токен: ${tokenStorageImpl.getToken()}\nвыданный токен: $token"
+                        "сохраненный токен: ${tokenRepositoryImpl.getToken()}\nвыданный токен: $token"
                     )
                     DataTransferState(isLoading = false, true)
                 } else {
@@ -167,14 +167,14 @@ class NetworkClient(
                 saveToken(login = login, token = token)
                 Log.d(
                     "dataTransfer",
-                    "сохраненный токен: ${tokenStorageImpl.getToken()}\nвыданный токен: $token"
+                    "сохраненный токен: ${tokenRepositoryImpl.getToken()}\nвыданный токен: $token"
                 )
                 DataTransferState(isLoading = false, true, errorMessage = null)
             } else {
                 Log.e("dataTransfer", "${response.body<String?>()}")
                 DataTransferState(isLoading = false, true, response.body<String?>())
             }
-        } catch (e: SocketTimeoutException) {
+        } catch (_: SocketTimeoutException) {
             try {
                 val response = networkService.post(urlString = "$serverHomeUrl/login") {
                     contentType(ContentType.Application.Json)
@@ -185,7 +185,7 @@ class NetworkClient(
                     saveToken(login = login, token = token)
                     Log.d(
                         "dataTransfer",
-                        "сохраненный токен: ${tokenStorageImpl.getToken()}\nвыданный токен: $token"
+                        "сохраненный токен: ${tokenRepositoryImpl.getToken()}\nвыданный токен: $token"
                     )
                     DataTransferState(isLoading = false, true, errorMessage = null)
                 } else {
@@ -226,7 +226,7 @@ class NetworkClient(
             } else {
                 UserActivityResponse(mutableListOf(), request.body<String?>(), null)
             }
-        } catch (e: SocketTimeoutException) {
+        } catch (_: SocketTimeoutException) {
             try {
                 val request = networkService.post(urlString = "$serverHomeUrl/post_activity") {
                     contentType(ContentType.Application.Json)
