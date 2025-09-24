@@ -1,6 +1,5 @@
 package apc.appcradle.kotlinjc_friendsactivity_app.ui.screens.auth
 
-import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
@@ -20,17 +19,18 @@ import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import apc.appcradle.kotlinjc_friendsactivity_app.domain.model.DataTransferState
+import apc.appcradle.kotlinjc_friendsactivity_app.R
+import apc.appcradle.kotlinjc_friendsactivity_app.domain.model.network.DataTransferState
 import apc.appcradle.kotlinjc_friendsactivity_app.ui.app_components.AppComponents
 import apc.appcradle.kotlinjc_friendsactivity_app.ui.app_components.AppComponents.AppText
 import apc.appcradle.kotlinjc_friendsactivity_app.ui.theme.KotlinJC_FriendsActivity_appTheme
@@ -49,11 +49,7 @@ fun AuthScreen(
     var fieldState by rememberSaveable { mutableStateOf(FieldState.Login) }
     var loginText by rememberSaveable { mutableStateOf("") }
     var passwordText by rememberSaveable { mutableStateOf("") }
-//    val transferState by rememberSaveable { mutableStateOf(transferState) }
 
-    LaunchedEffect(transferState) {
-        Log.i("dataTransfer", "new paint: $transferState")
-    }
     Scaffold { paddingValues ->
         Box(
             modifier = Modifier
@@ -67,7 +63,7 @@ fun AuthScreen(
             ) {
                 AppText(
                     modifier = Modifier.padding(15.dp),
-                    text = "Hello, user!\nPlease login or register",
+                    text = stringResource(R.string.auth_screen_greeting),
                     textAlign = TextAlign.Center,
                 )
                 AnimatedVisibility(
@@ -76,7 +72,7 @@ fun AuthScreen(
                     exit = fadeOut() + shrinkVertically()
                 ) {
                     AppComponents.AppInputField(
-                        label = "enter your login",
+                        label = stringResource(R.string.auth_screen_login_placeholder),
                         value = loginText,
                         onValueChange = { loginText = it },
                         trailingIcon = if (loginText.isNotBlank()) Icons.Default.PlayArrow else null,
@@ -88,7 +84,7 @@ fun AuthScreen(
                     exit = fadeOut() + shrinkVertically()
                 ) {
                     AppComponents.AppInputField(
-                        label = "enter your password",
+                        label = stringResource(R.string.auth_screen_password_placeholder),
                         value = passwordText,
                         onValueChange = { passwordText = it },
                         trailingIcon = if (passwordText.isNotBlank()) Icons.Default.PlayArrow else null,
@@ -105,10 +101,10 @@ fun AuthScreen(
                 }
                 ElevatedButton(
                     modifier = Modifier.width(260.dp), onClick = onRegisterClick
-                ) { AppText(text = "Создать аккаунт") }
+                ) { AppText(text = stringResource(R.string.auth_screen_create)) }
                 ElevatedButton(
                     modifier = Modifier.width(260.dp), onClick = onOfflineUseClick
-                ) { AppText(text = "Пользоваться без интернета") }
+                ) { AppText(text = stringResource(R.string.auth_screen_offline)) }
 
                 Box(Modifier.height(30.dp)) {
                     if (transferState.errorMessage != null) {

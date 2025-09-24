@@ -1,4 +1,4 @@
-package apc.appcradle.kotlinjc_friendsactivity_app.permissions
+package apc.appcradle.kotlinjc_friendsactivity_app.domain
 
 import android.Manifest
 import android.content.Context
@@ -6,6 +6,7 @@ import android.content.pm.PackageManager
 import android.os.Build
 import android.widget.Toast
 import androidx.core.content.ContextCompat
+import apc.appcradle.kotlinjc_friendsactivity_app.R
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -37,7 +38,7 @@ class PermissionManager(private val context: Context) {
         if (!isGranted) {
             Toast.makeText(
                 context,
-                "Для работы шагомера требуются все разрешения",
+                R.string.permissions_ask,
                 Toast.LENGTH_SHORT
             ).show()
         }
@@ -51,4 +52,4 @@ class PermissionManager(private val context: Context) {
             ) == PackageManager.PERMISSION_GRANTED
         }
     }
-} 
+}

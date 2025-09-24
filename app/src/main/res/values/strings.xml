@@ -1,3 +1,83 @@
 <resources>
-    <string name="app_name">Friends Activity</string>
+<!--    main-->
+    <string name="app_name" translatable="false">Friends Activity</string>
+
+<!--    authentification and login screens-->
+    <string name="auth_screen_greeting">Hello, user!\nPlease login or register</string>
+    <string name="auth_screen_login_placeholder">Your login</string>
+    <string name="auth_screen_password_placeholder">Your password</string>
+    <string name="auth_screen_create">Create account</string>
+    <string name="auth_screen_offline">Go Offline</string>
+    <string name="register_screen_greeting">Please, enter your new login, which also can help your friends to find you</string>
+
+<!--    main screen-->
+    <string name="permissions_ask">All permissions are required for the pedometer to work.</string>
+    <string name="permissions_asking">The pedometer requires permission to receive activity data.</string>
+    <string name="main_screen_not_support">Pedometer is not supported on this device.</string>
+    <string name="main_screen_your_result">Your result this week</string>
+    <string name="main_screen_km">Kilometers</string>
+    <string name="main_screen_kkal">Kkal</string>
+    <string name="main_screen_sensor_on">Turn on the counter</string>
+    <string name="main_screen_kkal_range">from %s to %s</string>
+    <string name="main_screen_destination_progress">%s km</string>
+    <string name="destination_pivo">go get a beer</string>
+    <string name="destination_marathon">walk the marathon distance</string>
+    <string name="destination_kanyon">walk through the Grand Canyon</string>
+    <string name="destination_lycian_way">walk the Lycian Way</string>
+    <string name="destination_gobi">cross the Gobi Desert</string>
+    <string name="destination_earth">reach the center of the Earth</string>
+    <string name="destination_Russia">cross Russia</string>
+    <string name="destination_ocean">along the bottom across the Pacific Ocean</string>
+    <string name="destination_equator">circumnavigate the Earth</string>
+    <string name="destination_moon">walking to the moon</string>
+
+<!--    ratings screen-->
+    <string name="ratings_screen_champion">Last week\'s champion:</string>
+    <string name="ratings_screen_of_course_you">Of course you ❤️</string>
+    <string name="ratings_screen_all_distance">Total kilometers covered by everyone:️</string>
+    <string name="ratings_screen_leader_diff">Current gap to the leader::️</string>
+
+<!--    settings screen-->
+    <string name="settings_screen_login_hint">You can change your login. Please note that you will need to enter your new login to log in to the app.</string>
+    <string name="settings_screen_your_step">The length of your step</string>
+    <string name="settings_screen_your_step_in_meters">%s m</string>
+    <string name="settings_screen_step_length_hint">If you want to indicate a more precise value, I advise you to walk a known distance (for example, on a map) and divide by the number of steps</string>
+    <string name="settings_screen_type_scale">Font scale</string>
+    <string name="settings_screen_type_scale_hint">Allows you to decrease or increase the fonts in the application.</string>
+    <string name="settings_screen_logout">Logout</string>
+    <string name="settings_screen_change_theme">Change theme</string>
+    <string name="settings_screen_offline_logout_warning">You need to exit offline mode and register.</string>
+
+<!--    AppBar strings-->
+    <string name="appbar_greeting_logged">Have a good day, %s!</string>
+    <string name="appbar_greeting_offline">Have a good day!</string>
+    <string name="appbar_greeting_ratings">Статистика</string>
+    <string name="appbar_greeting_settings">Settings</string>
+
+<!--    Components-->
+    <string name="components_inputs_labels_login_error">Can\'t be empty</string>
+
+<!--    Dialogs-->
+    <string name="dialogs_titles_support">Support the developer</string>
+    <string name="dialogs_titles_step_length">Set a new step length</string>
+    <string name="dialogs_titles_theme">Theme</string>
+    <string name="dialogs_titles_scale">Change scale</string>
+    <string name="dialogs_body_support">The app is completely free, ad-free, and tailored to your convenience. If you\'d like to show your appreciation to the developer—buy a coffee or help with the project\'s development and support—you\'ll be redirected to the translations page.</string>
+    <string name="dialogs_buttons_scale_yes">Apply</string>
+    <string name="dialogs_buttons_scale_no">Cancel</string>
+    <string name="dialogs_buttons_support_yes">Yes, why not!</string>
+    <string name="dialogs_buttons_support_no">Next time…</string>
+    <string name="dialogs_buttons_theme_light">Light</string>
+    <string name="dialogs_buttons_theme_dark">Dark</string>
+    <string name="dialogs_buttons_theme_system">System</string>
+    <string name="dialogs_buttons_theme_yes">Refresh</string>
+
+<!--    Navigation bar labels-->
+    <string name="navigation_buttons_auth">Auth</string>
+    <string name="navigation_buttons_register">Register</string>
+    <string name="navigation_buttons_home">Home</string>
+    <string name="navigation_buttons_ratings">Ratings</string>
+    <string name="navigation_buttons_settings">Settings</string>
+
+
 </resources>

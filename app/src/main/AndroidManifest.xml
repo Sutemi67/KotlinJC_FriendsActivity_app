@@ -21,7 +21,7 @@
         android:theme="@style/Theme.KotlinJC_FriendsActivity_app">
         
         <service
-            android:name=".sensors.StepCounterService"
+            android:name=".domain.StepCounterService"
             android:enabled="true"
             android:exported="false"
             android:foregroundServiceType="dataSync" />

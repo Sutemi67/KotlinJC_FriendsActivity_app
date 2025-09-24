@@ -9,11 +9,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import apc.appcradle.kotlinjc_friendsactivity_app.LocalAppTypography
+import apc.appcradle.kotlinjc_friendsactivity_app.R
 import apc.appcradle.kotlinjc_friendsactivity_app.domain.model.Distances
 import apc.appcradle.kotlinjc_friendsactivity_app.ui.theme.KotlinJC_FriendsActivity_appTheme
 
@@ -44,11 +46,14 @@ fun StatisticRow(
     ) {
         Text(
             modifier = Modifier.weight(1f),
-            text = stepsTarget.destination,
+            text = stringResource(stepsTarget.destination),
             style = textStyle
         )
         Text(
-            text = "${stepsTarget.distance.toInt()} км",
+            text = stringResource(
+                R.string.main_screen_destination_progress,
+                stepsTarget.distance.toInt()
+            ),
             style = textStyle
         )
     }
@@ -58,6 +63,6 @@ fun StatisticRow(
 @Composable
 private fun Preview() {
     KotlinJC_FriendsActivity_appTheme {
-        StatisticRow(Distances.Pivo, 10.50)
+        StatisticRow(Distances.Beer, 10.50)
     }
 }

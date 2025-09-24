@@ -1,4 +1,4 @@
-package apc.appcradle.kotlinjc_friendsactivity_app.sensors
+package apc.appcradle.kotlinjc_friendsactivity_app.data
 
 import android.content.Context
 import android.content.Context.SENSOR_SERVICE
@@ -7,8 +7,7 @@ import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
 import android.hardware.SensorManager
 import android.util.Log
-import apc.appcradle.kotlinjc_friendsactivity_app.data.StatsRepository
-import apc.appcradle.kotlinjc_friendsactivity_app.domain.model.Steps
+import apc.appcradle.kotlinjc_friendsactivity_app.domain.model.network.Steps
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -16,7 +15,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
-class AppSensorsManager(
+class SensorsManager(
     context: Context,
     private val statsRepository: StatsRepository
 ) : SensorEventListener {

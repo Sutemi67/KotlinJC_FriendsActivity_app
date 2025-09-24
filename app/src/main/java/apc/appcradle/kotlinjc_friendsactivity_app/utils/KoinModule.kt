@@ -1,37 +1,38 @@
-package apc.appcradle.kotlinjc_friendsactivity_app.koin_modules
+package apc.appcradle.kotlinjc_friendsactivity_app.utils
 
 import android.content.Context
 import android.content.SharedPreferences
 import android.util.Log
 import androidx.work.WorkManager
 import apc.appcradle.kotlinjc_friendsactivity_app.MainViewModel
-import apc.appcradle.kotlinjc_friendsactivity_app.data.SettingsStorageImpl
+import apc.appcradle.kotlinjc_friendsactivity_app.data.SensorsManager
+import apc.appcradle.kotlinjc_friendsactivity_app.data.SettingsRepositoryImpl
 import apc.appcradle.kotlinjc_friendsactivity_app.data.StatsRepository
-import apc.appcradle.kotlinjc_friendsactivity_app.data.TokenStorageImpl
+import apc.appcradle.kotlinjc_friendsactivity_app.data.TokenRepositoryImpl
 import apc.appcradle.kotlinjc_friendsactivity_app.domain.NetworkClient
-import apc.appcradle.kotlinjc_friendsactivity_app.domain.SettingsStorage
-import apc.appcradle.kotlinjc_friendsactivity_app.permissions.PermissionManager
-import apc.appcradle.kotlinjc_friendsactivity_app.sensors.AppSensorsManager
+import apc.appcradle.kotlinjc_friendsactivity_app.domain.PermissionManager
+import apc.appcradle.kotlinjc_friendsactivity_app.domain.SettingsRepository
+import apc.appcradle.kotlinjc_friendsactivity_app.domain.TokenRepository
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.module.dsl.singleOf
 import org.koin.core.module.dsl.viewModelOf
+import org.koin.dsl.bind
 import org.koin.dsl.module
 
-val appModule = module {
-    singleOf(::AppSensorsManager)
+val koinAppModule = module {
+    singleOf(::SettingsRepositoryImpl).bind<SettingsRepository>()
+    singleOf(::TokenRepositoryImpl).bind<TokenRepository>()
+    singleOf(::SensorsManager)
     singleOf(::PermissionManager)
-    singleOf(::TokenStorageImpl)
     singleOf(::NetworkClient)
     singleOf(::StatsRepository)
 
-    single<SettingsStorage> { SettingsStorageImpl(get()) }
+    viewModelOf(::MainViewModel)
 
     single<WorkManager> {
         Log.i("worker", "work manager created")
         WorkManager.getInstance(get())
     }
-
-    viewModelOf(::MainViewModel)
 
     single<SharedPreferences> {
         androidContext().getSharedPreferences(

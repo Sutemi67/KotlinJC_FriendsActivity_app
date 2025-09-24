@@ -10,8 +10,10 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import apc.appcradle.kotlinjc_friendsactivity_app.R
 import apc.appcradle.kotlinjc_friendsactivity_app.ui.app_components.AppComponents.AppText
 import apc.appcradle.kotlinjc_friendsactivity_app.ui.theme.KotlinJC_FriendsActivity_appTheme
 
@@ -32,15 +34,22 @@ fun StatsTable(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            AppText(text = "Чемпион прошлой недели:", modifier = Modifier.weight(1f))
-            AppText(text = leader ?: "конечно же ты <3", singleLine = true)
+            AppText(
+                text = stringResource(R.string.ratings_screen_champion),
+                modifier = Modifier.weight(1f)
+            )
+            AppText(
+                text = leader ?: stringResource(R.string.ratings_screen_of_course_you),
+                singleLine = true
+            )
         }
         Row(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            AppText("Всеми пройдено:")
-            AppText("${distance.toInt()} км.")
+            AppText(stringResource(R.string.ratings_screen_all_distance))
+            AppText(stringResource(R.string.main_screen_destination_progress, distance.toInt()))
         }
         HorizontalDivider(Modifier.padding(10.dp))
         Row(
@@ -49,12 +58,15 @@ fun StatsTable(
             verticalAlignment = Alignment.CenterVertically
         ) {
             AppText(
-                text = "Текущее отставание от лидера: ",
+                text = stringResource(R.string.ratings_screen_leader_diff),
                 modifier = Modifier.weight(1f)
             )
             AppText(
                 text = if (leaderDifference != 0.0)
-                    "${leaderDifference.toInt()} км."
+                    stringResource(
+                        R.string.main_screen_destination_progress,
+                        leaderDifference.toInt()
+                    )
                 else "-",
                 modifier = Modifier.wrapContentWidth()
             )
@@ -66,6 +78,6 @@ fun StatsTable(
 @Composable
 private fun Preview() {
     KotlinJC_FriendsActivity_appTheme {
-        StatsTable(4334.3, leaderDifference = 0.0, leader = null)
+        StatsTable(4334.3, leaderDifference = 3.0, leader = null)
     }
 }

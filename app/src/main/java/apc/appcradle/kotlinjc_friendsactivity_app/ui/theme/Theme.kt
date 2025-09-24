@@ -63,25 +63,6 @@ fun KotlinJC_FriendsActivity_appTheme(
         else -> LightColorScheme
     }
 
-//    val currentWindowSizeClass = windowSizeClass ?: WindowSizeClass.calculateFromSize(
-//        DpSize(
-//            LocalConfiguration.current.screenWidthDp.dp,
-//            LocalConfiguration.current.screenHeightDp.dp
-//        )
-//    )
-
-//    val density = LocalDensity.current.density
-//    Log.d("density", "$density")
-//    val typography: Typography = when (currentWindowSizeClass.widthSizeClass) {
-//        WindowWidthSizeClass.Expanded -> ExpandedTypography
-//        WindowWidthSizeClass.Medium -> MediumTypography
-//        else -> when {
-//            density >= 3.1f -> CompactHighDpiTypography
-//            density >= 2.5f -> CompactTypography
-//            else -> CompactTypography
-//        }
-//    }
-
     val view = LocalView.current
     if (!view.isInEditMode) {
         SideEffect {

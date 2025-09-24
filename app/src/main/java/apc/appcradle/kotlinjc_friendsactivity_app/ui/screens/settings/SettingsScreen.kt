@@ -27,10 +27,12 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import apc.appcradle.kotlinjc_friendsactivity_app.LocalAppTypography
+import apc.appcradle.kotlinjc_friendsactivity_app.R
 import apc.appcradle.kotlinjc_friendsactivity_app.domain.model.AppThemes
 import apc.appcradle.kotlinjc_friendsactivity_app.ui.app_components.AppComponents.AppText
 import apc.appcradle.kotlinjc_friendsactivity_app.ui.app_components.AppDialogs
@@ -82,7 +84,7 @@ fun SettingsScreen(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 AppText(
-                    text = "Ваш логин:",
+                    text = stringResource(R.string.auth_screen_login_placeholder),
                 )
                 Card(
                     modifier = Modifier.clickable { isLoginDialogVisible = true }
@@ -99,7 +101,7 @@ fun SettingsScreen(
                     .fillMaxWidth()
                     .padding(10.dp),
                 textAlign = TextAlign.Center,
-                text = "Вы можете изменить свой логин"
+                text = stringResource(R.string.settings_screen_login_hint)
             )
         }
         ElevatedCard(
@@ -112,13 +114,16 @@ fun SettingsScreen(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                AppText(text = "Длина вашего шага:")
+                AppText(text = stringResource(R.string.settings_screen_your_step))
                 Card(
                     modifier = Modifier.clickable { isStepDialogVisible = true }
                 ) {
                     AppText(
                         modifier = Modifier.padding(vertical = 10.dp, horizontal = 20.dp),
-                        text = "$userStepLength m",
+                        text = stringResource(
+                            R.string.settings_screen_your_step_in_meters,
+                            userStepLength
+                        ),
                         singleLine = true
                     )
                 }
@@ -129,7 +134,7 @@ fun SettingsScreen(
                     .fillMaxWidth()
                     .padding(10.dp),
                 textAlign = TextAlign.Center,
-                text = "Если вы хотите указать более точное значение советую вам пройти известное расстояние (например, по карте) и разделить на число шагов"
+                text = stringResource(R.string.settings_screen_step_length_hint)
             )
         }
         ElevatedCard(
@@ -142,7 +147,7 @@ fun SettingsScreen(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                AppText(text = "Масштаб шрифтов:")
+                AppText(text = stringResource(R.string.settings_screen_type_scale))
                 Card(
                     modifier = Modifier.clickable { isScaleDialogVisible = true }
                 ) {
@@ -163,7 +168,7 @@ fun SettingsScreen(
                     .fillMaxWidth()
                     .padding(10.dp),
                 textAlign = TextAlign.Center,
-                text = "Позволяет уменьшить или увеличить шрифты в приложении."
+                text = stringResource(R.string.settings_screen_type_scale_hint)
             )
         }
         Spacer(Modifier.height(20.dp))
@@ -173,7 +178,7 @@ fun SettingsScreen(
                 .padding(horizontal = 20.dp),
             onClick = onLogoutClick
         ) {
-            AppText(text = "Logout")
+            AppText(text = stringResource(R.string.settings_screen_logout))
         }
         ElevatedButton(
             modifier = Modifier
@@ -181,7 +186,7 @@ fun SettingsScreen(
                 .padding(horizontal = 20.dp),
             onClick = { isThemeDialogVisible = true }
         ) {
-            AppText(text = "Change theme")
+            AppText(text = stringResource(R.string.settings_screen_change_theme))
         }
     }
 
@@ -204,7 +209,6 @@ fun SettingsScreen(
             initialValue = userScale,
             onConfirm = { newValue ->
                 onScaleClick(newValue)
-                Log.i("scale", "new scale is $newValue")
             },
             onDismiss = { isScaleDialogVisible = false }
         )
@@ -213,7 +217,7 @@ fun SettingsScreen(
             null -> {
                 Toast.makeText(
                     LocalContext.current,
-                    "Нужно выйти из оффлайн режима и зарегистрироваться",
+                    stringResource(R.string.settings_screen_offline_logout_warning),
                     Toast.LENGTH_SHORT
                 ).show()
             }

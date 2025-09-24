@@ -8,17 +8,17 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.work.WorkManager
 import apc.appcradle.kotlinjc_friendsactivity_app.data.StatsRepository
-import apc.appcradle.kotlinjc_friendsactivity_app.data.TokenStorageImpl
+import apc.appcradle.kotlinjc_friendsactivity_app.data.TokenRepositoryImpl
 import apc.appcradle.kotlinjc_friendsactivity_app.data.WORKER_TAG
 import apc.appcradle.kotlinjc_friendsactivity_app.domain.NetworkClient
-import apc.appcradle.kotlinjc_friendsactivity_app.domain.SettingsStorage
-import apc.appcradle.kotlinjc_friendsactivity_app.domain.model.AppSavedSettingsData
+import apc.appcradle.kotlinjc_friendsactivity_app.domain.SettingsRepository
+import apc.appcradle.kotlinjc_friendsactivity_app.domain.model.SharedPreferencesData
 import apc.appcradle.kotlinjc_friendsactivity_app.domain.model.AppState
 import apc.appcradle.kotlinjc_friendsactivity_app.domain.model.AppThemes
-import apc.appcradle.kotlinjc_friendsactivity_app.domain.model.DataTransferState
-import apc.appcradle.kotlinjc_friendsactivity_app.domain.model.PlayersListSyncData
-import apc.appcradle.kotlinjc_friendsactivity_app.permissions.PermissionManager
-import apc.appcradle.kotlinjc_friendsactivity_app.sensors.StepCounterService
+import apc.appcradle.kotlinjc_friendsactivity_app.domain.model.network.DataTransferState
+import apc.appcradle.kotlinjc_friendsactivity_app.domain.model.network.PlayersListSyncData
+import apc.appcradle.kotlinjc_friendsactivity_app.domain.PermissionManager
+import apc.appcradle.kotlinjc_friendsactivity_app.domain.StepCounterService
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -30,8 +30,8 @@ import kotlinx.coroutines.withContext
 class MainViewModel(
     private val permissionManager: PermissionManager,
     private val networkClient: NetworkClient,
-    private val tokenStorageImpl: TokenStorageImpl,
-    private val settingsPreferencesImpl: SettingsStorage,
+    private val tokenRepositoryImpl: TokenRepositoryImpl,
+    private val settingsPreferencesImpl: SettingsRepository,
     private val statsRepository: StatsRepository,
     private val workManager: WorkManager
 ) : ViewModel() {
@@ -100,7 +100,7 @@ class MainViewModel(
 
     //region Authentification
     fun logout() {
-        tokenStorageImpl.clearToken()
+        tokenRepositoryImpl.clearToken()
         _state.update {
             it.copy(
                 isLoggedIn = false,
@@ -111,7 +111,7 @@ class MainViewModel(
     }
 
     fun goOfflineUse() {
-        tokenStorageImpl.saveOfflineToken()
+        tokenRepositoryImpl.saveOfflineToken()
         _state.update {
             it.copy(
                 isLoggedIn = true,
@@ -121,7 +121,7 @@ class MainViewModel(
     }
 
     private fun checkPermanentAuth() {
-        val token = tokenStorageImpl.getToken()
+        val token = tokenRepositoryImpl.getToken()
         when (token) {
             "offline" -> {
                 _state.update {
@@ -137,7 +137,7 @@ class MainViewModel(
             }
 
             else -> {
-                val login = tokenStorageImpl.getLogin()
+                val login = tokenRepositoryImpl.getLogin()
                 _state.update {
                     it.copy(
                         isLoggedIn = true,
@@ -218,7 +218,7 @@ class MainViewModel(
             if (networkClient.changeUserLogin(login, newLogin)) {
                 Log.i("dataTransfer", "смена ника - ${true}")
                 _state.update { it.copy(userLogin = newLogin) }
-                tokenStorageImpl.saveNewLogin(newLogin)
+                tokenRepositoryImpl.saveNewLogin(newLogin)
                 return@launch
             }
             Log.e("dataTransfer", "смена ника - ${false}")
@@ -245,7 +245,7 @@ class MainViewModel(
 
     private fun saveSettings() {
         settingsPreferencesImpl.saveSettingsData(
-            AppSavedSettingsData(
+            SharedPreferencesData(
                 savedTheme = state.value.currentTheme,
                 savedScale = state.value.userScale,
                 savedUserStep = state.value.userStepLength
