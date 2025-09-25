@@ -37,12 +37,12 @@ val MediumText = MyTypography(
     appBarTitle = TextStyle(
         fontFamily = FontFamily.Default,
         fontWeight = FontWeight.Normal,
-        fontSize = 28.sp
+        fontSize = 26.sp
     ),
     mainStepCounter = TextStyle(
         fontFamily = FontFamily.Default,
         fontWeight = FontWeight.Normal,
-        fontSize = 26.sp
+        fontSize = 28.sp
     ),
     header = TextStyle(
         fontFamily = FontFamily.Default,
