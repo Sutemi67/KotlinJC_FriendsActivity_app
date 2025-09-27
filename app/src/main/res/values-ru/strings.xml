@@ -29,10 +29,10 @@
     <string name="ratings_screen_of_course_you">конечно ты ❤️</string>
     <string name="ratings_screen_all_distance">Всеми пройдено километров:️</string>
     <string name="ratings_screen_leader_diff">Текущее отставание от лидера::️</string>
-    <string name="settings_screen_login_hint">Ты можешь изменить свой логин. Учтите, что для входа в приложение так же нужно будет вводитьименно новый логин.</string>
+    <string name="settings_screen_login_hint">Ты можешь изменить свой логин. Учтите, что для входа в приложение так же нужно будет вводить именно новый логин.</string>
     <string name="settings_screen_your_step">Длина твоего шага</string>
     <string name="settings_screen_your_step_in_meters">%s м</string>
-    <string name="settings_screen_step_length_hint">Если хочешь указать более точное значение советую пройти известное расстояние (например, по карте) и разделить на число шагов</string>
+    <string name="settings_screen_step_length_hint">Если хочешь указать более точное значение, советую пройти известное расстояние (например, по карте) и разделить на число шагов</string>
     <string name="settings_screen_type_scale">Масштаб шрифтов</string>
     <string name="settings_screen_type_scale_hint">Позволяет уменьшить или увеличить шрифты в приложении.</string>
     <string name="settings_screen_change_theme">Изменить тему</string>
