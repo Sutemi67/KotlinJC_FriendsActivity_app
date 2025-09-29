@@ -8,6 +8,7 @@ import apc.appcradle.kotlinjc_friendsactivity_app.domain.NetworkClient
 import apc.appcradle.kotlinjc_friendsactivity_app.domain.model.network.PlayerActivityData
 import apc.appcradle.kotlinjc_friendsactivity_app.domain.model.network.PlayersListSyncData
 import apc.appcradle.kotlinjc_friendsactivity_app.domain.model.network.Steps
+import apc.appcradle.kotlinjc_friendsactivity_app.utils.USER_STEP_DEFAULT
 import apc.appcradle.kotlinjc_friendsactivity_app.utils.whenNextMonday
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -86,15 +87,17 @@ class StatsRepository(
             }
         }
         Log.e("dataTransfer", "summ of steps is $stepsSum")
-        return stepsSum * 0.4 / 1000
+        return stepsSum * USER_STEP_DEFAULT / 1000
     }
 
     private fun calcLeaderDiff(login: String?): Double {
         var diff = 0.0
+
         if (playersList.isNotEmpty()) {
             val leader = playersList.first()
             val player = playersList.first { it.login == login }
-            diff = (leader.weeklySteps - player.weeklySteps) * 0.5 / 1000
+            diff = (leader.weeklySteps - player.weeklySteps) * USER_STEP_DEFAULT / 1000
+            Log.e("difference", "$leader\n$player\n$diff")
         }
         return diff
     }
@@ -129,8 +132,6 @@ class StatsRepository(
         if (isFirstAppStart) {
             isFirstAppStart = false
             sharedPreferences.edit { putBoolean(FIRST_START_ID, false) }
-//            workManager.enqueue(trancateStepsRequest(10000))
-//            workManager.enqueue(trancateStepsRequest(whenNextDayModern()))
             workManager.enqueue(trancateStepsRequest(whenNextMonday()))
             Log.d("worker", "statRepo,planningTrancateSteps -> ${whenNextMonday()}")
         }
