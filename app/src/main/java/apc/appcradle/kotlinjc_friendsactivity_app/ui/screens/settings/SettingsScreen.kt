@@ -26,11 +26,13 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import apc.appcradle.kotlinjc_friendsactivity_app.BuildConfig
 import apc.appcradle.kotlinjc_friendsactivity_app.LocalAppTypography
 import apc.appcradle.kotlinjc_friendsactivity_app.R
 import apc.appcradle.kotlinjc_friendsactivity_app.domain.model.AppThemes
@@ -170,6 +172,30 @@ fun SettingsScreen(
                 textAlign = TextAlign.Center,
                 text = stringResource(R.string.settings_screen_type_scale_hint)
             )
+        }
+        ElevatedCard(
+            modifier = Modifier
+                .padding(vertical = 5.dp)
+                .alpha(0.4f),
+        ) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 5.dp, horizontal = 10.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                AppText(
+                    text = stringResource(R.string.settings_screen_app_version),
+                )
+                Card {
+                    AppText(
+                        modifier = Modifier.padding(10.dp),
+                        text = BuildConfig.VERSION_NAME,
+                        textAlign = TextAlign.Center,
+                    )
+                }
+            }
         }
         Spacer(Modifier.height(20.dp))
         ElevatedButton(

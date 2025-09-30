@@ -36,6 +36,7 @@
     <string name="settings_screen_type_scale">Масштаб шрифтов</string>
     <string name="settings_screen_type_scale_hint">Позволяет уменьшить или увеличить шрифты в приложении.</string>
     <string name="settings_screen_change_theme">Изменить тему</string>
+    <string name="settings_screen_app_version">Версия приложения</string>
     <string name="settings_screen_offline_logout_warning">Нужно выйти из офлайн режима и зарегистрироваться</string>
     <string name="settings_screen_logout">Выйти</string>
     <string name="appbar_greeting_logged">Хорошего дня, %s!</string>

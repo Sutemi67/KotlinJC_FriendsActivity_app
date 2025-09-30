@@ -46,6 +46,7 @@
     <string name="settings_screen_type_scale_hint">Allows you to decrease or increase the fonts in the application.</string>
     <string name="settings_screen_logout">Logout</string>
     <string name="settings_screen_change_theme">Change theme</string>
+    <string name="settings_screen_app_version">Application version</string>
     <string name="settings_screen_offline_logout_warning">You need to exit offline mode and register.</string>
 
 <!--    AppBar strings-->
