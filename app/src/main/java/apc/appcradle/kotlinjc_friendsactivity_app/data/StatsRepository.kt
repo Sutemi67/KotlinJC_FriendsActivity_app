@@ -5,9 +5,9 @@ import android.util.Log
 import androidx.core.content.edit
 import androidx.work.WorkManager
 import apc.appcradle.kotlinjc_friendsactivity_app.domain.NetworkClient
-import apc.appcradle.kotlinjc_friendsactivity_app.domain.model.network.PlayerActivityData
-import apc.appcradle.kotlinjc_friendsactivity_app.domain.model.network.PlayersListSyncData
-import apc.appcradle.kotlinjc_friendsactivity_app.domain.model.network.Steps
+import apc.appcradle.kotlinjc_friendsactivity_app.domain.model.network.in_app_states.PlayerActivityData
+import apc.appcradle.kotlinjc_friendsactivity_app.domain.model.network.in_app_states.PlayersListSyncData
+import apc.appcradle.kotlinjc_friendsactivity_app.domain.model.network.in_app_states.Steps
 import apc.appcradle.kotlinjc_friendsactivity_app.utils.USER_STEP_DEFAULT
 import apc.appcradle.kotlinjc_friendsactivity_app.utils.whenNextMonday
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -20,6 +20,11 @@ class StatsRepository(
     private val workManager: WorkManager,
     private val sharedPreferences: SharedPreferences
 ) {
+    init {
+        isFirstStartCheck()
+        planningTrancateSteps()
+    }
+
     private val _syncStatus = MutableStateFlow(false)
     val syncStatus: StateFlow<Boolean> = _syncStatus.asStateFlow()
 
@@ -63,7 +68,7 @@ class StatsRepository(
             playersList = newPlayersList
             percentageMax()
             val sumKm = calcSumKm()
-            val difference = calcLeaderDiff(login)
+            val difference = calcLeaderDifference(login)
             _syncStatus.update { false }
             return PlayersListSyncData(
                 playersList = playersList,
@@ -86,25 +91,15 @@ class StatsRepository(
                 stepsSum += player.steps
             }
         }
-        Log.e("dataTransfer", "summ of steps is $stepsSum")
         return stepsSum * USER_STEP_DEFAULT / 1000
     }
 
-    private fun calcLeaderDiff(login: String?): Double {
-        var diff = 0.0
-
-        if (playersList.isNotEmpty()) {
+    private fun calcLeaderDifference(login: String?): Double {
+        return if (playersList.isNotEmpty()) {
             val leader = playersList.first()
             val player = playersList.first { it.login == login }
-            diff = (leader.weeklySteps - player.weeklySteps) * USER_STEP_DEFAULT / 1000
-            Log.e("difference", "$leader\n$player\n$diff")
-        }
-        return diff
-    }
-
-    init {
-        isFirstStartCheck()
-        planningTrancateSteps()
+            (leader.weeklySteps - player.weeklySteps) * USER_STEP_DEFAULT / 1000
+        } else 0.0
     }
 
     private fun isFirstStartCheck() {

@@ -7,7 +7,7 @@ import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
 import android.hardware.SensorManager
 import android.util.Log
-import apc.appcradle.kotlinjc_friendsactivity_app.domain.model.network.Steps
+import apc.appcradle.kotlinjc_friendsactivity_app.domain.model.network.in_app_states.Steps
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay

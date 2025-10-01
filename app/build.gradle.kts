@@ -21,6 +21,8 @@ android {
         applicationId = "apc.appcradle.kotlinjc_friendsactivity_app"
         minSdk = 24
         targetSdk = 36
+
+        //изменено и опубликовано 29 сентября
         versionCode = 3
         versionName = "1.0.2"
 

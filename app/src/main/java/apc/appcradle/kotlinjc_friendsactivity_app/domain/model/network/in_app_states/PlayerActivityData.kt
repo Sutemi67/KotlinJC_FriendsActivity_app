@@ -1,4 +1,4 @@
-package apc.appcradle.kotlinjc_friendsactivity_app.domain.model.network
+package apc.appcradle.kotlinjc_friendsactivity_app.domain.model.network.in_app_states
 
 import kotlinx.serialization.Serializable
 

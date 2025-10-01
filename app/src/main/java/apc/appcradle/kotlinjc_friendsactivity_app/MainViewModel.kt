@@ -15,8 +15,8 @@ import apc.appcradle.kotlinjc_friendsactivity_app.domain.SettingsRepository
 import apc.appcradle.kotlinjc_friendsactivity_app.domain.model.SharedPreferencesData
 import apc.appcradle.kotlinjc_friendsactivity_app.domain.model.AppState
 import apc.appcradle.kotlinjc_friendsactivity_app.domain.model.AppThemes
-import apc.appcradle.kotlinjc_friendsactivity_app.domain.model.network.DataTransferState
-import apc.appcradle.kotlinjc_friendsactivity_app.domain.model.network.PlayersListSyncData
+import apc.appcradle.kotlinjc_friendsactivity_app.domain.model.network.in_app_states.DataTransferState
+import apc.appcradle.kotlinjc_friendsactivity_app.domain.model.network.in_app_states.PlayersListSyncData
 import apc.appcradle.kotlinjc_friendsactivity_app.domain.PermissionManager
 import apc.appcradle.kotlinjc_friendsactivity_app.domain.StepCounterService
 import kotlinx.coroutines.Dispatchers
