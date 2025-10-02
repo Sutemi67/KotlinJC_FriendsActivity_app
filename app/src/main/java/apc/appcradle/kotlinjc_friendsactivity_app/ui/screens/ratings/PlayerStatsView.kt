@@ -23,7 +23,7 @@ import androidx.compose.ui.unit.dp
 import apc.appcradle.kotlinjc_friendsactivity_app.utils.USER_STEP_DEFAULT
 import apc.appcradle.kotlinjc_friendsactivity_app.domain.model.AppTextStyles
 import apc.appcradle.kotlinjc_friendsactivity_app.domain.model.Distances
-import apc.appcradle.kotlinjc_friendsactivity_app.domain.model.network.in_app_states.PlayerActivityData
+import apc.appcradle.kotlinjc_friendsactivity_app.domain.model.network.in_app_states.RatingsData
 import apc.appcradle.kotlinjc_friendsactivity_app.ui.app_components.AppComponents.AppText
 import apc.appcradle.kotlinjc_friendsactivity_app.ui.theme.KotlinJC_FriendsActivity_appTheme
 
@@ -31,10 +31,10 @@ import apc.appcradle.kotlinjc_friendsactivity_app.ui.theme.KotlinJC_FriendsActiv
 fun PlayerStatsView(
     modifier: Modifier = Modifier,
     login: String?,
-    playerActivityData: PlayerActivityData,
+    ratingsData: RatingsData,
 ) {
     val percentageAnimate = animateFloatAsState(
-        targetValue = playerActivityData.percentage,
+        targetValue = ratingsData.percentage,
         animationSpec = tween(durationMillis = 3000)
     )
     ElevatedCard(
@@ -49,7 +49,7 @@ fun PlayerStatsView(
             Box(
                 modifier = Modifier
                     .background(
-                        color = if (login == playerActivityData.login) MaterialTheme.colorScheme.tertiaryContainer else MaterialTheme.colorScheme.secondaryContainer,
+                        color = if (login == ratingsData.login) MaterialTheme.colorScheme.tertiaryContainer else MaterialTheme.colorScheme.secondaryContainer,
                         shape = RoundedCornerShape(20.dp)
                     )
                     .fillMaxWidth(percentageAnimate.value)
@@ -66,17 +66,17 @@ fun PlayerStatsView(
                 ) {
                     AppText(
                         color = MaterialTheme.colorScheme.onSurface,
-                        text = playerActivityData.login
+                        text = ratingsData.login
                     )
                     AppText(
                         color = MaterialTheme.colorScheme.onSurface,
-                        text = stringResource(getDistanceByValue(playerActivityData.steps * USER_STEP_DEFAULT / 1000).destination),
+                        text = stringResource(getDistanceByValue(ratingsData.steps * USER_STEP_DEFAULT / 1000).destination),
                         appTextStyle = AppTextStyles.Label
                     )
                 }
                 AppText(
                     color = MaterialTheme.colorScheme.onSurface,
-                    text = "${playerActivityData.weeklySteps}"
+                    text = "${ratingsData.weeklySteps}"
                 )
             }
         }
@@ -92,7 +92,7 @@ private fun Preview() {
     KotlinJC_FriendsActivity_appTheme {
         PlayerStatsView(
             login = "Alexander",
-            playerActivityData = PlayerActivityData(
+            ratingsData = RatingsData(
                 "Alexander",
                 3423,
                 weeklySteps = 22,

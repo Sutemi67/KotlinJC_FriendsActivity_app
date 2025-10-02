@@ -1,7 +1,7 @@
 package apc.appcradle.kotlinjc_friendsactivity_app.domain
 
 import apc.appcradle.kotlinjc_friendsactivity_app.data.TokenRepositoryImpl
-import apc.appcradle.kotlinjc_friendsactivity_app.domain.model.network.in_app_states.DataTransferState
+import apc.appcradle.kotlinjc_friendsactivity_app.domain.model.network.in_app_states.DataTransferStatus
 import apc.appcradle.kotlinjc_friendsactivity_app.domain.model.network.requests.LoginChangeRequest
 import apc.appcradle.kotlinjc_friendsactivity_app.domain.model.network.requests.RatingsRequest
 import apc.appcradle.kotlinjc_friendsactivity_app.domain.model.network.requests.TokenRequest
@@ -69,7 +69,7 @@ class NetworkClient(
         tokenRepositoryImpl.saveToken(login = login, token = token)
     }
 
-    suspend fun sendRegistrationInfo(login: String, password: String): DataTransferState {
+    suspend fun sendRegistrationInfo(login: String, password: String): DataTransferStatus {
         val body = TokenRequest(login = login, password = password)
         return try {
             val response = networkService.post(urlString = "$serverUrl/register") {
@@ -79,9 +79,9 @@ class NetworkClient(
             if (response.status.isSuccess()) {
                 val token = response.body<TokenResponse>().token
                 saveToken(login = login, token = token)
-                DataTransferState(isLoading = false, true)
+                DataTransferStatus(isLoading = false, true)
             } else {
-                DataTransferState(isLoading = false, true, response.body<String?>())
+                DataTransferStatus(isLoading = false, true, response.body<String?>())
             }
         } catch (_: SocketTimeoutException) {
             return try {
@@ -92,17 +92,17 @@ class NetworkClient(
                 if (response.status.isSuccess()) {
                     val token = response.body<TokenResponse>().token
                     saveToken(login = login, token = token)
-                    DataTransferState(isLoading = false, true)
+                    DataTransferStatus(isLoading = false, true)
                 } else {
-                    DataTransferState(isLoading = false, true, response.body<String?>())
+                    DataTransferStatus(isLoading = false, true, response.body<String?>())
                 }
             } catch (e: Exception) {
-                DataTransferState(isLoading = false, false, "${e.message}")
+                DataTransferStatus(isLoading = false, false, "${e.message}")
             }
         }
     }
 
-    suspend fun sendLoginInfo(login: String, password: String): DataTransferState {
+    suspend fun sendLoginInfo(login: String, password: String): DataTransferStatus {
         val body = TokenRequest(login, password)
         return try {
             val response = networkService.post(urlString = "$serverUrl/login") {
@@ -112,9 +112,9 @@ class NetworkClient(
             if (response.status.isSuccess()) {
                 val token = response.body<TokenResponse>().token
                 saveToken(login = login, token = token)
-                DataTransferState(isLoading = false, true, errorMessage = null)
+                DataTransferStatus(isLoading = false, true, errorMessage = null)
             } else {
-                DataTransferState(isLoading = false, true, response.body<String?>())
+                DataTransferStatus(isLoading = false, true, response.body<String?>())
             }
         } catch (_: SocketTimeoutException) {
             try {
@@ -125,17 +125,17 @@ class NetworkClient(
                 if (response.status.isSuccess()) {
                     val token = response.body<TokenResponse>().token
                     saveToken(login = login, token = token)
-                    DataTransferState(isLoading = false, true, errorMessage = null)
+                    DataTransferStatus(isLoading = false, true, errorMessage = null)
                 } else {
-                    DataTransferState(isLoading = false, true, response.body<String?>())
+                    DataTransferStatus(isLoading = false, true, response.body<String?>())
                 }
             } catch (e: Exception) {
-                DataTransferState(isLoading = false, false, "${e.message}")
+                DataTransferStatus(isLoading = false, false, "${e.message}")
             }
         } catch (e: HttpRequestTimeoutException) {
-            DataTransferState(isLoading = false, false, "${e.message}")
+            DataTransferStatus(isLoading = false, false, "${e.message}")
         } catch (e: Exception) {
-            DataTransferState(isLoading = false, false, "${e.message}")
+            DataTransferStatus(isLoading = false, false, "${e.message}")
         }
     }
 

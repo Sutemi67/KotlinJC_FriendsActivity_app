@@ -24,13 +24,13 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import apc.appcradle.kotlinjc_friendsactivity_app.R
-import apc.appcradle.kotlinjc_friendsactivity_app.domain.model.network.in_app_states.DataTransferState
+import apc.appcradle.kotlinjc_friendsactivity_app.domain.model.network.in_app_states.DataTransferStatus
 import apc.appcradle.kotlinjc_friendsactivity_app.ui.app_components.AppComponents
 import apc.appcradle.kotlinjc_friendsactivity_app.ui.theme.KotlinJC_FriendsActivity_appTheme
 
 @Composable
 fun RegistrationScreen(
-    transferResult: DataTransferState,
+    transferResult: DataTransferStatus,
     toMainScreen: () -> Unit,
     sendRegisterCallback: (String, String) -> Unit,
 ) {
@@ -113,7 +113,7 @@ fun RegistrationScreen(
 fun Preview() {
     KotlinJC_FriendsActivity_appTheme {
         RegistrationScreen(
-            DataTransferState(),
+            DataTransferStatus(),
             {},
             { _, _ -> {} }
         )

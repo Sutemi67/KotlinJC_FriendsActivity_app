@@ -15,7 +15,7 @@ import apc.appcradle.kotlinjc_friendsactivity_app.domain.SettingsRepository
 import apc.appcradle.kotlinjc_friendsactivity_app.domain.model.SharedPreferencesData
 import apc.appcradle.kotlinjc_friendsactivity_app.domain.model.AppState
 import apc.appcradle.kotlinjc_friendsactivity_app.domain.model.AppThemes
-import apc.appcradle.kotlinjc_friendsactivity_app.domain.model.network.in_app_states.DataTransferState
+import apc.appcradle.kotlinjc_friendsactivity_app.domain.model.network.in_app_states.DataTransferStatus
 import apc.appcradle.kotlinjc_friendsactivity_app.domain.model.network.in_app_states.PlayersListSyncData
 import apc.appcradle.kotlinjc_friendsactivity_app.domain.PermissionManager
 import apc.appcradle.kotlinjc_friendsactivity_app.domain.StepCounterService
@@ -39,8 +39,8 @@ class MainViewModel(
     private var _state = MutableStateFlow(AppState())
     val state: StateFlow<AppState> = _state.asStateFlow()
 
-    private var _transferState = MutableStateFlow(DataTransferState())
-    val transferState: StateFlow<DataTransferState> = _transferState.asStateFlow()
+    private var _transferState = MutableStateFlow(DataTransferStatus())
+    val transferState: StateFlow<DataTransferStatus> = _transferState.asStateFlow()
 
     init {
         checkPermanentAuth()

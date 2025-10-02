@@ -30,7 +30,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import apc.appcradle.kotlinjc_friendsactivity_app.R
-import apc.appcradle.kotlinjc_friendsactivity_app.domain.model.network.in_app_states.DataTransferState
+import apc.appcradle.kotlinjc_friendsactivity_app.domain.model.network.in_app_states.DataTransferStatus
 import apc.appcradle.kotlinjc_friendsactivity_app.ui.app_components.AppComponents
 import apc.appcradle.kotlinjc_friendsactivity_app.ui.app_components.AppComponents.AppText
 import apc.appcradle.kotlinjc_friendsactivity_app.ui.theme.KotlinJC_FriendsActivity_appTheme
@@ -42,7 +42,7 @@ private enum class FieldState {
 @Composable
 fun AuthScreen(
     sendLoginData: (String, String) -> Unit,
-    transferState: DataTransferState,
+    transferState: DataTransferStatus,
     onRegisterClick: () -> Unit,
     onOfflineUseClick: () -> Unit
 ) {
@@ -125,7 +125,7 @@ private fun Preview() {
         AuthScreen(
             sendLoginData = { log, pass -> {} },
             onRegisterClick = {},
-            transferState = DataTransferState(),
+            transferState = DataTransferStatus(),
             onOfflineUseClick = {}
         )
     }

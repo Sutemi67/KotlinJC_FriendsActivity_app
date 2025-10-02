@@ -22,7 +22,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import apc.appcradle.kotlinjc_friendsactivity_app.domain.model.network.in_app_states.PlayerActivityData
+import apc.appcradle.kotlinjc_friendsactivity_app.domain.model.network.in_app_states.RatingsData
 import apc.appcradle.kotlinjc_friendsactivity_app.domain.model.network.in_app_states.PlayersListSyncData
 import apc.appcradle.kotlinjc_friendsactivity_app.ui.app_components.AppComponents.AppText
 import apc.appcradle.kotlinjc_friendsactivity_app.ui.theme.KotlinJC_FriendsActivity_appTheme
@@ -37,7 +37,7 @@ fun RatingsScreen(
     var leader: String? by remember { mutableStateOf("") }
     var kmWeekly by remember { mutableDoubleStateOf(0.0) }
     var leaderDifference by remember { mutableDoubleStateOf(0.0) }
-    var list by remember { mutableStateOf<List<PlayerActivityData>>(emptyList()) }
+    var list by remember { mutableStateOf<List<RatingsData>>(emptyList()) }
 
     LaunchedEffect(Unit) {
         if (login != null) {
@@ -74,7 +74,7 @@ fun RatingsScreen(
                 itemsIndexed(list) { index, item ->
                     PlayerStatsView(
                         login = login,
-                        playerActivityData = item
+                        ratingsData = item
                     )
                 }
             }
@@ -98,13 +98,13 @@ private fun Preview2() {
             syncFun = {
                 PlayersListSyncData(
                     playersList = listOf(
-                        PlayerActivityData(
+                        RatingsData(
                             "Alex",
                             33,
                             2333,
                             .63f,
                         ),
-                        PlayerActivityData(
+                        RatingsData(
                             "AlexMagnus",
                             33333,
                             23373,

@@ -5,7 +5,7 @@ import android.util.Log
 import androidx.core.content.edit
 import androidx.work.WorkManager
 import apc.appcradle.kotlinjc_friendsactivity_app.domain.NetworkClient
-import apc.appcradle.kotlinjc_friendsactivity_app.domain.model.network.in_app_states.PlayerActivityData
+import apc.appcradle.kotlinjc_friendsactivity_app.domain.model.network.in_app_states.RatingsData
 import apc.appcradle.kotlinjc_friendsactivity_app.domain.model.network.in_app_states.PlayersListSyncData
 import apc.appcradle.kotlinjc_friendsactivity_app.domain.model.network.in_app_states.Steps
 import apc.appcradle.kotlinjc_friendsactivity_app.utils.USER_STEP_DEFAULT
@@ -28,7 +28,7 @@ class StatsRepository(
     private val _syncStatus = MutableStateFlow(false)
     val syncStatus: StateFlow<Boolean> = _syncStatus.asStateFlow()
 
-    private var playersList = mutableListOf<PlayerActivityData>()
+    private var playersList = mutableListOf<RatingsData>()
     private var isFirstAppStart = true
 
     private fun percentageMax() {
@@ -54,10 +54,10 @@ class StatsRepository(
                 steps = steps,
                 weeklySteps = weeklySteps
             )
-            val newPlayersList = mutableListOf<PlayerActivityData>()
+            val newPlayersList = mutableListOf<RatingsData>()
             data.friendsList.forEach { it ->
                 newPlayersList.add(
-                    PlayerActivityData(
+                    RatingsData(
                         login = it.login,
                         steps = it.steps,
                         weeklySteps = it.weeklySteps,
