@@ -4,7 +4,7 @@ import android.content.SharedPreferences
 import android.util.Log
 import androidx.core.content.edit
 import androidx.work.WorkManager
-import apc.appcradle.kotlinjc_friendsactivity_app.domain.NetworkClient
+import apc.appcradle.kotlinjc_friendsactivity_app.data.NetworkClient
 import apc.appcradle.kotlinjc_friendsactivity_app.domain.model.network.in_app_states.RatingsData
 import apc.appcradle.kotlinjc_friendsactivity_app.domain.model.network.in_app_states.PlayersListSyncData
 import apc.appcradle.kotlinjc_friendsactivity_app.domain.model.network.in_app_states.Steps

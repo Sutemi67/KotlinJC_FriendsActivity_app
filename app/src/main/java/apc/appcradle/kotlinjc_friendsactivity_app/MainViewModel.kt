@@ -10,7 +10,7 @@ import androidx.work.WorkManager
 import apc.appcradle.kotlinjc_friendsactivity_app.data.StatsRepository
 import apc.appcradle.kotlinjc_friendsactivity_app.data.TokenRepositoryImpl
 import apc.appcradle.kotlinjc_friendsactivity_app.data.WORKER_TAG
-import apc.appcradle.kotlinjc_friendsactivity_app.domain.NetworkClient
+import apc.appcradle.kotlinjc_friendsactivity_app.data.NetworkClient
 import apc.appcradle.kotlinjc_friendsactivity_app.domain.SettingsRepository
 import apc.appcradle.kotlinjc_friendsactivity_app.domain.model.SharedPreferencesData
 import apc.appcradle.kotlinjc_friendsactivity_app.domain.model.AppState

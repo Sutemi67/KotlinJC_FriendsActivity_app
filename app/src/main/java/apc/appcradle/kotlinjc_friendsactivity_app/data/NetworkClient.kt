@@ -1,6 +1,5 @@
-package apc.appcradle.kotlinjc_friendsactivity_app.domain
+package apc.appcradle.kotlinjc_friendsactivity_app.data
 
-import apc.appcradle.kotlinjc_friendsactivity_app.data.TokenRepositoryImpl
 import apc.appcradle.kotlinjc_friendsactivity_app.domain.model.network.in_app_states.DataTransferStatus
 import apc.appcradle.kotlinjc_friendsactivity_app.domain.model.network.requests.LoginChangeRequest
 import apc.appcradle.kotlinjc_friendsactivity_app.domain.model.network.requests.RatingsRequest
@@ -31,9 +30,9 @@ class NetworkClient(
 ) {
     private val networkService = HttpClient(engineFactory = Android) {
         install(HttpTimeout) {
-            requestTimeoutMillis = 5000
-            connectTimeoutMillis = 5000
-            socketTimeoutMillis = 5000
+            requestTimeoutMillis = 4000
+            connectTimeoutMillis = 4000
+            socketTimeoutMillis = 4000
         }
         install(ContentNegotiation) {
             json(
