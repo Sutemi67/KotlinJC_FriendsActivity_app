@@ -99,6 +99,9 @@ class SensorsManager(
 
     fun trancate() {
         statsRepository.trancate()
+        currentSteps = 0
+        stepsWithoutChecking = 0
+        isFirstStart = true
         loadSteps()
     }
 
@@ -107,6 +110,7 @@ class SensorsManager(
         _allSteps.value = loadedSteps.allSteps
         _weeklySteps.value = loadedSteps.weeklySteps
         stepsInitialWeekly = loadedSteps.weeklySteps
+        currentSteps = loadedSteps.weeklySteps
     }
 
     override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) {}

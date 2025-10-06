@@ -28,16 +28,16 @@ class StatsRepository(
 
     private fun percentageMax() {
         _syncStatus.update { true }
-        var maxSteps = 0
-        playersList.forEach { it ->
-            if (it.weeklySteps > maxSteps) maxSteps = it.weeklySteps
+        val maxSteps = playersList.maxOfOrNull { it.weeklySteps } ?: 0
+        playersList.forEach { player ->
+            player.percentage = if (maxSteps > 0) {
+                player.weeklySteps.toFloat() / maxSteps
+            } else 0f
         }
-        playersList.forEach { it ->
-            it.percentage = it.weeklySteps.toFloat() / maxSteps
-        }
-        playersList.sortByDescending { it.percentage }
+        // Sort by absolute weekly steps to ensure correct leader ordering
+        playersList.sortByDescending { it.weeklySteps }
         _syncStatus.update { false }
-        Log.d("dataTransfer", "StatsRepo sorted list $")
+        Log.d("dataTransfer", "StatsRepo sorted list")
     }
 
     suspend fun syncData(login: String, steps: Int, weeklySteps: Int): PlayersListSyncData {
@@ -83,23 +83,20 @@ class StatsRepository(
         var stepsSum = 0
         if (playersList.isNotEmpty()) {
             playersList.forEach { player ->
-                stepsSum += player.steps
+                stepsSum += player.weeklySteps
             }
         }
-        Log.e("dataTransfer", "summ of steps is $stepsSum")
+        Log.e("dataTransfer", "sum of weekly steps is $stepsSum")
         return stepsSum * USER_STEP_DEFAULT / 1000
     }
 
     private fun calcLeaderDiff(login: String?): Double {
-        var diff = 0.0
-
-        if (playersList.isNotEmpty()) {
-            val leader = playersList.first()
-            val player = playersList.first { it.login == login }
-            diff = (leader.weeklySteps - player.weeklySteps) * USER_STEP_DEFAULT / 1000
-            Log.e("difference", "$leader\n$player\n$diff")
-        }
-        return diff
+        if (playersList.isEmpty() || login.isNullOrBlank()) return 0.0
+        val leader = playersList.maxByOrNull { it.weeklySteps } ?: return 0.0
+        val player = playersList.firstOrNull { it.login == login } ?: return 0.0
+        val diffKm = (leader.weeklySteps - player.weeklySteps) * USER_STEP_DEFAULT / 1000
+        Log.e("difference", "$leader\n$player\n$diffKm")
+        return diffKm
     }
 
     init {
