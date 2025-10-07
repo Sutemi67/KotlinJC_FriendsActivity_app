@@ -36,15 +36,24 @@ fun MainUserScreen(
         if (!state.isPermissionsGet) {
             UnpermittedUi(
                 onGetPermissionsClick = {
+                    // Сначала запрашиваем runtime-разрешения
                     permissionLauncher.launch(permissionManager.requiredPermissions.toTypedArray())
+                    // Затем, если точные будильники не разрешены, открываем системные настройки
+                    if (!permissionManager.isExactAlarmAllowed()) {
+                        permissionManager.openExactAlarmSettings()
+                    }
                 }
             )
         } else {
+            // Автозапуск, если флаг включен и сервис не запущен
+            if (state.isServiceEnabled && !state.isServiceRunning) {
+                viewModel.startService(context)
+            }
             PermittedUi(
                 isStepSensorsAvailable = sensorsManager.isStepSensorAvailable,
                 summarySteps = sensorsManager.allSteps.collectAsState().value,
                 weeklySteps = sensorsManager.weeklySteps.collectAsState().value,
-                isServiceRunning = state.isServiceRunning,
+                isServiceRunning = state.isServiceRunning || state.isServiceEnabled,
                 onTrueCallback = { viewModel.startService(context) },
                 onFalseCallback = { viewModel.stopService(context) },
                 userStepLength = state.userStepLength

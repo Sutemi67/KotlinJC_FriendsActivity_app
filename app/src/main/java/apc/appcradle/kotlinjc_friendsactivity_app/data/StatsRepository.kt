@@ -1,9 +1,7 @@
 package apc.appcradle.kotlinjc_friendsactivity_app.data
 
 import android.content.SharedPreferences
-import android.os.Build
 import android.util.Log
-import androidx.annotation.RequiresApi
 import androidx.core.content.edit
 import androidx.work.WorkManager
 import apc.appcradle.kotlinjc_friendsactivity_app.domain.NetworkClient
@@ -16,7 +14,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
-import java.time.Duration
 
 class StatsRepository(
     private val networkClient: NetworkClient,
@@ -127,7 +124,6 @@ class StatsRepository(
         return steps
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
     fun planningTrancateSteps() {
         if (isFirstAppStart) {
             isFirstAppStart = false

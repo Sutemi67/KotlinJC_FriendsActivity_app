@@ -8,6 +8,7 @@ data class AppState(
     //Login and Permissions
     val isPermissionsGet: Boolean = false,
     val isServiceRunning: Boolean = false,
+    val isServiceEnabled: Boolean = false,
     val isLoggedIn: Boolean = false,
     val userLogin: String? = null,
 

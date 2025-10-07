@@ -1,5 +1,6 @@
 package apc.appcradle.kotlinjc_friendsactivity_app.domain
 
+import android.app.AlarmManager
 import android.app.ForegroundServiceStartNotAllowedException
 import android.app.NotificationChannel
 import android.app.NotificationManager
@@ -10,6 +11,7 @@ import android.content.pm.ServiceInfo
 import android.graphics.BitmapFactory
 import android.os.Build
 import android.os.IBinder
+import android.os.SystemClock
 import android.util.Log
 import androidx.core.app.NotificationCompat
 import apc.appcradle.kotlinjc_friendsactivity_app.MainActivity
@@ -33,8 +35,8 @@ class StepCounterService : Service() {
     }
 
     override fun onTaskRemoved(rootIntent: Intent?) {
-        Log.e("service", "Stopped")
         super.onTaskRemoved(rootIntent)
+        scheduleSelfRestart()
     }
 
     override fun onBind(intent: Intent?): IBinder? = null
@@ -112,5 +114,26 @@ class StepCounterService : Service() {
         super.onDestroy()
         sensorManager.unregisterSensors()
         Log.e("service", "destroyed")
+//        scheduleSelfRestart()
+    }
+
+    private fun scheduleSelfRestart() {
+        val restartIntent = Intent(this, StepCounterService::class.java)
+        val pendingIntent = PendingIntent.getService(
+            this,
+            0,
+            restartIntent,
+            PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_CANCEL_CURRENT
+        )
+        val alarmManager = getSystemService(ALARM_SERVICE) as AlarmManager
+        try {
+            alarmManager.setExactAndAllowWhileIdle(
+                AlarmManager.ELAPSED_REALTIME_WAKEUP,
+                SystemClock.elapsedRealtime() + 5_000L,
+                pendingIntent
+            )
+        } catch (e: SecurityException) {
+            Log.e("service", "StepCounterService -> ${e.message}")
+        }
     }
 }
