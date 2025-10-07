@@ -1,7 +1,9 @@
 package apc.appcradle.kotlinjc_friendsactivity_app.data
 
 import android.content.SharedPreferences
+import android.os.Build
 import android.util.Log
+import androidx.annotation.RequiresApi
 import androidx.core.content.edit
 import androidx.work.WorkManager
 import apc.appcradle.kotlinjc_friendsactivity_app.domain.NetworkClient
@@ -14,6 +16,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import java.time.Duration
 
 class StatsRepository(
     private val networkClient: NetworkClient,
@@ -34,7 +37,6 @@ class StatsRepository(
                 player.weeklySteps.toFloat() / maxSteps
             } else 0f
         }
-        // Sort by absolute weekly steps to ensure correct leader ordering
         playersList.sortByDescending { it.weeklySteps }
         _syncStatus.update { false }
         Log.d("dataTransfer", "StatsRepo sorted list")
@@ -125,13 +127,16 @@ class StatsRepository(
         return steps
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     fun planningTrancateSteps() {
         if (isFirstAppStart) {
             isFirstAppStart = false
             sharedPreferences.edit { putBoolean(FIRST_START_ID, false) }
+//            workManager.enqueue(trancateStepsRequest(Duration.ofMinutes(30).toMillis()))
             workManager.enqueue(trancateStepsRequest(whenNextMonday()))
             Log.d("worker", "statRepo,planningTrancateSteps -> ${whenNextMonday()}")
         }
+
     }
 
     fun trancate() {

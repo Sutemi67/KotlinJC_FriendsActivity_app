@@ -55,8 +55,6 @@ fun NavigationHost(
 
     val context = LocalContext.current
     val transferState = viewModel.transferState.collectAsState().value
-    val steps = sensorManager.allSteps.collectAsState().value
-    val weeklySteps = sensorManager.weeklySteps.collectAsState().value
     val isSynced = statsRepository.syncStatus.collectAsState().value
 
     LaunchedEffect(Unit) {
@@ -126,10 +124,12 @@ fun NavigationHost(
                     login = state.userLogin,
                     isSynced = isSynced,
                     syncFun = {
+                        val stepsNow = sensorManager.allSteps.value
+                        val weeklyNow = sensorManager.weeklySteps.value
                         viewModel.syncData(
                             login = state.userLogin!!,
-                            steps = steps,
-                            weeklySteps = weeklySteps
+                            steps = stepsNow,
+                            weeklySteps = weeklyNow
                         )
                     }
                 )

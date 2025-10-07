@@ -40,6 +40,7 @@ class SensorsManager(
     private var stepsWithoutChecking = 0
     private var isFirstStart = true
     private var isSaved = false
+    private var lastTotalCounterSteps: Int? = null
 
     init {
         loadSteps()
@@ -102,6 +103,7 @@ class SensorsManager(
         currentSteps = 0
         stepsWithoutChecking = 0
         isFirstStart = true
+        lastTotalCounterSteps = null
         loadSteps()
     }
 
@@ -122,9 +124,18 @@ class SensorsManager(
                     if (isFirstStart && totalSensorSteps > 0) {
                         stepsWithoutChecking = totalSensorSteps - stepsInitialWeekly
                         isFirstStart = false
+                        lastTotalCounterSteps = totalSensorSteps
                     }
                     if (!isFirstStart) {
-                        stepsCounter(totalSensorSteps)
+                        currentSteps = totalSensorSteps - stepsWithoutChecking
+                        _weeklySteps.value = currentSteps
+                        val previous = lastTotalCounterSteps ?: totalSensorSteps
+                        val delta = (totalSensorSteps - previous).coerceAtLeast(0)
+                        lastTotalCounterSteps = totalSensorSteps
+                        if (delta > 0) {
+                            _allSteps.value += delta
+                            periodicalSaving()
+                        }
                     }
                 }
 
@@ -136,12 +147,5 @@ class SensorsManager(
                 }
             }
         }
-    }
-
-    private fun stepsCounter(totalSensorSteps: Int) {
-        currentSteps = totalSensorSteps - stepsWithoutChecking
-        _weeklySteps.value = currentSteps
-        _allSteps.value++
-        periodicalSaving()
     }
 }
