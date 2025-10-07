@@ -18,6 +18,7 @@ import apc.appcradle.kotlinjc_friendsactivity_app.MainActivity
 import apc.appcradle.kotlinjc_friendsactivity_app.R
 import apc.appcradle.kotlinjc_friendsactivity_app.data.SensorsManager
 import org.koin.android.ext.android.inject
+import org.koin.java.KoinJavaComponent.inject
 
 class StepCounterService : Service() {
     companion object {
@@ -30,7 +31,7 @@ class StepCounterService : Service() {
         createNotificationChannel()
         startServiceInForeground()
         sensorManager.registerSensors()
-        Log.e("service", "Started")
+        Log.i("service", "Service -> onStartCommand")
         return START_STICKY
     }
 
@@ -113,11 +114,20 @@ class StepCounterService : Service() {
     override fun onDestroy() {
         super.onDestroy()
         sensorManager.unregisterSensors()
-        Log.e("service", "destroyed")
-//        scheduleSelfRestart()
+        Log.i("service", "Service -> Destroyed")
     }
 
     private fun scheduleSelfRestart() {
+        val settingsRepository by inject<SettingsRepository>(SettingsRepository::class.java)
+        val permissionManager by inject<PermissionManager>(PermissionManager::class.java)
+
+        val isEnabled = try {
+            settingsRepository.loadSettingsData().savedIsServiceEnabled
+        } catch (e: Exception) {
+            Log.e("service", "Service -> ${ e.message }")
+            false
+        }
+        if (!isEnabled || !permissionManager.arePermissionsGranted()) return
         val restartIntent = Intent(this, StepCounterService::class.java)
         val pendingIntent = PendingIntent.getService(
             this,
@@ -133,7 +143,7 @@ class StepCounterService : Service() {
                 pendingIntent
             )
         } catch (e: SecurityException) {
-            Log.e("service", "StepCounterService -> ${e.message}")
+            Log.e("service", "Service -> ${e.message}")
         }
     }
 }

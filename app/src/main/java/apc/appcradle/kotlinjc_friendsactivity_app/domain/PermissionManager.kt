@@ -58,6 +58,15 @@ class PermissionManager(private val context: Context) {
         return runtimeOk && exactAlarmOk
     }
 
+    fun areRuntimePermissionsGranted(): Boolean {
+        return requiredPermissions.all { permission ->
+            ContextCompat.checkSelfPermission(
+                context,
+                permission
+            ) == PackageManager.PERMISSION_GRANTED
+        }
+    }
+
     fun isExactAlarmAllowed(): Boolean {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S) return true
         val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
