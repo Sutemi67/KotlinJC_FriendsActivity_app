@@ -78,6 +78,8 @@ class MainViewModel(
         try {
             ContextCompat.startForegroundService(context, serviceIntent)
             isServiceRunning(context)
+            _state.update { it.copy(isServiceEnabled = true) }
+            saveSettings()
         } catch (e: Exception) {
             Log.e("service", "Failed to start service: ${e.message}")
         }
@@ -87,6 +89,8 @@ class MainViewModel(
         val serviceIntent = Intent(context, StepCounterService::class.java)
         context.stopService(serviceIntent)
         isServiceRunning(context)
+        _state.update { it.copy(isServiceEnabled = false) }
+        saveSettings()
     }
 
     private fun isServiceRunning(context: Context, serviceClass: Class<*>): Boolean {
@@ -248,7 +252,8 @@ class MainViewModel(
             SharedPreferencesData(
                 savedTheme = state.value.currentTheme,
                 savedScale = state.value.userScale,
-                savedUserStep = state.value.userStepLength
+                savedUserStep = state.value.userStepLength,
+                savedIsServiceEnabled = state.value.isServiceEnabled
             )
         )
     }
@@ -259,7 +264,8 @@ class MainViewModel(
             it.copy(
                 currentTheme = settings.savedTheme,
                 userStepLength = settings.savedUserStep,
-                userScale = settings.savedScale
+                userScale = settings.savedScale,
+                isServiceEnabled = settings.savedIsServiceEnabled
             )
         }
     }

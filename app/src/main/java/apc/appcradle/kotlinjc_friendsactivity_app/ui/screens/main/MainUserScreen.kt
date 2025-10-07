@@ -5,6 +5,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
@@ -36,15 +37,26 @@ fun MainUserScreen(
         if (!state.isPermissionsGet) {
             UnpermittedUi(
                 onGetPermissionsClick = {
+                    // Сначала запрашиваем runtime-разрешения
                     permissionLauncher.launch(permissionManager.requiredPermissions.toTypedArray())
+                    // Затем, если точные будильники не разрешены, открываем системные настройки
+                    if (!permissionManager.isExactAlarmAllowed()) {
+                        permissionManager.openExactAlarmSettings()
+                    }
                 }
             )
         } else {
+            // Автозапуск, если флаг включен и сервис не запущен (однократно)
+            LaunchedEffect(state.isServiceEnabled) {
+                if (state.isServiceEnabled && !state.isServiceRunning) {
+                    viewModel.startService(context)
+                }
+            }
             PermittedUi(
                 isStepSensorsAvailable = sensorsManager.isStepSensorAvailable,
                 summarySteps = sensorsManager.allSteps.collectAsState().value,
                 weeklySteps = sensorsManager.weeklySteps.collectAsState().value,
-                isServiceRunning = state.isServiceRunning,
+                isServiceRunning = state.isServiceRunning || state.isServiceEnabled,
                 onTrueCallback = { viewModel.startService(context) },
                 onFalseCallback = { viewModel.stopService(context) },
                 userStepLength = state.userStepLength

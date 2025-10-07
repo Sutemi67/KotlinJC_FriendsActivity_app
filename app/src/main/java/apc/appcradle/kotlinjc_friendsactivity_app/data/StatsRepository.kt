@@ -34,7 +34,6 @@ class StatsRepository(
                 player.weeklySteps.toFloat() / maxSteps
             } else 0f
         }
-        // Sort by absolute weekly steps to ensure correct leader ordering
         playersList.sortByDescending { it.weeklySteps }
         _syncStatus.update { false }
         Log.d("dataTransfer", "StatsRepo sorted list")
@@ -129,9 +128,11 @@ class StatsRepository(
         if (isFirstAppStart) {
             isFirstAppStart = false
             sharedPreferences.edit { putBoolean(FIRST_START_ID, false) }
+//            workManager.enqueue(trancateStepsRequest(Duration.ofMinutes(30).toMillis()))
             workManager.enqueue(trancateStepsRequest(whenNextMonday()))
             Log.d("worker", "statRepo,planningTrancateSteps -> ${whenNextMonday()}")
         }
+
     }
 
     fun trancate() {

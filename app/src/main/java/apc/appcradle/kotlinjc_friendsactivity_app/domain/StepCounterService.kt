@@ -1,5 +1,6 @@
 package apc.appcradle.kotlinjc_friendsactivity_app.domain
 
+import android.app.AlarmManager
 import android.app.ForegroundServiceStartNotAllowedException
 import android.app.NotificationChannel
 import android.app.NotificationManager
@@ -10,12 +11,14 @@ import android.content.pm.ServiceInfo
 import android.graphics.BitmapFactory
 import android.os.Build
 import android.os.IBinder
+import android.os.SystemClock
 import android.util.Log
 import androidx.core.app.NotificationCompat
 import apc.appcradle.kotlinjc_friendsactivity_app.MainActivity
 import apc.appcradle.kotlinjc_friendsactivity_app.R
 import apc.appcradle.kotlinjc_friendsactivity_app.data.SensorsManager
 import org.koin.android.ext.android.inject
+import org.koin.java.KoinJavaComponent.inject
 
 class StepCounterService : Service() {
     companion object {
@@ -28,13 +31,13 @@ class StepCounterService : Service() {
         createNotificationChannel()
         startServiceInForeground()
         sensorManager.registerSensors()
-        Log.e("service", "Started")
+        Log.i("service", "Service -> onStartCommand")
         return START_STICKY
     }
 
     override fun onTaskRemoved(rootIntent: Intent?) {
-        Log.e("service", "Stopped")
         super.onTaskRemoved(rootIntent)
+        scheduleSelfRestart()
     }
 
     override fun onBind(intent: Intent?): IBinder? = null
@@ -111,6 +114,36 @@ class StepCounterService : Service() {
     override fun onDestroy() {
         super.onDestroy()
         sensorManager.unregisterSensors()
-        Log.e("service", "destroyed")
+        Log.i("service", "Service -> Destroyed")
+    }
+
+    private fun scheduleSelfRestart() {
+        val settingsRepository by inject<SettingsRepository>(SettingsRepository::class.java)
+        val permissionManager by inject<PermissionManager>(PermissionManager::class.java)
+
+        val isEnabled = try {
+            settingsRepository.loadSettingsData().savedIsServiceEnabled
+        } catch (e: Exception) {
+            Log.e("service", "Service -> ${ e.message }")
+            false
+        }
+        if (!isEnabled || !permissionManager.arePermissionsGranted()) return
+        val restartIntent = Intent(this, StepCounterService::class.java)
+        val pendingIntent = PendingIntent.getService(
+            this,
+            0,
+            restartIntent,
+            PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_CANCEL_CURRENT
+        )
+        val alarmManager = getSystemService(ALARM_SERVICE) as AlarmManager
+        try {
+            alarmManager.setExactAndAllowWhileIdle(
+                AlarmManager.ELAPSED_REALTIME_WAKEUP,
+                SystemClock.elapsedRealtime() + 5_000L,
+                pendingIntent
+            )
+        } catch (e: SecurityException) {
+            Log.e("service", "Service -> ${e.message}")
+        }
     }
 }
