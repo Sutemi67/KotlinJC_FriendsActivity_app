@@ -46,7 +46,7 @@ fun RatingsScreen(
                 errorMessage = response.errorMessage
                 kmWeekly = response.summaryKm
                 leaderDifference = response.leaderDifferenceKm
-                list = response.playersList
+                list = response.playersList.filter { it.weeklySteps > 0 }
                 leader = response.leader
             } catch (e: Exception) {
                 Log.e("dataTransfer", "RatingsScreen: error syncing data: ${e.message}")
@@ -102,12 +102,18 @@ private fun Preview2() {
                             "Alex",
                             33,
                             2333,
-                            .63f,
+                            .4f,
                         ),
                         PlayerActivityData(
                             "AlexMagnus",
                             33333,
                             23373,
+                            .73f,
+                        ),
+                        PlayerActivityData(
+                            "Zero",
+                            33333,
+                            0,
                             .3f,
                         )
                     ).sortedByDescending { it.weeklySteps },
