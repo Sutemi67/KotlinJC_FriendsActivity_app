@@ -3,6 +3,13 @@ package apc.appcradle.kotlinjc_friendsactivity_app.domain
 import android.util.Log
 import apc.appcradle.kotlinjc_friendsactivity_app.data.TokenRepositoryImpl
 import apc.appcradle.kotlinjc_friendsactivity_app.domain.model.network.DataTransferState
+import apc.appcradle.kotlinjc_friendsactivity_app.domain.model.network.requests.LoginChange
+import apc.appcradle.kotlinjc_friendsactivity_app.domain.model.network.requests.LoginReceiveRemote
+import apc.appcradle.kotlinjc_friendsactivity_app.domain.model.network.requests.RegisterReceiveRemote
+import apc.appcradle.kotlinjc_friendsactivity_app.domain.model.network.requests.UserActivity
+import apc.appcradle.kotlinjc_friendsactivity_app.domain.model.network.responses.LoginResponseRemote
+import apc.appcradle.kotlinjc_friendsactivity_app.domain.model.network.responses.RegisterResponseRemote
+import apc.appcradle.kotlinjc_friendsactivity_app.domain.model.network.responses.UserActivityResponse
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.engine.android.Android
@@ -18,7 +25,6 @@ import io.ktor.http.ContentType
 import io.ktor.http.contentType
 import io.ktor.http.isSuccess
 import io.ktor.serialization.kotlinx.json.json
-import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 import java.net.ConnectException
 import java.net.SocketTimeoutException
@@ -26,51 +32,6 @@ import java.net.SocketTimeoutException
 class NetworkClient(
     private val tokenRepositoryImpl: TokenRepositoryImpl
 ) {
-
-    companion object {
-        @Serializable
-        data class RegisterReceiveRemote(
-            val login: String,
-            val password: String
-        )
-
-        @Serializable
-        data class RegisterResponseRemote(
-            val token: String
-        )
-
-        @Serializable
-        data class LoginReceiveRemote(
-            val login: String,
-            val password: String
-        )
-
-        @Serializable
-        data class LoginResponseRemote(
-            val token: String
-        )
-
-        @Serializable
-        data class UserActivity(
-            val login: String,
-            val steps: Int,
-            val weeklySteps: Int
-        )
-
-        @Serializable
-        data class UserActivityResponse(
-            val friendsList: MutableList<UserActivity>,
-            val errorMessage: String?,
-            val leader: String?
-        )
-
-        @Serializable
-        data class LoginChange(
-            val login: String,
-            val newLogin: String
-        )
-    }
-
     private val networkService = HttpClient(engineFactory = Android) {
         install(HttpTimeout) {
             requestTimeoutMillis = 5000
