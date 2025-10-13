@@ -39,7 +39,7 @@ class SensorsManager(
     private var currentSteps = 0
     private var stepsWithoutChecking = 0
     private var isFirstStart = true
-    private var isSaved = false
+    private var isSavingInProgress = false
     private var lastTotalCounterSteps: Int? = null
 
     init {
@@ -83,9 +83,9 @@ class SensorsManager(
     }
 
     private fun periodicalSaving() {
-        if (!isSaved) {
+        if (!isSavingInProgress) {
             CoroutineScope(Dispatchers.IO).launch {
-                isSaved = true
+                isSavingInProgress = true
                 delay(60000)
                 statsRepository.saveAllSteps(
                     Steps(
@@ -93,7 +93,7 @@ class SensorsManager(
                         weeklySteps = weeklySteps.value
                     )
                 )
-                isSaved = false
+                isSavingInProgress = false
             }
         }
     }

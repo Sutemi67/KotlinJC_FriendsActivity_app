@@ -1,14 +1,13 @@
 package apc.appcradle.kotlinjc_friendsactivity_app.domain
 
-import android.util.Log
 import apc.appcradle.kotlinjc_friendsactivity_app.data.TokenRepositoryImpl
 import apc.appcradle.kotlinjc_friendsactivity_app.domain.model.network.DataTransferState
-import apc.appcradle.kotlinjc_friendsactivity_app.domain.model.network.requests.LoginChange
-import apc.appcradle.kotlinjc_friendsactivity_app.domain.model.network.requests.LoginReceiveRemote
-import apc.appcradle.kotlinjc_friendsactivity_app.domain.model.network.requests.RegisterReceiveRemote
-import apc.appcradle.kotlinjc_friendsactivity_app.domain.model.network.requests.UserActivity
-import apc.appcradle.kotlinjc_friendsactivity_app.domain.model.network.responses.LoginResponseRemote
-import apc.appcradle.kotlinjc_friendsactivity_app.domain.model.network.responses.RegisterResponseRemote
+import apc.appcradle.kotlinjc_friendsactivity_app.domain.model.network.requests.LoginChangeRequest
+import apc.appcradle.kotlinjc_friendsactivity_app.domain.model.network.requests.LoginRequest
+import apc.appcradle.kotlinjc_friendsactivity_app.domain.model.network.requests.RegisterRequest
+import apc.appcradle.kotlinjc_friendsactivity_app.domain.model.network.requests.UserActivityRequest
+import apc.appcradle.kotlinjc_friendsactivity_app.domain.model.network.responses.LoginResponse
+import apc.appcradle.kotlinjc_friendsactivity_app.domain.model.network.responses.RegisterResponse
 import apc.appcradle.kotlinjc_friendsactivity_app.domain.model.network.responses.UserActivityResponse
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
@@ -34,9 +33,9 @@ class NetworkClient(
 ) {
     private val networkService = HttpClient(engineFactory = Android) {
         install(HttpTimeout) {
-            requestTimeoutMillis = 5000
-            connectTimeoutMillis = 5000
-            socketTimeoutMillis = 5000
+            requestTimeoutMillis = 4000
+            connectTimeoutMillis = 4000
+            socketTimeoutMillis = 4000
         }
         install(ContentNegotiation) {
             json(
@@ -73,22 +72,17 @@ class NetworkClient(
     }
 
     suspend fun sendRegistrationInfo(login: String, password: String): DataTransferState {
-        val body = RegisterReceiveRemote(login = login, password = password)
+        val body = RegisterRequest(login = login, password = password)
         return try {
             val response = networkService.post(urlString = "$serverUrl/register") {
                 contentType(ContentType.Application.Json)
                 setBody(body)
             }
             if (response.status.isSuccess()) {
-                val token = response.body<RegisterResponseRemote>().token
+                val token = response.body<RegisterResponse>().token
                 saveToken(login = login, token = token)
-                Log.d(
-                    "dataTransfer",
-                    "сохраненный токен: ${tokenRepositoryImpl.getToken()}\nвыданный токен: $token"
-                )
                 DataTransferState(isLoading = false, true)
             } else {
-                Log.e("dataTransfer", "${response.body<String?>()}")
                 DataTransferState(isLoading = false, true, response.body<String?>())
             }
         } catch (_: SocketTimeoutException) {
@@ -98,41 +92,30 @@ class NetworkClient(
                     setBody(body)
                 }
                 if (response.status.isSuccess()) {
-                    val token = response.body<RegisterResponseRemote>().token
+                    val token = response.body<RegisterResponse>().token
                     saveToken(login = login, token = token)
-                    Log.d(
-                        "dataTransfer",
-                        "сохраненный токен: ${tokenRepositoryImpl.getToken()}\nвыданный токен: $token"
-                    )
                     DataTransferState(isLoading = false, true)
                 } else {
-                    Log.e("dataTransfer", "${response.body<String?>()}")
                     DataTransferState(isLoading = false, true, response.body<String?>())
                 }
             } catch (e: Exception) {
-                Log.e("dataTransfer", "not successful sending", e)
                 DataTransferState(isLoading = false, false, "${e.message}")
             }
         }
     }
 
     suspend fun sendLoginInfo(login: String, password: String): DataTransferState {
-        val body = LoginReceiveRemote(login, password)
+        val body = LoginRequest(login, password)
         return try {
             val response = networkService.post(urlString = "$serverUrl/login") {
                 contentType(ContentType.Application.Json)
                 setBody(body)
             }
             if (response.status.isSuccess()) {
-                val token = response.body<LoginResponseRemote>().token
+                val token = response.body<LoginResponse>().token
                 saveToken(login = login, token = token)
-                Log.d(
-                    "dataTransfer",
-                    "сохраненный токен: ${tokenRepositoryImpl.getToken()}\nвыданный токен: $token"
-                )
                 DataTransferState(isLoading = false, true, errorMessage = null)
             } else {
-                Log.e("dataTransfer", "${response.body<String?>()}")
                 DataTransferState(isLoading = false, true, response.body<String?>())
             }
         } catch (_: SocketTimeoutException) {
@@ -142,30 +125,22 @@ class NetworkClient(
                     setBody(body)
                 }
                 if (response.status.isSuccess()) {
-                    val token = response.body<LoginResponseRemote>().token
+                    val token = response.body<LoginResponse>().token
                     saveToken(login = login, token = token)
-                    Log.d(
-                        "dataTransfer",
-                        "сохраненный токен: ${tokenRepositoryImpl.getToken()}\nвыданный токен: $token"
-                    )
                     DataTransferState(isLoading = false, true, errorMessage = null)
                 } else {
-                    Log.e("dataTransfer", "${response.body<String?>()}")
                     DataTransferState(isLoading = false, true, response.body<String?>())
                 }
-            } catch (e: Exception) {
-                Log.e("dataTransfer", "error is - ${e.message}")
+            } catch (_: Exception) {
                 DataTransferState(
                     isLoading = false,
                     false,
                     "Connection error: server does not respond"
                 )
             }
-        } catch (e: HttpRequestTimeoutException) {
-            Log.e("dataTransfer", "error is - ${e.message}")
+        } catch (_: HttpRequestTimeoutException) {
             DataTransferState(isLoading = false, false, "Request timeout has expired")
-        } catch (e: Exception) {
-            Log.e("dataTransfer", "error is - ${e.message}")
+        } catch (_: Exception) {
             DataTransferState(isLoading = false, false, "Unknown error")
         }
     }
@@ -175,7 +150,7 @@ class NetworkClient(
         steps: Int,
         weeklySteps: Int
     ): UserActivityResponse {
-        val body = UserActivity(login = login, steps = steps, weeklySteps = weeklySteps)
+        val body = UserActivityRequest(login = login, steps = steps, weeklySteps = weeklySteps)
         return try {
             val request = networkService.post(urlString = "$serverUrl/post_activity") {
                 contentType(ContentType.Application.Json)
@@ -228,26 +203,14 @@ class NetworkClient(
     }
 
     suspend fun changeUserLogin(login: String, newLogin: String): Boolean {
-        val body = LoginChange(login, newLogin)
+        val body = LoginChangeRequest(login, newLogin)
         try {
             val response = networkService.post(urlString = "$serverUrl/login_update") {
                 contentType(ContentType.Application.Json)
                 setBody(body)
             }
-            if (response.status.isSuccess()) {
-                Log.d(
-                    "dataTransfer",
-                    "network client -> login change successful, ${response.status}"
-                )
-                return true
-            }
-            Log.e(
-                "dataTransfer",
-                "network client -> login change unsuccessful, ${response.status}"
-            )
-            return false
-        } catch (e: Exception) {
-            Log.e("dataTransfer", "network client -> not successful sending", e)
+            return response.status.isSuccess()
+        } catch (_: Exception) {
             return false
         }
     }

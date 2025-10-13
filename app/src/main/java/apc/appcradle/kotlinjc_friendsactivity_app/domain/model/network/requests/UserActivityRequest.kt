@@ -3,7 +3,8 @@ package apc.appcradle.kotlinjc_friendsactivity_app.domain.model.network.requests
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class RegisterReceiveRemote(
+data class UserActivityRequest(
     val login: String,
-    val password: String
+    val steps: Int,
+    val weeklySteps: Int
 )
