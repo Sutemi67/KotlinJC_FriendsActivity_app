@@ -20,5 +20,7 @@ dependencyResolutionManagement {
 }
 
 rootProject.name = "KotlinJC_FriendsActivity_app"
-include(":app")
- 
+include(":presentation")
+include(":domain")
+include(":data")
+include(":core")
