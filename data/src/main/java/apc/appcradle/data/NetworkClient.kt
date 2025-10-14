@@ -1,5 +1,6 @@
 package apc.appcradle.data
 
+import apc.appcradle.domain.NetworkClient
 import apc.appcradle.domain.models.network.DataTransferState
 import apc.appcradle.domain.models.network.requests.LoginChangeRequest
 import apc.appcradle.domain.models.network.requests.LoginRequest
@@ -29,7 +30,7 @@ import java.net.SocketTimeoutException
 
 class NetworkClient(
     private val tokenRepositoryImpl: TokenRepositoryImpl
-) {
+) : NetworkClient {
     private val networkService = HttpClient(engineFactory = Android) {
         install(HttpTimeout) {
             requestTimeoutMillis = 4000

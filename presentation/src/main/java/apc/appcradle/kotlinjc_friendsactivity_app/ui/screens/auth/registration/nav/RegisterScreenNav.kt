@@ -7,7 +7,7 @@ import androidx.compose.runtime.remember
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
-import apc.appcradle.kotlinjc_friendsactivity_app.MainViewModel
+import apc.appcradle.kotlinjc_friendsactivity_app.NetworkViewModel
 import apc.appcradle.kotlinjc_friendsactivity_app.ui.screens.Destinations
 import apc.appcradle.kotlinjc_friendsactivity_app.ui.screens.auth.registration.RegistrationScreen
 import org.koin.androidx.compose.koinViewModel
@@ -26,7 +26,7 @@ fun NavGraphBuilder.registerScreen(
 fun RegistrationRoute(
     toMainScreen: () -> Unit,
 ) {
-    val viewModel: MainViewModel = koinViewModel()
+    val viewModel: NetworkViewModel = koinViewModel()
     val transferResult by viewModel.transferState.collectAsState()
     val sendRegisterCallback = remember(viewModel) {
         { login: String, password: String ->

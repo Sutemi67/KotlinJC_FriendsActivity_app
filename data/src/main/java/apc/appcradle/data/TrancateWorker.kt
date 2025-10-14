@@ -4,9 +4,8 @@ import android.content.Context
 import androidx.work.CoroutineWorker
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkerParameters
+import apc.appcradle.core.constants.WORKER_TAG
 import java.util.concurrent.TimeUnit
-
-const val WORKER_TAG = "trancate"
 
 class TrancateWorker(
     context: Context,

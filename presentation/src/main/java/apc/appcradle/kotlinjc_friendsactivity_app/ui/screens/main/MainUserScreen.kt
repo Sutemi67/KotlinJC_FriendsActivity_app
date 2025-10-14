@@ -10,18 +10,18 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import apc.appcradle.kotlinjc_friendsactivity_app.MainViewModel
+import apc.appcradle.kotlinjc_friendsactivity_app.NetworkViewModel
 import apc.appcradle.kotlinjc_friendsactivity_app.PermissionManager
 import apc.appcradle.kotlinjc_friendsactivity_app.ui.screens.LocalSensorManager
 import org.koin.compose.koinInject
 
 @Composable
 fun MainUserScreen(
-    viewModel: MainViewModel
+    viewModel: NetworkViewModel
 ) {
     val sensorsManager = LocalSensorManager.current
     val permissionManager = koinInject<PermissionManager>()
-    val state by viewModel.state.collectAsState()
+    val state by viewModel.networkState.collectAsState()
     val context = LocalContext.current
 
     val permissionLauncher = rememberLauncherForActivityResult(

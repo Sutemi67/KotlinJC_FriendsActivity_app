@@ -1,4 +1,4 @@
-package apc.appcradle.kotlinjc_friendsactivity_app
+package apc.appcradle.data
 
 import android.app.AlarmManager
 import android.app.ForegroundServiceStartNotAllowedException
@@ -15,17 +15,17 @@ import android.os.SystemClock
 import android.util.Log
 import androidx.core.app.NotificationCompat
 import apc.appcradle.domain.SettingsRepository
-import apc.appcradle.data.SensorsManager
 import org.koin.android.ext.android.inject
-import org.koin.java.KoinJavaComponent
 
-class StepCounterService : Service() {
+class StepCounterService (): Service() {
     companion object {
         const val NOTIFICATION_ID = 1
         const val CHANNEL_ID = "StepCounterChannel"
     }
+    private val settingsRepository by inject<SettingsRepository>()
+    private val permissionManager by inject<PermissionManager>()
+    private val sensorManager by inject<SensorManager>()
 
-    private val sensorManager: SensorsManager by inject()
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         createNotificationChannel()
         startServiceInForeground()
@@ -117,8 +117,7 @@ class StepCounterService : Service() {
     }
 
     private fun scheduleSelfRestart() {
-        val settingsRepository by KoinJavaComponent.inject<SettingsRepository>(SettingsRepository::class.java)
-        val permissionManager by KoinJavaComponent.inject<PermissionManager>(PermissionManager::class.java)
+
 
         val isEnabled = try {
             settingsRepository.loadSettingsData().savedIsServiceEnabled

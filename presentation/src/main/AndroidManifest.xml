@@ -22,7 +22,7 @@
         android:theme="@style/Theme.KotlinJC_FriendsActivity_app">
         
         <service
-            android:name=".StepCounterService"
+            android:name="apc.appcradle.data.StepCounterService"
             android:enabled="true"
             android:exported="false"
             android:foregroundServiceType="dataSync" />

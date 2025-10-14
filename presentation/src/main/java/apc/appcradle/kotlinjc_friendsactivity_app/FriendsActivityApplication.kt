@@ -12,7 +12,7 @@ class FriendsActivityApplication : Application() {
         startKoin {
             androidLogger()
             androidContext(this@FriendsActivityApplication)
-            modules(koinAppModule)
+            modules(koinPresentationModule)
         }
     }
 }

@@ -62,4 +62,10 @@ dependencies {
     implementation(libs.work.runtime.ktx)
     //Gson
     implementation(libs.gson)
+
+    //Koin
+    implementation(libs.koin.androidx.compose)
+    implementation(libs.koin.androidx.compose.navigation)
+    implementation(libs.koin.ktor)
+    testImplementation(libs.koin.test.junit4)
 }
