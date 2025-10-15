@@ -4,7 +4,7 @@ plugins {
 }
 
 android {
-    namespace = "apc.appcradle.core"
+    namespace = "apc.appcradle.di"
     compileSdk {
         version = release(36)
     }
@@ -35,10 +35,15 @@ android {
 }
 
 dependencies {
-
+    //modules
+    implementation(project(":data"))
+    implementation(project(":presentation"))
+    implementation(project(":domain"))
+    //default
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
+    implementation(libs.work.runtime.ktx)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

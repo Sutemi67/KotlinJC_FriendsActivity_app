@@ -10,7 +10,7 @@
     <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM"/>
 
     <application
-        android:name=".presentation.FriendsActivityApplication"
+        android:name="apc.appcradle.kotlinjc_friendsactivity_app.FriendsActivityApplication"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
@@ -22,12 +22,10 @@
         android:theme="@style/Theme.KotlinJC_FriendsActivity_app">
         
         <service
-            android:name="apc.appcradle.data.StepCounterService"
+            android:name=".StepCounterService"
             android:enabled="true"
             android:exported="false"
             android:foregroundServiceType="dataSync" />
-
-        
             
         <activity
             android:name=".presentation.MainActivity"

@@ -99,10 +99,7 @@ fun NavigationHost(
                 toRegisterScreen = { navController.toRegisterScreen() },
                 transferState = transferState,
                 sendLoginData = { login, password ->
-                    networkViewModel.sendLoginData(
-                        login,
-                        password
-                    )
+                    networkViewModel.sendLoginData(login, password)
                 },
                 onOfflineUseClick = { networkViewModel.goOfflineUse() }
             )
@@ -132,10 +129,7 @@ fun NavigationHost(
                 userScale = settingsViewModel.settingsState.value.savedScale,
                 onThemeClick = { settingsViewModel.changeTheme(it) },
                 onNickNameClick = { login, newLogin ->
-                    networkViewModel.changeLogin(
-                        login,
-                        newLogin
-                    )
+                    networkViewModel.changeLogin(login, newLogin)
                 },
                 onStepLengthClick = { settingsViewModel.changeStepLength(it) },
                 currentTheme = settingsViewModel.settingsState.value.savedTheme,

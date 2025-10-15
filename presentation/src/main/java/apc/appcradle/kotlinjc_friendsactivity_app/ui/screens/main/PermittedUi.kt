@@ -1,6 +1,5 @@
 package apc.appcradle.kotlinjc_friendsactivity_app.ui.screens.main
 
-import android.icu.text.DecimalFormat
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -30,6 +29,8 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import apc.appcradle.core.utils_functions.format
+import apc.appcradle.core.utils_functions.kkalCalc
 import apc.appcradle.kotlinjc_friendsactivity_app.R
 import apc.appcradle.kotlinjc_friendsactivity_app.ui.app_components.AppComponents.AppText
 import apc.appcradle.kotlinjc_friendsactivity_app.ui.theme.AppTextStyles
@@ -166,22 +167,6 @@ fun PermittedUi(
             }
         }
     }
-}
-
-private fun format(text: Int): String {
-    val ddd = DecimalFormat("###,###.##")
-    return ddd.format(text)
-}
-
-private fun format(text: Double): String {
-    val ddd = DecimalFormat("###,###.##")
-    return ddd.format(text)
-}
-
-private fun kkalCalc(userStepLength: Double, stepCount: Int): IntRange {
-    val firstValue = (50 * (stepCount * userStepLength / 2500)).roundToInt()
-    val secondValue = (75 * (stepCount * userStepLength / 2500)).roundToInt()
-    return IntRange(firstValue, secondValue)
 }
 
 @Preview

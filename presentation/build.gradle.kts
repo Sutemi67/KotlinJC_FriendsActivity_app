@@ -76,6 +76,7 @@ dependencies {
     //Modules
     implementation (project(":domain"))
     implementation (project(":core"))
+    implementation (project(":data"))
 
     //Koin
     implementation(libs.koin.androidx.compose)

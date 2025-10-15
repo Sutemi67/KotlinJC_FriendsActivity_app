@@ -9,30 +9,32 @@ import android.app.Service
 import android.content.Intent
 import android.content.pm.ServiceInfo
 import android.graphics.BitmapFactory
-import android.hardware.SensorEventListener
 import android.os.Build
 import android.os.IBinder
 import android.os.SystemClock
 import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
+import apc.appcradle.domain.SensorsManager
 import apc.appcradle.domain.SettingsRepository
 import apc.appcradle.domain.usecases_sensors.RegisterSensorsUseCase
 import apc.appcradle.domain.usecases_sensors.UnregisterSensorsUseCase
 import apc.appcradle.kotlinjc_friendsactivity_app.presentation.MainActivity
 import org.koin.android.ext.android.inject
 
-class StepCounterService(
-    private val registerSensorsUseCase: RegisterSensorsUseCase,
-    private val unregisterSensorsUseCase: UnregisterSensorsUseCase,
-) : Service() {
+class StepCounterService() : Service() {
+
+    private val settingsRepository by inject<SettingsRepository>()
+    private val sensorsManager by inject<SensorsManager>()
+    private val permissionManager by inject<PermissionManager>()
+
+    private val registerSensorsUseCase by lazy { RegisterSensorsUseCase(sensorsManager) }
+    private val unregisterSensorsUseCase by lazy { UnregisterSensorsUseCase(sensorsManager) }
+
     companion object {
         const val NOTIFICATION_ID = 1
         const val CHANNEL_ID = "StepCounterChannel"
     }
-
-    private val settingsRepository by inject<SettingsRepository>()
-    private val permissionManager by inject<PermissionManager>()
 
     @RequiresApi(Build.VERSION_CODES.S)
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {

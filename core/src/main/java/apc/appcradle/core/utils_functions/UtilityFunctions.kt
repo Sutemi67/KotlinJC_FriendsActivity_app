@@ -2,8 +2,10 @@ package apc.appcradle.core.utils_functions
 
 import android.content.Context
 import android.content.Intent
+import android.icu.text.DecimalFormat
 import androidx.core.net.toUri
 import java.util.Calendar
+import kotlin.math.roundToInt
 
 fun whenNextMonday(): Long {
     val now = Calendar.getInstance()
@@ -19,20 +21,24 @@ fun whenNextMonday(): Long {
     return target.timeInMillis - now.timeInMillis
 }
 
-//fun Activity.installSplashScreen() {
-//    val splashScreen = SplashScreen(this)
-//    splashScreen.install()
-//    return splashScreen
-//}
-
-//@Composable
-//fun nonScaledSp(size: Int): TextUnit {
-//    val fontScale = LocalDensity.current.fontScale
-//    return (size / fontScale).sp
-//}
-
 fun openDonate(context: Context) {
     val url = "https://pay.cloudtips.ru/p/2d71d3e5"
     val intent = Intent(Intent.ACTION_VIEW, url.toUri())
     context.startActivity(intent)
+}
+
+fun format(text: Int): String {
+    val ddd = DecimalFormat("###,###.##")
+    return ddd.format(text)
+}
+
+fun format(text: Double): String {
+    val ddd = DecimalFormat("###,###.##")
+    return ddd.format(text)
+}
+
+fun kkalCalc(userStepLength: Double, stepCount: Int): IntRange {
+    val firstValue = (50 * (stepCount * userStepLength / 2500)).roundToInt()
+    val secondValue = (75 * (stepCount * userStepLength / 2500)).roundToInt()
+    return IntRange(firstValue, secondValue)
 }
