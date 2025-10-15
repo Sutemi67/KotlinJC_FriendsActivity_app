@@ -34,7 +34,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
-import apc.appcradle.kotlinjc_friendsactivity_app.LocalAppTypography
+import apc.appcradle.kotlinjc_friendsactivity_app.presentation.LocalAppTypography
 import apc.appcradle.kotlinjc_friendsactivity_app.R
 import apc.appcradle.kotlinjc_friendsactivity_app.ui.app_components.AppDialogs.AppDonationDialog
 import apc.appcradle.kotlinjc_friendsactivity_app.ui.screens.Destinations

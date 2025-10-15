@@ -19,7 +19,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.unit.dp
 import androidx.core.view.WindowCompat
-import apc.appcradle.kotlinjc_friendsactivity_app.LocalAppTypography
+import apc.appcradle.kotlinjc_friendsactivity_app.presentation.LocalAppTypography
 
 private val DarkColorScheme = darkColorScheme(
     primary = Purple80,

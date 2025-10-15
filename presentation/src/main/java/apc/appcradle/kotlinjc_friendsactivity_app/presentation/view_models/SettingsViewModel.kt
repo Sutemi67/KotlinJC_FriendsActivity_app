@@ -1,10 +1,10 @@
-package apc.appcradle.kotlinjc_friendsactivity_app
+package apc.appcradle.kotlinjc_friendsactivity_app.presentation.view_models
 
 import androidx.lifecycle.ViewModel
 import apc.appcradle.domain.models.AppThemes
 import apc.appcradle.domain.models.local_data.SharedPreferencesData
-import apc.appcradle.domain.settings_usecasees.LoadSettingsUseCase
-import apc.appcradle.domain.settings_usecasees.SaveSettingsUseCase
+import apc.appcradle.domain.usecases_settings.LoadSettingsUseCase
+import apc.appcradle.domain.usecases_settings.SaveSettingsUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow

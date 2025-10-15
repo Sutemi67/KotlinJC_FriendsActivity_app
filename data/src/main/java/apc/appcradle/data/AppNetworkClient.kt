@@ -28,8 +28,8 @@ import kotlinx.serialization.json.Json
 import java.net.ConnectException
 import java.net.SocketTimeoutException
 
-class NetworkClient(
-    private val tokenRepositoryImpl: TokenRepositoryImpl
+class AppNetworkClient(
+    private val appTokenRepository: AppTokenRepository
 ) : NetworkClient {
     private val networkService = HttpClient(engineFactory = Android) {
         install(HttpTimeout) {
@@ -49,7 +49,7 @@ class NetworkClient(
         install(Auth) {
             bearer {
                 loadTokens {
-                    val token = tokenRepositoryImpl.getToken()
+                    val token = appTokenRepository.getToken()
                     if (token != null) {
                         BearerTokens(accessToken = token, refreshToken = "")
                     } else {
@@ -57,7 +57,7 @@ class NetworkClient(
                     }
                 }
                 refreshTokens {
-                    tokenRepositoryImpl.clearToken()
+                    appTokenRepository.clearToken()
                     null
                 }
             }
@@ -67,11 +67,11 @@ class NetworkClient(
     private val serverUrl = "http://212.3.131.67:6655/"
     private val serverHomeUrl = "http://192.168.1.100:6655/"
 
-    private fun saveToken(login: String, token: String) {
-        tokenRepositoryImpl.saveToken(login = login, token = token)
+    override fun saveToken(login: String, token: String) {
+        appTokenRepository.saveToken(login = login, token = token)
     }
 
-    suspend fun sendRegistrationInfo(login: String, password: String): DataTransferState {
+    override suspend fun sendRegistrationInfo(login: String, password: String): DataTransferState {
         val body = RegisterRequest(login = login, password = password)
         return try {
             val response = networkService.post(urlString = "$serverUrl/register") {
@@ -104,7 +104,7 @@ class NetworkClient(
         }
     }
 
-    suspend fun sendLoginInfo(login: String, password: String): DataTransferState {
+    override suspend fun sendLoginInfo(login: String, password: String): DataTransferState {
         val body = LoginRequest(login, password)
         return try {
             val response = networkService.post(urlString = "$serverUrl/login") {
@@ -145,7 +145,7 @@ class NetworkClient(
         }
     }
 
-    suspend fun postUserDataAndSyncFriendsData(
+    override suspend fun postUserDataAndSyncFriendsData(
         login: String,
         steps: Int,
         weeklySteps: Int
@@ -202,7 +202,7 @@ class NetworkClient(
         }
     }
 
-    suspend fun changeUserLogin(login: String, newLogin: String): Boolean {
+    override suspend fun changeUserLogin(login: String, newLogin: String): Boolean {
         val body = LoginChangeRequest(login, newLogin)
         try {
             val response = networkService.post(urlString = "$serverUrl/login_update") {

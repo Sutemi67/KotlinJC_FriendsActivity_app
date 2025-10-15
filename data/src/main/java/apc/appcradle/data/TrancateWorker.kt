@@ -10,11 +10,11 @@ import java.util.concurrent.TimeUnit
 class TrancateWorker(
     context: Context,
     workerParams: WorkerParameters,
-    private val sensorsManager: SensorsManager
+    private val appSensorsManager: AppSensorsManager
 ) : CoroutineWorker(context, workerParams) {
 
     override suspend fun doWork(): Result {
-        sensorsManager.trancate()
+        appSensorsManager.trancate()
         return Result.success()
     }
 }

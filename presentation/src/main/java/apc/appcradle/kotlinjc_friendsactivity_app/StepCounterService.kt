@@ -1,4 +1,4 @@
-package apc.appcradle.data
+package apc.appcradle.kotlinjc_friendsactivity_app
 
 import android.app.AlarmManager
 import android.app.ForegroundServiceStartNotAllowedException
@@ -9,27 +9,36 @@ import android.app.Service
 import android.content.Intent
 import android.content.pm.ServiceInfo
 import android.graphics.BitmapFactory
+import android.hardware.SensorEventListener
 import android.os.Build
 import android.os.IBinder
 import android.os.SystemClock
 import android.util.Log
+import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
 import apc.appcradle.domain.SettingsRepository
+import apc.appcradle.domain.usecases_sensors.RegisterSensorsUseCase
+import apc.appcradle.domain.usecases_sensors.UnregisterSensorsUseCase
+import apc.appcradle.kotlinjc_friendsactivity_app.presentation.MainActivity
 import org.koin.android.ext.android.inject
 
-class StepCounterService (): Service() {
+class StepCounterService(
+    private val registerSensorsUseCase: RegisterSensorsUseCase,
+    private val unregisterSensorsUseCase: UnregisterSensorsUseCase,
+) : Service() {
     companion object {
         const val NOTIFICATION_ID = 1
         const val CHANNEL_ID = "StepCounterChannel"
     }
+
     private val settingsRepository by inject<SettingsRepository>()
     private val permissionManager by inject<PermissionManager>()
-    private val sensorManager by inject<SensorManager>()
 
+    @RequiresApi(Build.VERSION_CODES.S)
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         createNotificationChannel()
         startServiceInForeground()
-        sensorManager.registerSensors()
+        registerSensorsUseCase()
         Log.i("service", "Service -> onStartCommand")
         return START_STICKY
     }
@@ -41,6 +50,7 @@ class StepCounterService (): Service() {
 
     override fun onBind(intent: Intent?): IBinder? = null
 
+    @RequiresApi(Build.VERSION_CODES.S)
     private fun startServiceInForeground() {
         try {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
@@ -112,7 +122,7 @@ class StepCounterService (): Service() {
 
     override fun onDestroy() {
         super.onDestroy()
-        sensorManager.unregisterSensors()
+        unregisterSensorsUseCase()
         Log.i("service", "Service -> Destroyed")
     }
 
@@ -122,7 +132,7 @@ class StepCounterService (): Service() {
         val isEnabled = try {
             settingsRepository.loadSettingsData().savedIsServiceEnabled
         } catch (e: Exception) {
-            Log.e("service", "Service -> ${ e.message }")
+            Log.e("service", "Service -> ${e.message}")
             false
         }
         if (!isEnabled || !permissionManager.arePermissionsGranted()) return

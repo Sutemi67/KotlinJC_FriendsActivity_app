@@ -6,6 +6,7 @@ import androidx.core.content.edit
 import androidx.work.WorkManager
 import apc.appcradle.core.constants.USER_STEP_DEFAULT
 import apc.appcradle.core.utils_functions.whenNextMonday
+import apc.appcradle.domain.StatsRepository
 import apc.appcradle.domain.models.network.PlayerActivityData
 import apc.appcradle.domain.models.network.PlayersListSyncData
 import apc.appcradle.domain.models.network.Steps
@@ -14,11 +15,11 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 
-class StatsRepository(
-    private val networkClient: NetworkClient,
+class AppStatsRepository(
+    private val appNetworkClient: AppNetworkClient,
     private val workManager: WorkManager,
     private val sharedPreferences: SharedPreferences
-) {
+) : StatsRepository {
     private val _syncStatus = MutableStateFlow(false)
     val syncStatus: StateFlow<Boolean> = _syncStatus.asStateFlow()
 
@@ -38,11 +39,15 @@ class StatsRepository(
         Log.d("dataTransfer", "StatsRepo sorted list")
     }
 
-    suspend fun syncData(login: String, steps: Int, weeklySteps: Int): PlayersListSyncData {
+    override suspend fun syncData(
+        login: String,
+        steps: Int,
+        weeklySteps: Int
+    ): PlayersListSyncData {
         _syncStatus.update { true }
         try {
             Log.d("dataTransfer", "StatsRepo syncData called with steps: $steps, $weeklySteps")
-            val data = networkClient.postUserDataAndSyncFriendsData(
+            val data = appNetworkClient.postUserDataAndSyncFriendsData(
                 login = login,
                 steps = steps,
                 weeklySteps = weeklySteps
@@ -107,14 +112,14 @@ class StatsRepository(
         Log.d("worker", "statRepo,isFirstStartCheck -> $isFirstAppStart")
     }
 
-    fun saveAllSteps(steps: Steps) {
+    override fun saveAllSteps(steps: Steps) {
         sharedPreferences.edit {
             putInt(STEPS_ID, steps.allSteps)
             putInt(STEPS_WEEKLY_ID, steps.weeklySteps)
         }
     }
 
-    fun loadSteps(): Steps {
+    override fun loadSteps(): Steps {
         val steps = Steps(
             allSteps = sharedPreferences.getInt(STEPS_ID, 0),
             weeklySteps = sharedPreferences.getInt(STEPS_WEEKLY_ID, 0)
@@ -123,7 +128,7 @@ class StatsRepository(
         return steps
     }
 
-    fun planningTrancateSteps() {
+    override fun planningTrancateSteps() {
         if (isFirstAppStart) {
             isFirstAppStart = false
             sharedPreferences.edit { putBoolean(FIRST_START_ID, false) }
@@ -134,7 +139,7 @@ class StatsRepository(
 
     }
 
-    fun trancate() {
+    override fun trancate() {
         isFirstAppStart = true
         sharedPreferences.edit {
             putInt(STEPS_WEEKLY_ID, 0)

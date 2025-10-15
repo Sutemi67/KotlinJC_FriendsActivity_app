@@ -6,6 +6,8 @@ import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
 import android.hardware.SensorManager
 import android.util.Log
+import apc.appcradle.domain.SensorsManager
+import apc.appcradle.domain.StatsRepository
 import apc.appcradle.domain.models.network.Steps
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -14,10 +16,10 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
-class SensorsManager(
+class AppSensorsManager(
     context: Context,
-    private val statsRepository: StatsRepository,
-) : SensorEventListener {
+    private val appStatsRepository: StatsRepository,
+) : SensorEventListener, SensorsManager {
 
     private val sensorManager = context.getSystemService(Context.SENSOR_SERVICE) as SensorManager
     private val stepCounterSensor: Sensor? =
@@ -45,7 +47,7 @@ class SensorsManager(
         loadSteps()
     }
 
-    fun registerSensors() {
+    override fun registerSensors() {
         if (stepCounterSensor != null) {
             sensorManager.registerListener(
                 this,
@@ -66,14 +68,14 @@ class SensorsManager(
         }
     }
 
-    fun unregisterSensors() {
+    override fun unregisterSensors() {
         stepCounterSensor?.let { sensor ->
             sensorManager.unregisterListener(this, sensor)
         }
         stepDetectorSensor?.let { sensor ->
             sensorManager.unregisterListener(this, sensor)
         }
-        statsRepository.saveAllSteps(
+        appStatsRepository.saveAllSteps(
             Steps(
                 allSteps = allSteps.value,
                 weeklySteps = weeklySteps.value
@@ -86,7 +88,7 @@ class SensorsManager(
             CoroutineScope(Dispatchers.IO).launch {
                 isSavingInProgress = true
                 delay(60000)
-                statsRepository.saveAllSteps(
+                appStatsRepository.saveAllSteps(
                     Steps(
                         allSteps = allSteps.value,
                         weeklySteps = weeklySteps.value
@@ -97,8 +99,8 @@ class SensorsManager(
         }
     }
 
-    fun trancate() {
-        statsRepository.trancate()
+    override fun trancate() {
+        appStatsRepository.trancate()
         currentSteps = 0
         stepsWithoutChecking = 0
         isFirstStart = true
@@ -107,7 +109,7 @@ class SensorsManager(
     }
 
     private fun loadSteps() {
-        val loadedSteps = statsRepository.loadSteps()
+        val loadedSteps = appStatsRepository.loadSteps()
         _allSteps.value = loadedSteps.allSteps
         _weeklySteps.value = loadedSteps.weeklySteps
         stepsInitialWeekly = loadedSteps.weeklySteps

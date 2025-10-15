@@ -1,4 +1,4 @@
-package apc.appcradle.kotlinjc_friendsactivity_app
+package apc.appcradle.kotlinjc_friendsactivity_app.presentation
 
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
@@ -8,6 +8,7 @@ import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.getValue
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import apc.appcradle.domain.models.AppThemes
+import apc.appcradle.kotlinjc_friendsactivity_app.presentation.view_models.SettingsViewModel
 import apc.appcradle.kotlinjc_friendsactivity_app.ui.screens.NavigationHost
 import apc.appcradle.kotlinjc_friendsactivity_app.ui.theme.CompactText
 import apc.appcradle.kotlinjc_friendsactivity_app.ui.theme.ExpandedText

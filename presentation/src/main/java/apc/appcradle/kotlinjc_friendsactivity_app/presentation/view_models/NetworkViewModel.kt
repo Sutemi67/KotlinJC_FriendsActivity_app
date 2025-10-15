@@ -1,17 +1,23 @@
-package apc.appcradle.kotlinjc_friendsactivity_app
+package apc.appcradle.kotlinjc_friendsactivity_app.presentation.view_models
 
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.work.WorkManager
 import apc.appcradle.core.constants.WORKER_TAG
-import apc.appcradle.data.WORKER_TAG
-import apc.appcradle.domain.auth_usecases.CheckPermanentAuthUseCase
-import apc.appcradle.domain.auth_usecases.GetLoginUseCase
-import apc.appcradle.domain.auth_usecases.LogoutUseCase
-import apc.appcradle.domain.auth_usecases.OfflineUseUseCase
 import apc.appcradle.domain.models.network.DataTransferState
 import apc.appcradle.domain.models.network.PlayersListSyncData
+import apc.appcradle.domain.usecases_auth.ChangeLoginUseCase
+import apc.appcradle.domain.usecases_auth.CheckPermanentAuthUseCase
+import apc.appcradle.domain.usecases_auth.GetTokenUseCase
+import apc.appcradle.domain.usecases_auth.LogoutUseCase
+import apc.appcradle.domain.usecases_auth.OfflineUseUseCase
+import apc.appcradle.domain.usecases_auth.SaveNewLoginUseCase
+import apc.appcradle.domain.usecases_auth.SendLoginUseCase
+import apc.appcradle.domain.usecases_auth.SendRegistrationUseCase
+import apc.appcradle.domain.usecases_auth.SyncDataUseCase
+import apc.appcradle.kotlinjc_friendsactivity_app.NetworkAppState
+import apc.appcradle.kotlinjc_friendsactivity_app.PermissionManager
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -26,7 +32,12 @@ class NetworkViewModel(
     private val offlineUseUseCase: OfflineUseUseCase,
     private val logoutUseCase: LogoutUseCase,
     private val checkPermanentAuthUseCase: CheckPermanentAuthUseCase,
-    private val getLoginUseCase: GetLoginUseCase,
+    private val getTokenUseCase: GetTokenUseCase,
+    private val sendLoginUseCase: SendLoginUseCase,
+    private val sendRegistrationUseCase: SendRegistrationUseCase,
+    private val changeLoginUseCase: ChangeLoginUseCase,
+    private val saveNewLoginUseCase: SaveNewLoginUseCase,
+    private val syncDataUseCase: SyncDataUseCase
 ) : ViewModel() {
 
     private var _networkState = MutableStateFlow(NetworkAppState())
@@ -95,7 +106,7 @@ class NetworkViewModel(
             }
 
             else -> {
-                val login = getLoginUseCase()
+                val login = getTokenUseCase()
                 _networkState.update {
                     it.copy(
                         isLoggedIn = true,
@@ -110,7 +121,7 @@ class NetworkViewModel(
     fun sendLoginData(login: String, password: String) {
         viewModelScope.launch {
             _transferState.update { it.copy(isLoading = true) }
-            val result = networkClient.sendLoginInfo(login, password)
+            val result = sendLoginUseCase(login, password)
             if (result.isSuccessful == true && result.errorMessage == null) {
                 Log.i("dataTransfer", "viewModel transfer - OK")
                 _transferState.update {
@@ -142,7 +153,7 @@ class NetworkViewModel(
     fun sendRegisterData(login: String, password: String) {
         viewModelScope.launch {
             _transferState.update { it.copy(isLoading = true) }
-            val result = networkClient.sendRegistrationInfo(login, password)
+            val result = sendRegistrationUseCase(login, password)
             if (result.isSuccessful == true && result.errorMessage == null) {
                 Log.i("dataTransfer", "viewModel transfer - OK")
                 _transferState.update {
@@ -173,10 +184,10 @@ class NetworkViewModel(
 
     fun changeLogin(login: String, newLogin: String) {
         viewModelScope.launch {
-            if (networkClient.changeUserLogin(login, newLogin)) {
+            if (changeLoginUseCase(login, newLogin)) {
                 Log.i("dataTransfer", "смена ника - ${true}")
                 _networkState.update { it.copy(userLogin = newLogin) }
-                tokenRepositoryImpl.saveNewLogin(newLogin)
+                saveNewLoginUseCase(newLogin)
                 return@launch
             }
             Log.e("dataTransfer", "смена ника - ${false}")
@@ -185,7 +196,7 @@ class NetworkViewModel(
 
     suspend fun syncData(login: String, steps: Int, weeklySteps: Int): PlayersListSyncData {
         return withContext(Dispatchers.IO) {
-            val result = statsRepository.syncData(
+            val result = syncDataUseCase(
                 login = login, steps = steps, weeklySteps = weeklySteps
             )
             Log.i("dataTransfer", "ViewModel sync result: $result")

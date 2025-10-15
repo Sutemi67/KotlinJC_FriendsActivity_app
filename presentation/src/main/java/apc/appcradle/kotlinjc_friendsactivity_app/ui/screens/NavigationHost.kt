@@ -15,8 +15,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import apc.appcradle.kotlinjc_friendsactivity_app.NetworkViewModel
-import apc.appcradle.kotlinjc_friendsactivity_app.SettingsViewModel
+import apc.appcradle.kotlinjc_friendsactivity_app.presentation.view_models.NetworkViewModel
+import apc.appcradle.kotlinjc_friendsactivity_app.presentation.view_models.SettingsViewModel
 import apc.appcradle.kotlinjc_friendsactivity_app.ui.app_components.AppComponents
 import apc.appcradle.kotlinjc_friendsactivity_app.ui.screens.auth.authScreen
 import apc.appcradle.kotlinjc_friendsactivity_app.ui.screens.auth.registration.nav.registerScreen

@@ -10,7 +10,7 @@
     <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM"/>
 
     <application
-        android:name=".FriendsActivityApplication"
+        android:name=".presentation.FriendsActivityApplication"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
@@ -30,7 +30,7 @@
         
             
         <activity
-            android:name=".MainActivity"
+            android:name=".presentation.MainActivity"
             android:exported="true"
             android:theme="@style/Theme.KotlinJC_FriendsActivity_app">
             <intent-filter>

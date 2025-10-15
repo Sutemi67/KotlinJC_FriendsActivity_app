@@ -4,17 +4,18 @@ import android.content.SharedPreferences
 import androidx.core.content.edit
 import apc.appcradle.domain.TokenRepository
 
-class TokenRepositoryImpl(
+class AppTokenRepository(
     private val sharedPreferences: SharedPreferences
 ) : TokenRepository {
+
     companion object {
-        const val AUTH_ID = "auth_token"
+        const val TOKEN_ID = "auth_token"
         const val LOGIN_ID = "login"
     }
 
     override fun saveToken(login: String, token: String) {
         sharedPreferences.edit {
-            putString(AUTH_ID, token)
+            putString(TOKEN_ID, token)
             putString(LOGIN_ID, login)
         }
     }
@@ -26,7 +27,7 @@ class TokenRepositoryImpl(
     }
 
     override fun saveOfflineToken() {
-        sharedPreferences.edit { putString(AUTH_ID, "offline") }
+        sharedPreferences.edit { putString(TOKEN_ID, "offline") }
     }
 
     override fun getLogin(): String? {
@@ -34,10 +35,10 @@ class TokenRepositoryImpl(
     }
 
     override fun getToken(): String? {
-        return sharedPreferences.getString(AUTH_ID, null)
+        return sharedPreferences.getString(TOKEN_ID, null)
     }
 
     override fun clearToken() {
-        sharedPreferences.edit { remove(AUTH_ID) }
+        sharedPreferences.edit { remove(TOKEN_ID) }
     }
 }

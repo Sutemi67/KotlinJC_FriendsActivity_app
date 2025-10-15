@@ -10,7 +10,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import apc.appcradle.kotlinjc_friendsactivity_app.NetworkViewModel
+import apc.appcradle.kotlinjc_friendsactivity_app.presentation.view_models.NetworkViewModel
 import apc.appcradle.kotlinjc_friendsactivity_app.PermissionManager
 import apc.appcradle.kotlinjc_friendsactivity_app.ui.screens.LocalSensorManager
 import org.koin.compose.koinInject

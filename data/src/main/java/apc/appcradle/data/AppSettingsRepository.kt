@@ -7,7 +7,7 @@ import apc.appcradle.domain.SettingsRepository
 import apc.appcradle.domain.models.local_data.SharedPreferencesData
 import com.google.gson.Gson
 
-class SettingsRepositoryImpl(
+class AppSettingsRepository(
     private val sharedPreferences: SharedPreferences
 ) : SettingsRepository {
 
