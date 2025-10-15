@@ -10,18 +10,20 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import apc.appcradle.kotlinjc_friendsactivity_app.presentation.view_models.NetworkViewModel
 import apc.appcradle.kotlinjc_friendsactivity_app.PermissionManager
-import apc.appcradle.kotlinjc_friendsactivity_app.ui.screens.LocalSensorManager
+import apc.appcradle.kotlinjc_friendsactivity_app.presentation.view_models.ServiceViewModel
 import org.koin.compose.koinInject
 
 @Composable
 fun MainUserScreen(
-    viewModel: NetworkViewModel
+    serviceViewModel: ServiceViewModel
 ) {
-    val sensorsManager = LocalSensorManager.current
     val permissionManager = koinInject<PermissionManager>()
-    val state by viewModel.networkState.collectAsState()
+
+    val isPermissionsGranted by permissionManager.permissionsGranted.collectAsState()
+    val sensorsState by serviceViewModel.stepsDataState.collectAsState()
+    val isServiceRunning by serviceViewModel.isServiceWorkingState.collectAsState()
+
     val context = LocalContext.current
 
     val permissionLauncher = rememberLauncherForActivityResult(
@@ -34,7 +36,7 @@ fun MainUserScreen(
     Box(
         modifier = Modifier.fillMaxSize()
     ) {
-        if (!state.isPermissionsGet) {
+        if (!isPermissionsGranted) {
             UnpermittedUi(
                 onGetPermissionsClick = {
                     // Сначала запрашиваем runtime-разрешения
@@ -47,19 +49,19 @@ fun MainUserScreen(
             )
         } else {
             // Автозапуск, если флаг включен и сервис не запущен (однократно)
-            LaunchedEffect(state.isServiceEnabled) {
-                if (state.isServiceEnabled && !state.isServiceRunning) {
-                    viewModel.startService(context)
+            LaunchedEffect(isServiceRunning) {
+                if (!isServiceRunning) {
+                    serviceViewModel.startService(context)
                 }
             }
             PermittedUi(
-                isStepSensorsAvailable = sensorsManager.isStepSensorAvailable,
-                summarySteps = sensorsManager.allSteps.collectAsState().value,
-                weeklySteps = sensorsManager.weeklySteps.collectAsState().value,
-                isServiceRunning = state.isServiceRunning || state.isServiceEnabled,
-                onTrueCallback = { viewModel.startService(context) },
-                onFalseCallback = { viewModel.stopService(context) },
-                userStepLength = state.userStepLength
+                isStepSensorsAvailable = sensorsState.isSensorsAvailable,
+                summarySteps = sensorsState.userAllSteps,
+                weeklySteps = sensorsState.userWeeklySteps,
+                isServiceRunning = isServiceRunning,
+                onTrueCallback = { serviceViewModel.startService(context) },
+                onFalseCallback = { serviceViewModel.stopService(context) },
+                userStepLength = 0.65 //todo исправить
             )
         }
     }

@@ -8,11 +8,13 @@ import android.hardware.SensorManager
 import android.util.Log
 import apc.appcradle.domain.SensorsManager
 import apc.appcradle.domain.StatsRepository
+import apc.appcradle.domain.models.local_data.SensorsDataState
 import apc.appcradle.domain.models.network.Steps
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
@@ -35,6 +37,9 @@ class AppSensorsManager(
 
     private var _weeklySteps = MutableStateFlow(0)
     val weeklySteps = _weeklySteps.asStateFlow()
+
+    private val _sensorsDataFlow = MutableStateFlow(SensorsDataState(isStepSensorAvailable, 0, 0))
+    override val sensorsDataFlow: StateFlow<SensorsDataState> = _sensorsDataFlow.asStateFlow()
 
     private var stepsInitialWeekly: Int = 0
     private var currentSteps = 0

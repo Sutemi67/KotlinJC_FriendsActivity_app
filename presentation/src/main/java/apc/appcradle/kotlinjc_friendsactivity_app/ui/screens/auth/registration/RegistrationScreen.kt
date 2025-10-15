@@ -101,7 +101,7 @@ fun RegistrationScreen(
             ) { Text(stringResource(R.string.auth_screen_create)) }
             Box(Modifier.height(50.dp)) {
                 if (!transferResult.errorMessage.isNullOrEmpty()) {
-                    Text(text = transferResult.errorMessage, color = Color.Red)
+                    Text(text = transferResult.errorMessage!!, color = Color.Red)
                 }
             }
         }

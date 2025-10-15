@@ -13,7 +13,9 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 
-class PermissionManager(private val context: Context) {
+class PermissionManager(
+    private val context: Context
+) {
 
     private val _permissionsGranted = MutableStateFlow(false)
     val permissionsGranted: StateFlow<Boolean> = _permissionsGranted.asStateFlow()
@@ -80,7 +82,8 @@ class PermissionManager(private val context: Context) {
                         addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                     }
                 )
-            } catch (_: Exception) {}
+            } catch (_: Exception) {
+            }
         }
     }
 }

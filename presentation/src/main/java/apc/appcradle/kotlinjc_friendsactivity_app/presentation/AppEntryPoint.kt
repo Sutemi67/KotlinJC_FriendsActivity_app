@@ -9,7 +9,6 @@ import androidx.compose.runtime.getValue
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import apc.appcradle.domain.models.AppThemes
 import apc.appcradle.kotlinjc_friendsactivity_app.presentation.view_models.SettingsViewModel
-import apc.appcradle.kotlinjc_friendsactivity_app.ui.screens.NavigationHost
 import apc.appcradle.kotlinjc_friendsactivity_app.ui.theme.CompactText
 import apc.appcradle.kotlinjc_friendsactivity_app.ui.theme.ExpandedText
 import apc.appcradle.kotlinjc_friendsactivity_app.ui.theme.KotlinJC_FriendsActivity_appTheme

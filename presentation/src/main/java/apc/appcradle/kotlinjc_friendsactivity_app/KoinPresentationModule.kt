@@ -16,13 +16,7 @@ import org.koin.core.module.dsl.viewModelOf
 import org.koin.dsl.module
 
 val koinPresentationModule = module {
-//    singleOf(::SettingsRepositoryImpl).bind<SettingsRepository>()
-//    singleOf(::TokenRepositoryImpl).bind<TokenRepository>()
-//    singleOf(::SensorsManager).bind<SensorEventListener>()
     singleOf(::PermissionManager)
-//    singleOf(::NetworkClient)
-//    singleOf(::StatsRepository)
-//    singleOf(::TrancateWorker)
 
     viewModelOf(::NetworkViewModel)
     viewModelOf(::SettingsViewModel)

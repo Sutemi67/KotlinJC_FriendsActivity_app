@@ -1,4 +1,4 @@
-package apc.appcradle.kotlinjc_friendsactivity_app.ui.screens
+package apc.appcradle.kotlinjc_friendsactivity_app.presentation
 
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Icon
@@ -10,14 +10,15 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import apc.appcradle.kotlinjc_friendsactivity_app.presentation.view_models.NetworkViewModel
+import apc.appcradle.kotlinjc_friendsactivity_app.presentation.view_models.ServiceViewModel
 import apc.appcradle.kotlinjc_friendsactivity_app.presentation.view_models.SettingsViewModel
 import apc.appcradle.kotlinjc_friendsactivity_app.ui.app_components.AppComponents
+import apc.appcradle.kotlinjc_friendsactivity_app.ui.screens.Destinations
 import apc.appcradle.kotlinjc_friendsactivity_app.ui.screens.auth.authScreen
 import apc.appcradle.kotlinjc_friendsactivity_app.ui.screens.auth.registration.nav.registerScreen
 import apc.appcradle.kotlinjc_friendsactivity_app.ui.screens.auth.registration.nav.toRegisterScreen
@@ -31,23 +32,25 @@ import org.koin.androidx.compose.koinViewModel
 @Composable
 fun NavigationHost(
     networkViewModel: NetworkViewModel = koinViewModel(),
-    settingsViewModel: SettingsViewModel = koinViewModel()
+    settingsViewModel: SettingsViewModel = koinViewModel(),
+    serviceViewModel: ServiceViewModel = koinViewModel()
 ) {
+    val networkState = networkViewModel.networkState.collectAsState()
+    val stepsDataState by serviceViewModel.stepsDataState.collectAsState()
+
     val navController = rememberNavController()
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val noAuthDestinations =
-        if (state.userLogin == null) {
+        if (networkState.value.userLogin == null) {
             Destinations.entries.filter { it != Destinations.AUTH && it != Destinations.REGISTER && it != Destinations.RATINGS }
         } else {
             Destinations.entries.filter { it != Destinations.AUTH && it != Destinations.REGISTER }
         }
 
-    val context = LocalContext.current
     val transferState = networkViewModel.transferState.collectAsState().value
-//    val isSynced = statsRepository.syncStatus.collectAsState().value
 
     LaunchedEffect(Unit) {
-        networkViewModel.isServiceRunning(context)
+        serviceViewModel.updateServiceState()
     }
     Scaffold(
         topBar = {
@@ -55,7 +58,7 @@ fun NavigationHost(
                 navBackStackEntry?.destination?.route != Destinations.REGISTER.route
             )
                 AppComponents.AppTopBar(
-                    login = state.userLogin,
+                    login = networkState.value.userLogin,
                     screenRoute = navBackStackEntry?.destination?.route
                 )
         },
@@ -86,7 +89,7 @@ fun NavigationHost(
         }
     ) { contentPadding ->
         val startDestination =
-            if (state.isLoggedIn) Destinations.MAIN.route else Destinations.AUTH.route
+            if (networkState.value.isLoggedIn) Destinations.MAIN.route else Destinations.AUTH.route
         NavHost(
             modifier = Modifier.padding(contentPadding),
             navController = navController,
@@ -95,23 +98,28 @@ fun NavigationHost(
             authScreen(
                 toRegisterScreen = { navController.toRegisterScreen() },
                 transferState = transferState,
-                sendLoginData = { login, password -> networkViewModel.sendLoginData(login, password) },
+                sendLoginData = { login, password ->
+                    networkViewModel.sendLoginData(
+                        login,
+                        password
+                    )
+                },
                 onOfflineUseClick = { networkViewModel.goOfflineUse() }
             )
             registerScreen(
                 toMainScreen = { navController.toMainScreen() }
             )
             mainScreen(
-                viewModel = networkViewModel
+                serviceViewModel = serviceViewModel
             )
             ratingsScreen(
-                login = state.userLogin,
-                isSynced = isSynced,
+                login = networkState.value.userLogin,
+                isSynced = transferState.isLoading,
                 syncFun = {
-                    val stepsNow = sensorManager.allSteps.value
-                    val weeklyNow = sensorManager.weeklySteps.value
+                    val stepsNow = stepsDataState.userAllSteps
+                    val weeklyNow = stepsDataState.userWeeklySteps
                     networkViewModel.syncData(
-                        login = state.userLogin!!,
+                        login = networkState.value.userLogin!!,
                         steps = stepsNow,
                         weeklySteps = weeklyNow
                     )
@@ -119,11 +127,16 @@ fun NavigationHost(
             )
             settingsScreen(
                 onLogoutClick = { networkViewModel.logout() },
-                userLogin = lgin,
+                userLogin = networkState.value.userLogin,
                 userStepLength = settingsViewModel.settingsState.value.savedUserStep,
                 userScale = settingsViewModel.settingsState.value.savedScale,
                 onThemeClick = { settingsViewModel.changeTheme(it) },
-                onNickNameClick = { login, newLogin -> networkViewModel.changeLogin(login, newLogin) },
+                onNickNameClick = { login, newLogin ->
+                    networkViewModel.changeLogin(
+                        login,
+                        newLogin
+                    )
+                },
                 onStepLengthClick = { settingsViewModel.changeStepLength(it) },
                 currentTheme = settingsViewModel.settingsState.value.savedTheme,
                 onScaleClick = { settingsViewModel.changeScale(it) }
