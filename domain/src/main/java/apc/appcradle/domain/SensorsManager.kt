@@ -8,5 +8,7 @@ interface SensorsManager {
     fun unregisterSensors()
     fun trancate()
 
-    val sensorsDataFlow: StateFlow<SensorsDataState>
+    val isStepSensorAvailable: Boolean
+    val allSteps: StateFlow<Int>
+    val weeklySteps: StateFlow<Int>
 }

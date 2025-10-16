@@ -1,11 +1,12 @@
 package apc.appcradle.domain.usecases_sensors
 
 import apc.appcradle.domain.SensorsManager
-import apc.appcradle.domain.models.local_data.SensorsDataState
 import kotlinx.coroutines.flow.StateFlow
 
 class GetStepsUseCase(
-    private val sensorsManager: SensorsManager
+    sensorsManager: SensorsManager
 ) {
-    operator fun invoke(): StateFlow<SensorsDataState> = sensorsManager.sensorsDataFlow
+    val sensorStatus: Boolean = sensorsManager.isStepSensorAvailable
+    val allSteps: StateFlow<Int> = sensorsManager.allSteps
+    val weeklySteps: StateFlow<Int> = sensorsManager.weeklySteps
 }

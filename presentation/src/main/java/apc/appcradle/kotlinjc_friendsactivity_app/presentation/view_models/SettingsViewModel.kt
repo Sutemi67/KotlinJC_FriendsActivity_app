@@ -22,7 +22,12 @@ class SettingsViewModel(
         loadSettings()
     }
 
-    fun saveSettings() = saveSettingsUseCase(
+    fun toggleService() {
+        _settingsState.update { it.copy(savedIsServiceEnabled = !settingsState.value.savedIsServiceEnabled) }
+        saveSettings()
+    }
+
+    private fun saveSettings() = saveSettingsUseCase(
         SharedPreferencesData(
             savedTheme = settingsState.value.savedTheme,
             savedScale = settingsState.value.savedScale,

@@ -3,7 +3,6 @@ package apc.appcradle.kotlinjc_friendsactivity_app.presentation.view_models
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import apc.appcradle.domain.models.local_data.SensorsDataState
 import apc.appcradle.domain.usecases_sensors.GetStepsUseCase
 import apc.appcradle.domain.usecases_service.CheckServiceStatusUseCase
 import apc.appcradle.domain.usecases_service.StartServiceUseCase
@@ -22,14 +21,20 @@ class ServiceViewModel(
     private val stopServiceUseCase: StopServiceUseCase,
     getStepsUseCase: GetStepsUseCase,
 ) : ViewModel() {
+    val sensorStatus: Boolean = getStepsUseCase.sensorStatus
 
     private val _isServiceWorkingState = MutableStateFlow(false)
     val isServiceWorkingState: StateFlow<Boolean> = _isServiceWorkingState.asStateFlow()
 
-    val stepsDataState: StateFlow<SensorsDataState> = getStepsUseCase().stateIn(
+    val allSteps: StateFlow<Int> = getStepsUseCase.allSteps.stateIn(
         scope = viewModelScope,
-        started = SharingStarted.WhileSubscribed(5_000),
-        initialValue = SensorsDataState(false, 0, 0)
+        started = SharingStarted.WhileSubscribed(2000),
+        initialValue = 0
+    )
+    val weeklySteps: StateFlow<Int> = getStepsUseCase.weeklySteps.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(2000),
+        initialValue = 0
     )
 
     init {

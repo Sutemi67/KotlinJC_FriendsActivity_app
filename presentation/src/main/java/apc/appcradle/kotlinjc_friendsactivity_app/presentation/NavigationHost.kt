@@ -32,11 +32,10 @@ import org.koin.androidx.compose.koinViewModel
 @Composable
 fun NavigationHost(
     networkViewModel: NetworkViewModel = koinViewModel(),
-    settingsViewModel: SettingsViewModel = koinViewModel<SettingsViewModel>(),
+    settingsViewModel: SettingsViewModel = koinViewModel(),
     serviceViewModel: ServiceViewModel = koinViewModel()
 ) {
     val networkState = networkViewModel.networkState.collectAsState()
-    val stepsDataState = serviceViewModel.stepsDataState.collectAsState()
     val settingsState = settingsViewModel.settingsState.collectAsState()
 
     val navController = rememberNavController()
@@ -110,13 +109,14 @@ fun NavigationHost(
                 networkState = networkState
             )
             mainScreen(
+                settingsViewModel = settingsViewModel,
                 serviceViewModel = serviceViewModel
             )
             ratingsScreen(
                 networkState = networkState,
                 syncFun = {
-                    val stepsNow = stepsDataState.value.userAllSteps
-                    val weeklyNow = stepsDataState.value.userWeeklySteps
+                    val stepsNow = serviceViewModel.allSteps.value
+                    val weeklyNow = serviceViewModel.weeklySteps.value
                     networkViewModel.syncData(
                         login = networkState.value.userLogin!!,
                         steps = stepsNow,

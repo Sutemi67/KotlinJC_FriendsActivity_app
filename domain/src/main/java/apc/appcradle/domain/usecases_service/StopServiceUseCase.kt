@@ -5,16 +5,14 @@ import android.content.Intent
 import android.util.Log
 
 class StopServiceUseCase(
-    private val context: Context
+    private val context: Context,
 ) {
-    operator fun invoke(serviceClass: Class<*>): Boolean {
-        return try {
+    operator fun invoke(serviceClass: Class<*>) {
+        try {
             val serviceIntent = Intent(context, serviceClass)
             context.stopService(serviceIntent)
-            true
         } catch (e: Exception) {
             Log.e("service", "${e.message}")
-            false
         }
     }
 }
