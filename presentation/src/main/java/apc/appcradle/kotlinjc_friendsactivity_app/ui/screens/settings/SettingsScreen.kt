@@ -32,19 +32,20 @@ import androidx.compose.ui.unit.dp
 import apc.appcradle.domain.models.AppThemes
 import apc.appcradle.domain.models.local_data.SharedPreferencesData
 import apc.appcradle.kotlinjc_friendsactivity_app.BuildConfig
+import apc.appcradle.kotlinjc_friendsactivity_app.NetworkAppState
 import apc.appcradle.kotlinjc_friendsactivity_app.R
 import apc.appcradle.kotlinjc_friendsactivity_app.ui.app_components.AppComponents.AppText
 import apc.appcradle.kotlinjc_friendsactivity_app.ui.app_components.AppDialogs
 
 @Composable
 fun SettingsScreen(
-    userLogin: String?,
     onLogoutClick: () -> Unit,
     onStepDistanceClick: (Double) -> Unit,
     onNicknameClick: (String, String) -> Unit = { s1, s2 -> },
     onScaleClick: (Float) -> Unit,
     onThemeClick: (AppThemes) -> Unit,
     settingsState: State<SharedPreferencesData>,
+    networkState: State<NetworkAppState>,
 ) {
     var isThemeDialogVisible by remember { mutableStateOf(false) }
     var isStepDialogVisible by remember { mutableStateOf(false) }
@@ -75,10 +76,17 @@ fun SettingsScreen(
                 Card(
                     modifier = Modifier.clickable { isLoginDialogVisible = true }
                 ) {
-                    AppText(
-                        modifier = Modifier.padding(vertical = 10.dp, horizontal = 20.dp),
-                        text = userLogin ?: "-",
-                    )
+                    if (networkState.value.isLoading) {
+                        AppText(
+                            modifier = Modifier.padding(vertical = 10.dp, horizontal = 20.dp),
+                            text = "обновление...",
+                        )
+                    } else {
+                        AppText(
+                            modifier = Modifier.padding(vertical = 10.dp, horizontal = 20.dp),
+                            text = networkState.value.userLogin ?: "-",
+                        )
+                    }
                 }
             }
             HorizontalDivider(Modifier.padding(horizontal = 15.dp))
@@ -223,7 +231,7 @@ fun SettingsScreen(
             onDismiss = { isScaleDialogVisible = false }
         )
     if (isLoginDialogVisible)
-        when (userLogin) {
+        when (networkState.value.userLogin) {
             null -> {
                 Toast.makeText(
                     LocalContext.current,
@@ -234,7 +242,12 @@ fun SettingsScreen(
 
             else -> {
                 AppDialogs.LoginChangeDialog(
-                    onConfirmClick = { newLogin -> onNicknameClick(userLogin, newLogin) },
+                    onConfirmClick = { newLogin ->
+                        onNicknameClick(
+                            networkState.value.userLogin!!,
+                            newLogin
+                        )
+                    },
                     onDismiss = { isLoginDialogVisible = false }
                 )
             }

@@ -105,10 +105,7 @@ fun NavigationHost(
             registerScreen(
                 toMainScreen = { navController.toMainScreen() },
                 sendRegisterCallback = { login, password ->
-                    networkViewModel.sendRegisterData(
-                        login,
-                        password
-                    )
+                    networkViewModel.sendRegisterData(login, password)
                 },
                 networkState = networkState
             )
@@ -116,8 +113,7 @@ fun NavigationHost(
                 serviceViewModel = serviceViewModel
             )
             ratingsScreen(
-                login = networkState.value.userLogin,
-                isSynced = networkState.value.isLoading,
+                networkState = networkState,
                 syncFun = {
                     val stepsNow = stepsDataState.value.userAllSteps
                     val weeklyNow = stepsDataState.value.userWeeklySteps
@@ -130,7 +126,7 @@ fun NavigationHost(
             )
             settingsScreen(
                 settingsState = settingsState,
-                userLogin = networkState.value.userLogin,
+                networkState = networkState,
                 onLogoutClick = { networkViewModel.logout() },
                 onThemeClick = { settingsViewModel.changeTheme(it) },
                 onNickNameClick = { login, newLogin ->

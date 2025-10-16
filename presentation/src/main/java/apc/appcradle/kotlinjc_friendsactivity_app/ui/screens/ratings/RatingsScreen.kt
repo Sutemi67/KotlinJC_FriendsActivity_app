@@ -12,6 +12,7 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableDoubleStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -20,17 +21,15 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import apc.appcradle.domain.models.network.PlayerActivityData
 import apc.appcradle.domain.models.network.PlayersListSyncData
+import apc.appcradle.kotlinjc_friendsactivity_app.NetworkAppState
 import apc.appcradle.kotlinjc_friendsactivity_app.ui.app_components.AppComponents.AppText
-import apc.appcradle.kotlinjc_friendsactivity_app.ui.theme.KotlinJC_FriendsActivity_appTheme
 
 @Composable
 fun RatingsScreen(
-    login: String?,
-    isSynced: Boolean,
+    networkState: State<NetworkAppState>,
     syncFun: suspend () -> PlayersListSyncData,
 ) {
     var errorMessage: String? by remember { mutableStateOf("") }
@@ -40,7 +39,7 @@ fun RatingsScreen(
     var list by remember { mutableStateOf<List<PlayerActivityData>>(emptyList()) }
 
     LaunchedEffect(Unit) {
-        if (login != null) {
+        if (networkState.value.userLogin != null) {
             try {
                 val response = syncFun()
                 errorMessage = response.errorMessage
@@ -63,7 +62,7 @@ fun RatingsScreen(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Box(Modifier.height(5.dp)) {
-            if (isSynced)
+            if (networkState.value.isLoading)
                 LinearProgressIndicator()
         }
         StatsTable(kmWeekly, leaderDifference, leader)
@@ -73,7 +72,7 @@ fun RatingsScreen(
             ) {
                 itemsIndexed(list) { index, item ->
                     PlayerStatsView(
-                        login = login,
+                        login = networkState.value.userLogin,
                         playerActivityData = item
                     )
                 }
@@ -85,43 +84,5 @@ fun RatingsScreen(
                 text = errorMessage!!
             )
         }
-    }
-}
-
-@Preview
-@Composable
-private fun Preview2() {
-    KotlinJC_FriendsActivity_appTheme {
-        RatingsScreen(
-            login = "AlexMagnuss",
-            isSynced = true,
-            syncFun = {
-                PlayersListSyncData(
-                    playersList = listOf(
-                        PlayerActivityData(
-                            "Alex",
-                            33,
-                            2333,
-                            .4f,
-                        ),
-                        PlayerActivityData(
-                            "AlexMagnus",
-                            33333,
-                            23373,
-                            .73f,
-                        ),
-                        PlayerActivityData(
-                            "Zero",
-                            33333,
-                            0,
-                            .3f,
-                        )
-                    ).sortedByDescending { it.weeklySteps },
-                    summaryKm = 33.0,
-                    leaderDifferenceKm = 22.3,
-                    errorMessage = null
-                )
-            },
-        )
     }
 }

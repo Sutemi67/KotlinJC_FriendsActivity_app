@@ -204,14 +204,22 @@ class AppNetworkClient(
 
     override suspend fun changeUserLogin(login: String, newLogin: String): Boolean {
         val body = LoginChangeRequest(login, newLogin)
-        try {
+        return try {
             val response = networkService.post(urlString = "$serverUrl/login_update") {
                 contentType(ContentType.Application.Json)
                 setBody(body)
             }
-            return response.status.isSuccess()
+            response.status.isSuccess()
         } catch (_: Exception) {
-            return false
+            try {
+                val response = networkService.post(urlString = "$serverHomeUrl/login_update") {
+                    contentType(ContentType.Application.Json)
+                    setBody(body)
+                }
+                response.status.isSuccess()
+            } catch (_: Exception) {
+                return false
+            }
         }
     }
 }

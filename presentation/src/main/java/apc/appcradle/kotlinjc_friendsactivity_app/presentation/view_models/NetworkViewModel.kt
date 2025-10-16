@@ -153,22 +153,26 @@ class NetworkViewModel(
 
     fun changeLogin(login: String, newLogin: String) {
         viewModelScope.launch {
+            _networkState.update { it.copy(isLoading = true) }
             if (changeLoginUseCase(login, newLogin)) {
                 Log.i("login", "смена ника - ${true}")
-                _networkState.update { it.copy(userLogin = newLogin) }
+                _networkState.update { it.copy(userLogin = newLogin, isLoading = false) }
                 saveNewLoginUseCase(newLogin)
                 return@launch
             }
+            _networkState.update { it.copy(isLoading = false) }
             Log.e("login", "смена ника - ${false}")
         }
     }
 
     suspend fun syncData(login: String, steps: Int, weeklySteps: Int): PlayersListSyncData {
+        _networkState.update { it.copy(isLoading = true) }
         return withContext(Dispatchers.IO) {
             val result = syncDataUseCase(
                 login = login, steps = steps, weeklySteps = weeklySteps
             )
             Log.i("dataTransfer", "ViewModel sync result: $result")
+            _networkState.update { it.copy(isLoading = false) }
             result
         }
     }

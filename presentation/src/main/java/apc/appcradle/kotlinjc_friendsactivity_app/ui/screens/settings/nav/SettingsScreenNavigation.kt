@@ -6,12 +6,13 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import apc.appcradle.domain.models.AppThemes
 import apc.appcradle.domain.models.local_data.SharedPreferencesData
+import apc.appcradle.kotlinjc_friendsactivity_app.NetworkAppState
 import apc.appcradle.kotlinjc_friendsactivity_app.ui.screens.Destinations
 import apc.appcradle.kotlinjc_friendsactivity_app.ui.screens.settings.SettingsScreen
 
 fun NavGraphBuilder.settingsScreen(
     settingsState: State<SharedPreferencesData>,
-    userLogin: String?,
+    networkState: State<NetworkAppState>,
     onLogoutClick: () -> Unit,
     onThemeClick: (AppThemes) -> Unit,
     onStepLengthClick: (Double) -> Unit,
@@ -21,7 +22,7 @@ fun NavGraphBuilder.settingsScreen(
     composable(Destinations.SETTINGS.route) {
         SettingsScreen(
             settingsState = settingsState,
-            userLogin = userLogin,
+            networkState = networkState,
             onLogoutClick = onLogoutClick,
             onThemeClick = onThemeClick,
             onStepDistanceClick = onStepLengthClick,

@@ -20,14 +20,11 @@ class AppStatsRepository(
     private val workManager: WorkManager,
     private val sharedPreferences: SharedPreferences
 ) : StatsRepository {
-    private val _syncStatus = MutableStateFlow(false)
-    val syncStatus: StateFlow<Boolean> = _syncStatus.asStateFlow()
 
     private var playersList = mutableListOf<PlayerActivityData>()
     private var isFirstAppStart = true
 
     private fun percentageMax() {
-        _syncStatus.update { true }
         val maxSteps = playersList.maxOfOrNull { it.weeklySteps } ?: 0
         playersList.forEach { player ->
             player.percentage = if (maxSteps > 0) {
@@ -35,7 +32,6 @@ class AppStatsRepository(
             } else 0f
         }
         playersList.sortByDescending { it.weeklySteps }
-        _syncStatus.update { false }
         Log.d("dataTransfer", "StatsRepo sorted list")
     }
 
@@ -44,7 +40,6 @@ class AppStatsRepository(
         steps: Int,
         weeklySteps: Int
     ): PlayersListSyncData {
-        _syncStatus.update { true }
         try {
             Log.d("dataTransfer", "StatsRepo syncData called with steps: $steps, $weeklySteps")
             val data = appNetworkClient.postUserDataAndSyncFriendsData(
@@ -67,7 +62,6 @@ class AppStatsRepository(
             percentageMax()
             val sumKm = calcSumKm()
             val difference = calcLeaderDiff(login)
-            _syncStatus.update { false }
             return PlayersListSyncData(
                 playersList = playersList,
                 summaryKm = sumKm,
