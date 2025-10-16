@@ -32,11 +32,12 @@ import org.koin.androidx.compose.koinViewModel
 @Composable
 fun NavigationHost(
     networkViewModel: NetworkViewModel = koinViewModel(),
-    settingsViewModel: SettingsViewModel = koinViewModel(),
+    settingsViewModel: SettingsViewModel = koinViewModel<SettingsViewModel>(),
     serviceViewModel: ServiceViewModel = koinViewModel()
 ) {
     val networkState = networkViewModel.networkState.collectAsState()
-    val stepsDataState by serviceViewModel.stepsDataState.collectAsState()
+    val stepsDataState = serviceViewModel.stepsDataState.collectAsState()
+    val settingsState = settingsViewModel.settingsState.collectAsState()
 
     val navController = rememberNavController()
     val navBackStackEntry by navController.currentBackStackEntryAsState()
@@ -46,8 +47,6 @@ fun NavigationHost(
         } else {
             Destinations.entries.filter { it != Destinations.AUTH && it != Destinations.REGISTER }
         }
-
-    val transferState = networkViewModel.transferState.collectAsState().value
 
     LaunchedEffect(Unit) {
         serviceViewModel.updateServiceState()
@@ -97,24 +96,31 @@ fun NavigationHost(
         ) {
             authScreen(
                 toRegisterScreen = { navController.toRegisterScreen() },
-                transferState = transferState,
+                networkState = networkState,
                 sendLoginData = { login, password ->
                     networkViewModel.sendLoginData(login, password)
                 },
                 onOfflineUseClick = { networkViewModel.goOfflineUse() }
             )
             registerScreen(
-                toMainScreen = { navController.toMainScreen() }
+                toMainScreen = { navController.toMainScreen() },
+                sendRegisterCallback = { login, password ->
+                    networkViewModel.sendRegisterData(
+                        login,
+                        password
+                    )
+                },
+                networkState = networkState
             )
             mainScreen(
                 serviceViewModel = serviceViewModel
             )
             ratingsScreen(
                 login = networkState.value.userLogin,
-                isSynced = transferState.isLoading,
+                isSynced = networkState.value.isLoading,
                 syncFun = {
-                    val stepsNow = stepsDataState.userAllSteps
-                    val weeklyNow = stepsDataState.userWeeklySteps
+                    val stepsNow = stepsDataState.value.userAllSteps
+                    val weeklyNow = stepsDataState.value.userWeeklySteps
                     networkViewModel.syncData(
                         login = networkState.value.userLogin!!,
                         steps = stepsNow,
@@ -123,16 +129,14 @@ fun NavigationHost(
                 }
             )
             settingsScreen(
-                onLogoutClick = { networkViewModel.logout() },
+                settingsState = settingsState,
                 userLogin = networkState.value.userLogin,
-                userStepLength = settingsViewModel.settingsState.value.savedUserStep,
-                userScale = settingsViewModel.settingsState.value.savedScale,
+                onLogoutClick = { networkViewModel.logout() },
                 onThemeClick = { settingsViewModel.changeTheme(it) },
                 onNickNameClick = { login, newLogin ->
                     networkViewModel.changeLogin(login, newLogin)
                 },
                 onStepLengthClick = { settingsViewModel.changeStepLength(it) },
-                currentTheme = settingsViewModel.settingsState.value.savedTheme,
                 onScaleClick = { settingsViewModel.changeScale(it) }
             )
         }

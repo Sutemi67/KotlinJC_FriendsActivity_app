@@ -10,6 +10,7 @@ data class NetworkAppState(
 
     val isLoggedIn: Boolean = false,
     val userLogin: String? = null,
+    val isPermissionsGet: Boolean = false,
 
     //Navigation
     val currentDestination: String = Destinations.AUTH.route,

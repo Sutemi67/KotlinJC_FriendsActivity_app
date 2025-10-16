@@ -94,7 +94,7 @@ class AppNetworkClient(
                 if (response.status.isSuccess()) {
                     val token = response.body<RegisterResponse>().token
                     saveToken(login = login, token = token)
-                    DataTransferState(isLoading = false, true)
+                    DataTransferState(isLoading = false, true, errorMessage = null)
                 } else {
                     DataTransferState(isLoading = false, true, response.body<String?>())
                 }

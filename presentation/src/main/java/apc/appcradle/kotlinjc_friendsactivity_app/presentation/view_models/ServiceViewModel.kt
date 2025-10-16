@@ -1,6 +1,6 @@
 package apc.appcradle.kotlinjc_friendsactivity_app.presentation.view_models
 
-import android.content.Context
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import apc.appcradle.domain.models.local_data.SensorsDataState
@@ -39,14 +39,15 @@ class ServiceViewModel(
     fun updateServiceState() {
         val isRun: Boolean = checkServiceStatusUseCase(StepCounterService::class.java)
         _isServiceWorkingState.update { isRun }
+        Log.i("service", "is service running -> $isRun")
     }
 
-    fun startService(context: Context) {
+    fun startService() {
         startServiceUseCase(StepCounterService::class.java)
         updateServiceState()
     }
 
-    fun stopService(context: Context) {
+    fun stopService() {
         stopServiceUseCase(StepCounterService::class.java)
         updateServiceState()
     }

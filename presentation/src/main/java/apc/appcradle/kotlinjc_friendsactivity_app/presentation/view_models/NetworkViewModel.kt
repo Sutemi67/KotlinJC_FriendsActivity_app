@@ -5,7 +5,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.work.WorkManager
 import apc.appcradle.core.constants.WORKER_TAG
-import apc.appcradle.domain.models.network.DataTransferState
 import apc.appcradle.domain.models.network.PlayersListSyncData
 import apc.appcradle.domain.usecases_auth.ChangeLoginUseCase
 import apc.appcradle.domain.usecases_auth.CheckPermanentAuthUseCase
@@ -43,9 +42,6 @@ class NetworkViewModel(
     private var _networkState = MutableStateFlow(NetworkAppState())
     val networkState: StateFlow<NetworkAppState> = _networkState.asStateFlow()
 
-    private var _transferState = MutableStateFlow(DataTransferState())
-    val transferState: StateFlow<DataTransferState> = _transferState.asStateFlow()
-
     init {
         checkPermanentAuth()
 
@@ -61,44 +57,32 @@ class NetworkViewModel(
             }
         }
 
-//        viewModelScope.launch {
-//            permissionManager.permissionsGranted.collect { isGranted ->
-//                _networkState.update { it.copy(isPermissionsGet = isGranted) }
-//            }
-//        }
+        viewModelScope.launch {
+            permissionManager.permissionsGranted.collect { isGranted ->
+                _networkState.update { it.copy(isPermissionsGet = isGranted) }
+            }
+        }
     }
 
     fun logout() {
         logoutUseCase()
-        _networkState.update {
-            it.copy(
-                isLoggedIn = false,
-                userLogin = null
-            )
-        }
-        _transferState.update { it.copy(isSuccessful = null, errorMessage = null) }
+        _networkState.update { NetworkAppState() }
+        Log.i("login", "logout-> ${networkState.value}")
+
     }
 
     fun goOfflineUse() {
         offlineUseUseCase()
-        _networkState.update {
-            it.copy(
-                isLoggedIn = true,
-                userLogin = null
-            )
-        }
+        _networkState.update { it.copy(isLoggedIn = true, userLogin = null) }
+        Log.i("login", "offline-> ${networkState.value}")
+
     }
 
     private fun checkPermanentAuth() {
         val token = checkPermanentAuthUseCase()
         when (token) {
             "offline" -> {
-                _networkState.update {
-                    it.copy(
-                        isLoggedIn = true,
-                        userLogin = null
-                    )
-                }
+                _networkState.update { it.copy(isLoggedIn = true) }
             }
 
             null -> {
@@ -107,71 +91,54 @@ class NetworkViewModel(
 
             else -> {
                 val login = getTokenUseCase()
-                _networkState.update {
-                    it.copy(
-                        isLoggedIn = true,
-                        userLogin = login
-                    )
-                }
-                Log.d("dataTransfer", "Token is valid. Loading main screen for login: $login")
+                _networkState.update { it.copy(isLoggedIn = true, userLogin = login) }
             }
         }
     }
 
     fun sendLoginData(login: String, password: String) {
         viewModelScope.launch {
-            _transferState.update { it.copy(isLoading = true) }
+            _networkState.update { it.copy(isLoading = true) }
             val result = sendLoginUseCase(login, password)
             if (result.isSuccessful == true && result.errorMessage == null) {
-                Log.i("dataTransfer", "viewModel transfer - OK")
-                _transferState.update {
-                    it.copy(
-                        isLoading = false,
-                        isSuccessful = true,
-                        errorMessage = null
-                    )
-                }
                 _networkState.update {
                     it.copy(
+                        isLoading = false,
                         isLoggedIn = true,
-                        userLogin = login
+                        isSuccessful = result.isSuccessful,
+                        errorMessage = null,
+                        userLogin = login,
                     )
                 }
             } else {
-                _transferState.update {
+                _networkState.update {
                     it.copy(
                         isLoading = false,
                         isSuccessful = result.isSuccessful,
                         errorMessage = result.errorMessage
                     )
                 }
-                Log.e("dataTransfer", "viewModel transfer not successfu\n${result.errorMessage}")
             }
+            Log.i("login", "login->${networkState.value}")
         }
     }
 
     fun sendRegisterData(login: String, password: String) {
         viewModelScope.launch {
-            _transferState.update { it.copy(isLoading = true) }
+            _networkState.update { it.copy(isLoading = true) }
             val result = sendRegistrationUseCase(login, password)
             if (result.isSuccessful == true && result.errorMessage == null) {
-                Log.i("dataTransfer", "viewModel transfer - OK")
-                _transferState.update {
+                _networkState.update {
                     it.copy(
                         isLoading = false,
+                        isLoggedIn = true,
+                        userLogin = login,
                         isSuccessful = true,
                         errorMessage = null
                     )
                 }
-                _networkState.update {
-                    it.copy(
-                        isLoggedIn = true,
-                        userLogin = login
-                    )
-                }
             } else {
-                Log.e("dataTransfer", "viewModel transfer error: ${result.errorMessage}")
-                _transferState.update {
+                _networkState.update {
                     it.copy(
                         isLoading = false,
                         isSuccessful = result.isSuccessful,
@@ -179,18 +146,20 @@ class NetworkViewModel(
                     )
                 }
             }
+            Log.i("login", "register-> ${networkState.value}")
+
         }
     }
 
     fun changeLogin(login: String, newLogin: String) {
         viewModelScope.launch {
             if (changeLoginUseCase(login, newLogin)) {
-                Log.i("dataTransfer", "смена ника - ${true}")
+                Log.i("login", "смена ника - ${true}")
                 _networkState.update { it.copy(userLogin = newLogin) }
                 saveNewLoginUseCase(newLogin)
                 return@launch
             }
-            Log.e("dataTransfer", "смена ника - ${false}")
+            Log.e("login", "смена ника - ${false}")
         }
     }
 

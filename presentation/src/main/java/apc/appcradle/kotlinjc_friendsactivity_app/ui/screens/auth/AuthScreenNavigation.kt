@@ -1,21 +1,22 @@
 package apc.appcradle.kotlinjc_friendsactivity_app.ui.screens.auth
 
+import androidx.compose.runtime.State
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
-import apc.appcradle.domain.models.network.DataTransferState
+import apc.appcradle.kotlinjc_friendsactivity_app.NetworkAppState
 import apc.appcradle.kotlinjc_friendsactivity_app.ui.screens.Destinations
 
 fun NavGraphBuilder.authScreen(
     toRegisterScreen: () -> Unit,
     onOfflineUseClick: () -> Unit,
     sendLoginData: (String, String) -> Unit,
-    transferState: DataTransferState
+    networkState: State<NetworkAppState>
 ) {
     composable(Destinations.AUTH.route) {
         AuthScreen(
             sendLoginData = sendLoginData,
-            transferState = transferState,
+            networkState = networkState,
             onRegisterClick = toRegisterScreen,
             onOfflineUseClick = onOfflineUseClick
         )

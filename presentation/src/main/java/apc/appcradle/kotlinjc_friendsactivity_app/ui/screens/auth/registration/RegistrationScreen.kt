@@ -12,6 +12,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -21,16 +22,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import apc.appcradle.kotlinjc_friendsactivity_app.NetworkAppState
 import apc.appcradle.kotlinjc_friendsactivity_app.R
-import apc.appcradle.domain.models.network.DataTransferState
 import apc.appcradle.kotlinjc_friendsactivity_app.ui.app_components.AppComponents
-import apc.appcradle.kotlinjc_friendsactivity_app.ui.theme.KotlinJC_FriendsActivity_appTheme
 
 @Composable
 fun RegistrationScreen(
-    transferResult: DataTransferState,
+    networkResult: State<NetworkAppState>,
     toMainScreen: () -> Unit,
     sendRegisterCallback: (String, String) -> Unit,
 ) {
@@ -39,8 +38,8 @@ fun RegistrationScreen(
     var isPasswordError by rememberSaveable { mutableStateOf(false) }
     var passText by rememberSaveable { mutableStateOf("") }
 
-    LaunchedEffect(transferResult) {
-        if (transferResult.isSuccessful == true && transferResult.errorMessage == null) {
+    LaunchedEffect(networkResult.value) {
+        if (networkResult.value.isSuccessful == true && networkResult.value.errorMessage == null) {
             toMainScreen()
         }
     }
@@ -77,7 +76,7 @@ fun RegistrationScreen(
                 }
             )
             Box(Modifier.height(10.dp)) {
-                if (transferResult.isLoading) {
+                if (networkResult.value.isLoading) {
                     LinearProgressIndicator(modifier = Modifier.padding(horizontal = 15.dp))
                 }
             }
@@ -100,22 +99,10 @@ fun RegistrationScreen(
                 }
             ) { Text(stringResource(R.string.auth_screen_create)) }
             Box(Modifier.height(50.dp)) {
-                if (!transferResult.errorMessage.isNullOrEmpty()) {
-                    Text(text = transferResult.errorMessage!!, color = Color.Red)
+                if (!networkResult.value.errorMessage.isNullOrEmpty()) {
+                    Text(text = networkResult.value.errorMessage!!, color = Color.Red)
                 }
             }
         }
-    }
-}
-
-@Preview
-@Composable
-fun Preview() {
-    KotlinJC_FriendsActivity_appTheme {
-        RegistrationScreen(
-            DataTransferState(),
-            {},
-            { _, _ -> {} }
-        )
     }
 }

@@ -19,6 +19,7 @@ import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -27,13 +28,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import apc.appcradle.domain.models.network.DataTransferState
+import apc.appcradle.kotlinjc_friendsactivity_app.NetworkAppState
 import apc.appcradle.kotlinjc_friendsactivity_app.R
 import apc.appcradle.kotlinjc_friendsactivity_app.ui.app_components.AppComponents
 import apc.appcradle.kotlinjc_friendsactivity_app.ui.app_components.AppComponents.AppText
-import apc.appcradle.kotlinjc_friendsactivity_app.ui.theme.KotlinJC_FriendsActivity_appTheme
 
 private enum class FieldState {
     Login, Password
@@ -42,7 +41,7 @@ private enum class FieldState {
 @Composable
 fun AuthScreen(
     sendLoginData: (String, String) -> Unit,
-    transferState: DataTransferState,
+    networkState: State<NetworkAppState>,
     onRegisterClick: () -> Unit,
     onOfflineUseClick: () -> Unit
 ) {
@@ -95,7 +94,7 @@ fun AuthScreen(
                         onLeadingIconClick = { fieldState = FieldState.Login })
                 }
                 Box(Modifier.height(10.dp)) {
-                    if (transferState.isLoading) {
+                    if (networkState.value.isLoading) {
                         LinearProgressIndicator(modifier = Modifier.padding(horizontal = 15.dp))
                     }
                 }
@@ -107,22 +106,9 @@ fun AuthScreen(
                 ) { AppText(text = stringResource(R.string.auth_screen_offline)) }
 
                 Box(Modifier.height(30.dp)) {
-                    if (transferState.errorMessage != null) Text(text = transferState.errorMessage!!)
+                    if (networkState.value.errorMessage != null) Text(text = networkState.value.errorMessage!!)
                 }
             }
         }
-    }
-}
-
-@Preview
-@Composable
-private fun Preview() {
-    KotlinJC_FriendsActivity_appTheme {
-        AuthScreen(
-            sendLoginData = { log, pass -> {} },
-            onRegisterClick = {},
-            transferState = DataTransferState(),
-            onOfflineUseClick = {}
-        )
     }
 }
