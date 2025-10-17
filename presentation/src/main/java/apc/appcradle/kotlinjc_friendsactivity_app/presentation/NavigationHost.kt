@@ -40,6 +40,7 @@ fun NavigationHost(
 
     val navController = rememberNavController()
     val navBackStackEntry by navController.currentBackStackEntryAsState()
+
     val noAuthDestinations =
         if (networkState.value.userLogin == null) {
             Destinations.entries.filter { it != Destinations.AUTH && it != Destinations.REGISTER && it != Destinations.RATINGS }
@@ -50,6 +51,7 @@ fun NavigationHost(
     LaunchedEffect(Unit) {
         serviceViewModel.updateServiceState()
     }
+
     Scaffold(
         topBar = {
             if (navBackStackEntry?.destination?.route != Destinations.AUTH.route &&
@@ -94,18 +96,14 @@ fun NavigationHost(
             startDestination = startDestination
         ) {
             authScreen(
-                toRegisterScreen = { navController.toRegisterScreen() },
+                toRegisterScreen = navController::toRegisterScreen,
                 networkState = networkState,
-                sendLoginData = { login, password ->
-                    networkViewModel.sendLoginData(login, password)
-                },
-                onOfflineUseClick = { networkViewModel.goOfflineUse() }
+                sendLoginData = networkViewModel::sendLoginData,
+                onOfflineUseClick = networkViewModel::goOfflineUse
             )
             registerScreen(
-                toMainScreen = { navController.toMainScreen() },
-                sendRegisterCallback = { login, password ->
-                    networkViewModel.sendRegisterData(login, password)
-                },
+                toMainScreen = navController::toMainScreen,
+                sendRegisterCallback = networkViewModel::sendRegisterData,
                 networkState = networkState
             )
             mainScreen(
@@ -115,25 +113,21 @@ fun NavigationHost(
             ratingsScreen(
                 networkState = networkState,
                 syncFun = {
-                    val stepsNow = serviceViewModel.allSteps.value
-                    val weeklyNow = serviceViewModel.weeklySteps.value
                     networkViewModel.syncData(
                         login = networkState.value.userLogin!!,
-                        steps = stepsNow,
-                        weeklySteps = weeklyNow
+                        steps = serviceViewModel.allSteps.value,
+                        weeklySteps = serviceViewModel.weeklySteps.value
                     )
                 }
             )
             settingsScreen(
                 settingsState = settingsState,
                 networkState = networkState,
-                onLogoutClick = { networkViewModel.logout() },
-                onThemeClick = { settingsViewModel.changeTheme(it) },
-                onNickNameClick = { login, newLogin ->
-                    networkViewModel.changeLogin(login, newLogin)
-                },
-                onStepLengthClick = { settingsViewModel.changeStepLength(it) },
-                onScaleClick = { settingsViewModel.changeScale(it) }
+                onLogoutClick = networkViewModel::logout,
+                onThemeClick = settingsViewModel::changeTheme,
+                onNickNameClick = networkViewModel::changeLogin,
+                onStepLengthClick = settingsViewModel::changeStepLength,
+                onScaleClick = settingsViewModel::changeScale
             )
         }
     }

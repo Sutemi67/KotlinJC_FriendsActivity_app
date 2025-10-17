@@ -87,9 +87,7 @@ fun AuthScreen(
                         value = passwordText,
                         onValueChange = { passwordText = it },
                         trailingIcon = if (passwordText.isNotBlank()) Icons.Default.PlayArrow else null,
-                        onIconClick = {
-                            sendLoginData(loginText, passwordText)
-                        },
+                        onIconClick = { sendLoginData(loginText, passwordText) },
                         needLeadingBackIcon = true,
                         onLeadingIconClick = { fieldState = FieldState.Login })
                 }

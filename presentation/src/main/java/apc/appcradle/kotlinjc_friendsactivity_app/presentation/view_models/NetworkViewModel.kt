@@ -1,10 +1,15 @@
 package apc.appcradle.kotlinjc_friendsactivity_app.presentation.view_models
 
+import android.content.Context
+import android.os.Build
 import android.util.Log
+import androidx.annotation.RequiresApi
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.work.WorkManager
 import apc.appcradle.core.constants.WORKER_TAG
+import apc.appcradle.core.utils_functions.appendLogsToFile
+import apc.appcradle.core.utils_functions.millisecondsToDays
 import apc.appcradle.domain.models.network.PlayersListSyncData
 import apc.appcradle.domain.usecases_auth.ChangeLoginUseCase
 import apc.appcradle.domain.usecases_auth.CheckPermanentAuthUseCase
@@ -24,7 +29,10 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import org.koin.java.KoinJavaComponent.inject
+import kotlin.math.roundToLong
 
+@RequiresApi(Build.VERSION_CODES.O)
 class NetworkViewModel(
     private val permissionManager: PermissionManager,
     private val workManager: WorkManager,
@@ -44,14 +52,16 @@ class NetworkViewModel(
 
     init {
         checkPermanentAuth()
-
+        val context: Context by inject(Context::class.java)
         viewModelScope.launch {
             workManager.pruneWork()
             workManager.getWorkInfosByTagFlow(WORKER_TAG).collect {
                 it.forEach { element ->
-                    Log.i(
-                        "worker",
-                        "statRepo,workerInfoAsync -> ${element.id}, ${element.state}, ${element.initialDelayMillis}"
+                    appendLogsToFile(
+                        context = context,
+                        message = "workerInfo -> id:${element.id},\nstate:${element.state},\nms:${element.initialDelayMillis}ms,\ndays:${
+                            millisecondsToDays(element.initialDelayMillis).roundToLong()
+                        } days"
                     )
                 }
             }

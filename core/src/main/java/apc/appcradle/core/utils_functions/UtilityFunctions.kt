@@ -3,9 +3,18 @@ package apc.appcradle.core.utils_functions
 import android.content.Context
 import android.content.Intent
 import android.icu.text.DecimalFormat
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.core.net.toUri
+import apc.appcradle.core.constants.USER_LOGS_FILENAME
+import java.io.File
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 import java.util.Calendar
 import kotlin.math.roundToInt
+import kotlin.time.Duration
+import kotlin.time.DurationUnit
+import kotlin.time.ExperimentalTime
 
 fun whenNextMonday(): Long {
     val now = Calendar.getInstance()
@@ -41,4 +50,36 @@ fun kkalCalc(userStepLength: Double, stepCount: Int): IntRange {
     val firstValue = (50 * (stepCount * userStepLength / 2500)).roundToInt()
     val secondValue = (75 * (stepCount * userStepLength / 2500)).roundToInt()
     return IntRange(firstValue, secondValue)
+}
+
+@OptIn(ExperimentalTime::class)
+fun millisecondsToDays(milliseconds: Long): Double {
+    val duration =
+        Duration.convert(milliseconds.toDouble(), DurationUnit.MILLISECONDS, DurationUnit.DAYS)
+    return duration
+}
+
+@RequiresApi(Build.VERSION_CODES.O)
+fun appendLogsToFile(context: Context, userLogin: String? = null, message: String? = null) {
+    val formatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME
+    val filename = USER_LOGS_FILENAME
+    val file = File(context.filesDir, filename)
+
+    when (message) {
+        null -> file.appendText(
+            "User: ${userLogin ?: "offline user"}, data truncated successfully at: ${
+                formatter.format(
+                    LocalDateTime.now()
+                )
+            }\n-------------"
+        )
+
+        else -> file.appendText(
+            "User: ${userLogin ?: "offline user"}, message ${message}, at: ${
+                formatter.format(
+                    LocalDateTime.now()
+                )
+            }\n-------------"
+        )
+    }
 }
