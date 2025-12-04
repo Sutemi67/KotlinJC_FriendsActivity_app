@@ -64,9 +64,6 @@ class NetworkClient(
         }
     }
 
-    private val serverUrl = "http://212.3.131.67:6655/"
-    private val serverHomeUrl = "http://192.168.1.100:6655/"
-
     private fun saveToken(login: String, token: String) {
         tokenRepositoryImpl.saveToken(login = login, token = token)
     }
@@ -74,10 +71,11 @@ class NetworkClient(
     suspend fun sendRegistrationInfo(login: String, password: String): DataTransferState {
         val body = RegisterRequest(login = login, password = password)
         return try {
-            val response = networkService.post(urlString = "$serverUrl/register") {
-                contentType(ContentType.Application.Json)
-                setBody(body)
-            }
+            val response =
+                networkService.post(urlString = "$SERVER_URL$POST_USER_REGISTER_HANDLE") {
+                    contentType(ContentType.Application.Json)
+                    setBody(body)
+                }
             if (response.status.isSuccess()) {
                 val token = response.body<RegisterResponse>().token
                 saveToken(login = login, token = token)
@@ -87,10 +85,11 @@ class NetworkClient(
             }
         } catch (_: SocketTimeoutException) {
             return try {
-                val response = networkService.post(urlString = "$serverHomeUrl/register") {
-                    contentType(ContentType.Application.Json)
-                    setBody(body)
-                }
+                val response =
+                    networkService.post(urlString = "$HOME_URL$POST_USER_REGISTER_HANDLE") {
+                        contentType(ContentType.Application.Json)
+                        setBody(body)
+                    }
                 if (response.status.isSuccess()) {
                     val token = response.body<RegisterResponse>().token
                     saveToken(login = login, token = token)
@@ -107,7 +106,7 @@ class NetworkClient(
     suspend fun sendLoginInfo(login: String, password: String): DataTransferState {
         val body = LoginRequest(login, password)
         return try {
-            val response = networkService.post(urlString = "$serverUrl/login") {
+            val response = networkService.post(urlString = "$SERVER_URL$POST_USER_LOGIN_HANDLE") {
                 contentType(ContentType.Application.Json)
                 setBody(body)
             }
@@ -120,7 +119,7 @@ class NetworkClient(
             }
         } catch (_: SocketTimeoutException) {
             try {
-                val response = networkService.post(urlString = "$serverHomeUrl/login") {
+                val response = networkService.post(urlString = "$HOME_URL$POST_USER_LOGIN_HANDLE") {
                     contentType(ContentType.Application.Json)
                     setBody(body)
                 }
@@ -152,7 +151,7 @@ class NetworkClient(
     ): UserActivityResponse {
         val body = UserActivityRequest(login = login, steps = steps, weeklySteps = weeklySteps)
         return try {
-            val request = networkService.post(urlString = "$serverUrl/post_activity") {
+            val request = networkService.post(urlString = "$SERVER_URL$POST_ACTIVITY_HANDLE") {
                 contentType(ContentType.Application.Json)
                 setBody(body)
             }
@@ -164,7 +163,7 @@ class NetworkClient(
             }
         } catch (_: SocketTimeoutException) {
             try {
-                val request = networkService.post(urlString = "$serverHomeUrl/post_activity") {
+                val request = networkService.post(urlString = "$HOME_URL$POST_ACTIVITY_HANDLE") {
                     contentType(ContentType.Application.Json)
                     setBody(body)
                 }
@@ -205,13 +204,23 @@ class NetworkClient(
     suspend fun changeUserLogin(login: String, newLogin: String): Boolean {
         val body = LoginChangeRequest(login, newLogin)
         try {
-            val response = networkService.post(urlString = "$serverUrl/login_update") {
-                contentType(ContentType.Application.Json)
-                setBody(body)
-            }
+            val response =
+                networkService.post(urlString = "$SERVER_URL$POST_USER_LOGIN_CHANGE_HANDLE") {
+                    contentType(ContentType.Application.Json)
+                    setBody(body)
+                }
             return response.status.isSuccess()
         } catch (_: Exception) {
             return false
         }
+    }
+
+    companion object {
+        const val SERVER_URL = "http://212.3.131.67:6655/"
+        const val HOME_URL = "http://192.168.1.100:6655/"
+        const val POST_USER_LOGIN_CHANGE_HANDLE = "/login_update"
+        const val POST_USER_REGISTER_HANDLE = "/register"
+        const val POST_USER_LOGIN_HANDLE = "/login"
+        const val POST_ACTIVITY_HANDLE = "/post_activity"
     }
 }
