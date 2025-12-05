@@ -2,6 +2,7 @@ package apc.appcradle.kotlinjc_friendsactivity_app.domain
 
 import android.app.AlarmManager
 import android.app.ForegroundServiceStartNotAllowedException
+import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
@@ -34,6 +35,7 @@ class StepCounterService : Service() {
         Log.i("service", "Service -> onStartCommand")
         return START_STICKY
     }
+
 
     override fun onTaskRemoved(rootIntent: Intent?) {
         super.onTaskRemoved(rootIntent)
@@ -74,6 +76,7 @@ class StepCounterService : Service() {
     }
 
     private fun createNotificationChannel() {
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val name = "Step Counter"
             val descriptionText = "Tracks your steps in background"
@@ -87,29 +90,38 @@ class StepCounterService : Service() {
         }
     }
 
-    private fun createNotification() = NotificationCompat.Builder(this, CHANNEL_ID)
-        .setContentTitle("Friends Activity")
-        .setContentText("Не сиди долго.")
-        .setSmallIcon(R.drawable.outline_directions_run_24)
-        .setLargeIcon(
-            BitmapFactory.decodeResource(
-                resources,
-                R.mipmap.ic_launcher
+    private fun createNotification(): Notification {
+
+        val notificationMessage = listOf(
+            resources.getString(R.string.notification_message_one),
+            resources.getString(R.string.notification_message_two),
+            resources.getString(R.string.notification_message_three),
+            resources.getString(R.string.notification_message_four),
+            resources.getString(R.string.notification_message_five),
+            resources.getString(R.string.notification_message_six),
+        ).random()
+
+        return NotificationCompat.Builder(this, CHANNEL_ID)
+            .setContentTitle(resources.getString(R.string.app_name))
+            .setContentText(notificationMessage)
+            .setSmallIcon(R.drawable.outline_directions_run_24)
+            .setLargeIcon(
+                BitmapFactory.decodeResource(resources, R.mipmap.ic_launcher)
             )
-        )
-        .setPriority(NotificationCompat.PRIORITY_LOW)
-        .setOngoing(true)
-        .setContentIntent(
-            PendingIntent.getActivity(
-                this,
-                0,
-                Intent(this, MainActivity::class.java).apply {
-                    Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-                },
-                PendingIntent.FLAG_IMMUTABLE
+            .setPriority(NotificationCompat.PRIORITY_MAX)
+            .setOngoing(true)
+            .setContentIntent(
+                PendingIntent.getActivity(
+                    this,
+                    0,
+                    Intent(this, MainActivity::class.java).apply {
+                        Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                    },
+                    PendingIntent.FLAG_IMMUTABLE
+                )
             )
-        )
-        .build()
+            .build()
+    }
 
     override fun onDestroy() {
         super.onDestroy()
@@ -124,7 +136,7 @@ class StepCounterService : Service() {
         val isEnabled = try {
             settingsRepository.loadSettingsData().savedIsServiceEnabled
         } catch (e: Exception) {
-            Log.e("service", "Service -> ${ e.message }")
+            Log.e("service", "Service -> ${e.message}")
             false
         }
         if (!isEnabled || !permissionManager.arePermissionsGranted()) return

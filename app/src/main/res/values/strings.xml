@@ -52,7 +52,7 @@
 <!--    AppBar strings-->
     <string name="appbar_greeting_logged">Have a good day, %s!</string>
     <string name="appbar_greeting_offline">Have a good day!</string>
-    <string name="appbar_greeting_ratings">Статистика</string>
+    <string name="appbar_greeting_ratings">Statistic</string>
     <string name="appbar_greeting_settings">Settings</string>
 
 <!--    Components-->
@@ -80,5 +80,18 @@
     <string name="navigation_buttons_ratings">Ratings</string>
     <string name="navigation_buttons_settings">Settings</string>
 
+    <!--    Notifications-->
+    <string name="notification_message_one">Want to boost your focus? Take a walk! Movement triggers the release of neurotransmitters that enhance attention.</string>
+    <string name="notification_message_two">Walk for just a couple of minutes—it’ll refresh your mind and lift your mood!</string>
+    <string name="notification_message_three">Did you know? Just 2 minutes of walking improve blood circulation and give your eyes a break from the screen.</string>
+    <string name="notification_message_four">Even a short walk reduces stress and boosts productivity.</string>
+    <string name="notification_message_five">Your body was made to move!</string>
+    <string name="notification_message_six">For every 20 minutes of sitting, take 2 minutes to walk. This simple rule protects your back and boosts your metabolism!</string>
 
+    <string-array name="random_messages">
+        <item>Привет!</item>
+        <item>Как дела?</item>
+        <item>Всё хорошо?</item>
+        <item>Удачи сегодня!</item>
+    </string-array>
 </resources>
