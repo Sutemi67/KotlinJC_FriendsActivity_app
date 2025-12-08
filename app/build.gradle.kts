@@ -22,9 +22,9 @@ android {
         minSdk = 24
         targetSdk = 36
 
-        //изменение от 10 октября 2025
-        versionCode = 5
-        versionName = "1.0.4"
+        // изменение от 08 декабря 2025
+        versionCode = 6
+        versionName = "1.0.5"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -90,7 +90,7 @@ dependencies {
     implementation(libs.ktor.serialization.kotlinx.json)
     implementation(libs.ktor.client.auth)
     // Security
-    implementation(libs.androidx.security.crypto)
+//    implementation(libs.androidx.security.crypto)
     //Gson
     implementation(libs.gson)
 }
