@@ -78,9 +78,9 @@ class StepCounterService : Service() {
     private fun createNotificationChannel() {
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val name = "Step Counter"
+            val name = getString(R.string.app_name)
             val descriptionText = "Tracks your steps in background"
-            val importance = NotificationManager.IMPORTANCE_LOW
+            val importance = NotificationManager.IMPORTANCE_HIGH
             val channel = NotificationChannel(CHANNEL_ID, name, importance).apply {
                 description = descriptionText
             }
