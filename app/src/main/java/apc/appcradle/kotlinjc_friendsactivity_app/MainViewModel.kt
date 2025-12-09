@@ -7,6 +7,8 @@ import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.work.WorkManager
+import apc.appcradle.kotlinjc_friendsactivity_app.data.SERVICE_RESTART_TAG
+import apc.appcradle.kotlinjc_friendsactivity_app.data.createServiceRestartRequest
 import apc.appcradle.kotlinjc_friendsactivity_app.data.StatsRepository
 import apc.appcradle.kotlinjc_friendsactivity_app.data.TokenRepositoryImpl
 import apc.appcradle.kotlinjc_friendsactivity_app.data.WORKER_TAG
@@ -98,6 +100,23 @@ class MainViewModel(
             context.getSystemService(Context.ACTIVITY_SERVICE) as android.app.ActivityManager
         return manager.getRunningServices(Integer.MAX_VALUE)
             .any { it.service.className == serviceClass.name }
+    }
+
+    fun triggerServiceRestartCheck() {
+        viewModelScope.launch {
+            try {
+                // Cancel any existing restart requests to avoid duplicates
+                workManager.cancelAllWorkByTag(SERVICE_RESTART_TAG)
+                
+                // Schedule a new restart check
+                val restartRequest = createServiceRestartRequest(delayMillis = 5_000L) // 5 seconds delay
+                workManager.enqueue(restartRequest)
+                
+                Log.i("service", "Manual service restart check triggered")
+            } catch (e: Exception) {
+                Log.e("service", "Failed to trigger service restart check: ${e.message}")
+            }
+        }
     }
 
     //endregion

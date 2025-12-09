@@ -1,22 +1,24 @@
 package apc.appcradle.kotlinjc_friendsactivity_app.domain
 
-import android.app.AlarmManager
 import android.app.ForegroundServiceStartNotAllowedException
 import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
 import android.app.Service
+import android.content.Context
 import android.content.Intent
 import android.content.pm.ServiceInfo
 import android.graphics.BitmapFactory
 import android.os.Build
 import android.os.IBinder
-import android.os.SystemClock
 import android.util.Log
 import androidx.core.app.NotificationCompat
+import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.WorkManager
 import apc.appcradle.kotlinjc_friendsactivity_app.MainActivity
 import apc.appcradle.kotlinjc_friendsactivity_app.R
+import apc.appcradle.kotlinjc_friendsactivity_app.data.SERVICE_RESTART_TAG
 import apc.appcradle.kotlinjc_friendsactivity_app.data.SensorsManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -24,7 +26,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
-import org.koin.java.KoinJavaComponent.inject
+import java.util.concurrent.TimeUnit
 
 class StepCounterService : Service() {
     companion object {
@@ -33,6 +35,7 @@ class StepCounterService : Service() {
     }
 
     private val sensorManager: SensorsManager by inject()
+    private val workManager: WorkManager by inject()
     private var notificationBuilder: NotificationCompat.Builder? = null
     private var stepsUpdateJob: Job = Job()
     
@@ -48,6 +51,9 @@ class StepCounterService : Service() {
                 updateNotification(steps)
             }
         }
+        
+        // Schedule health check to monitor service status
+        scheduleServiceHealthCheck()
         
         Log.i("service", "Service -> onStartCommand")
         return START_STICKY
@@ -158,32 +164,26 @@ class StepCounterService : Service() {
     }
 
     private fun scheduleSelfRestart() {
-        val settingsRepository by inject<SettingsRepository>(SettingsRepository::class.java)
-        val permissionManager by inject<PermissionManager>(PermissionManager::class.java)
-
-        val isEnabled = try {
-            settingsRepository.loadSettingsData().savedIsServiceEnabled
-        } catch (e: Exception) {
-            Log.e("service", "Service -> ${e.message}")
-            false
-        }
-        if (!isEnabled || !permissionManager.arePermissionsGranted()) return
-        val restartIntent = Intent(this, StepCounterService::class.java)
-        val pendingIntent = PendingIntent.getService(
-            this,
-            0,
-            restartIntent,
-            PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_CANCEL_CURRENT
-        )
-        val alarmManager = getSystemService(ALARM_SERVICE) as AlarmManager
+        Log.i("service", "Service -> Scheduling restart with WorkManager")
+        
         try {
-            alarmManager.setExactAndAllowWhileIdle(
-                AlarmManager.ELAPSED_REALTIME_WAKEUP,
-                SystemClock.elapsedRealtime() + 5_000L,
-                pendingIntent
-            )
-        } catch (e: SecurityException) {
-            Log.e("service", "Service -> ${e.message}")
+            val restartRequest = apc.appcradle.kotlinjc_friendsactivity_app.data.createServiceRestartRequest()
+            workManager.enqueue(restartRequest)
+            Log.i("service", "Service -> Restart scheduled successfully")
+        } catch (e: Exception) {
+            Log.e("service", "Service -> Failed to schedule restart: ${e.message}")
+        }
+    }
+
+    private fun scheduleServiceHealthCheck() {
+        Log.i("service", "Service -> Scheduling health check with WorkManager")
+        
+        try {
+            val healthCheckRequest = apc.appcradle.kotlinjc_friendsactivity_app.data.createServiceHealthCheckRequest()
+            workManager.enqueue(healthCheckRequest)
+            Log.i("service", "Service -> Health check scheduled successfully")
+        } catch (e: Exception) {
+            Log.e("service", "Service -> Failed to schedule health check: ${e.message}")
         }
     }
 }
