@@ -18,6 +18,11 @@ import androidx.core.app.NotificationCompat
 import apc.appcradle.kotlinjc_friendsactivity_app.MainActivity
 import apc.appcradle.kotlinjc_friendsactivity_app.R
 import apc.appcradle.kotlinjc_friendsactivity_app.data.SensorsManager
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
 import org.koin.java.KoinJavaComponent.inject
 
@@ -28,10 +33,22 @@ class StepCounterService : Service() {
     }
 
     private val sensorManager: SensorsManager by inject()
+    private var notificationBuilder: NotificationCompat.Builder? = null
+    private var stepsUpdateJob: Job = Job()
+    
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         createNotificationChannel()
         startServiceInForeground()
         sensorManager.registerSensors()
+        
+        stepsUpdateJob.cancel()
+        
+        stepsUpdateJob = CoroutineScope(Dispatchers.Main).launch {
+            sensorManager.allSteps.collect { steps ->
+                updateNotification(steps)
+            }
+        }
+        
         Log.i("service", "Service -> onStartCommand")
         return START_STICKY
     }
@@ -80,9 +97,15 @@ class StepCounterService : Service() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val name = getString(R.string.app_name)
             val descriptionText = "Tracks your steps in background"
-            val importance = NotificationManager.IMPORTANCE_HIGH
+            val importance = NotificationManager.IMPORTANCE_LOW
             val channel = NotificationChannel(CHANNEL_ID, name, importance).apply {
                 description = descriptionText
+                setShowBadge(false)
+                lockscreenVisibility = Notification.VISIBILITY_SECRET
+                // Для Samsung и других устройств - делаем уведомление постоянным
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                    setImportance(NotificationManager.IMPORTANCE_LOW)
+                }
             }
             val notificationManager =
                 getSystemService(NOTIFICATION_SERVICE) as NotificationManager
@@ -91,41 +114,46 @@ class StepCounterService : Service() {
     }
 
     private fun createNotification(): Notification {
-
-        val notificationMessage = listOf(
-            resources.getString(R.string.notification_message_one),
-            resources.getString(R.string.notification_message_two),
-            resources.getString(R.string.notification_message_three),
-            resources.getString(R.string.notification_message_four),
-            resources.getString(R.string.notification_message_five),
-            resources.getString(R.string.notification_message_six),
-        ).random()
-
-        return NotificationCompat.Builder(this, CHANNEL_ID)
+        return createNotificationBuilder(0).build()
+    }
+    
+    private fun createNotificationBuilder(steps: Int): NotificationCompat.Builder {
+        val notificationBuilder = NotificationCompat.Builder(this, CHANNEL_ID)
             .setContentTitle(resources.getString(R.string.app_name))
-            .setContentText(notificationMessage)
+            .setContentText(resources.getString(R.string.steps_notification_format, steps))
             .setSmallIcon(R.drawable.outline_directions_run_24)
             .setLargeIcon(
                 BitmapFactory.decodeResource(resources, R.mipmap.ic_launcher)
             )
-            .setPriority(NotificationCompat.PRIORITY_MAX)
+            .setPriority(NotificationCompat.PRIORITY_LOW)
             .setOngoing(true)
+            .setOnlyAlertOnce(true)
+            .setShowWhen(false)
             .setContentIntent(
                 PendingIntent.getActivity(
                     this,
                     0,
                     Intent(this, MainActivity::class.java).apply {
-                        Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                        flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
                     },
                     PendingIntent.FLAG_IMMUTABLE
                 )
             )
-            .build()
+        
+        this.notificationBuilder = notificationBuilder
+        return notificationBuilder
+    }
+    
+    private fun updateNotification(steps: Int) {
+        val notificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
+        val builder = createNotificationBuilder(steps)
+        notificationManager.notify(NOTIFICATION_ID, builder.build())
     }
 
     override fun onDestroy() {
         super.onDestroy()
         sensorManager.unregisterSensors()
+        stepsUpdateJob.cancel()
         Log.i("service", "Service -> Destroyed")
     }
 
