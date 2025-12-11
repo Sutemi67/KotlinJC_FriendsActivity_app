@@ -1,4 +1,4 @@
-package apc.appcradle.kotlinjc_friendsactivity_app.data
+package apc.appcradle.kotlinjc_friendsactivity_app.services
 
 import android.content.Context
 import android.content.Intent
@@ -7,7 +7,7 @@ import androidx.work.CoroutineWorker
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkRequest
 import androidx.work.WorkerParameters
-import apc.appcradle.kotlinjc_friendsactivity_app.domain.StepCounterService
+import apc.appcradle.kotlinjc_friendsactivity_app.services.StepCounterService
 
 class ServiceRestartWorker(
     context: Context,

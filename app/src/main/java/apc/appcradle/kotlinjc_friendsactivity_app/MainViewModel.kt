@@ -8,11 +8,9 @@ import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.work.WorkManager
-import apc.appcradle.kotlinjc_friendsactivity_app.data.SERVICE_RESTART_TAG
-import apc.appcradle.kotlinjc_friendsactivity_app.data.createServiceRestartRequest
 import apc.appcradle.kotlinjc_friendsactivity_app.data.StatsRepository
 import apc.appcradle.kotlinjc_friendsactivity_app.data.TokenRepositoryImpl
-import apc.appcradle.kotlinjc_friendsactivity_app.data.WORKER_TAG
+import apc.appcradle.kotlinjc_friendsactivity_app.services.WORKER_TAG
 import apc.appcradle.kotlinjc_friendsactivity_app.domain.NetworkClient
 import apc.appcradle.kotlinjc_friendsactivity_app.domain.SettingsRepository
 import apc.appcradle.kotlinjc_friendsactivity_app.domain.model.SharedPreferencesData
@@ -20,8 +18,8 @@ import apc.appcradle.kotlinjc_friendsactivity_app.domain.model.AppState
 import apc.appcradle.kotlinjc_friendsactivity_app.domain.model.AppThemes
 import apc.appcradle.kotlinjc_friendsactivity_app.domain.model.network.DataTransferState
 import apc.appcradle.kotlinjc_friendsactivity_app.domain.model.network.PlayersListSyncData
-import apc.appcradle.kotlinjc_friendsactivity_app.domain.PermissionManager
-import apc.appcradle.kotlinjc_friendsactivity_app.domain.StepCounterService
+import apc.appcradle.kotlinjc_friendsactivity_app.services.PermissionManager
+import apc.appcradle.kotlinjc_friendsactivity_app.services.StepCounterService
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -103,22 +101,22 @@ class MainViewModel(
             .any { it.service.className == serviceClass.name }
     }
 
-    fun triggerServiceRestartCheck() {
-        viewModelScope.launch {
-            try {
-                // Cancel any existing restart requests to avoid duplicates
-                workManager.cancelAllWorkByTag(SERVICE_RESTART_TAG)
-                
-                // Schedule a new restart check
-                val restartRequest = createServiceRestartRequest(delayMillis = 5_000L) // 5 seconds delay
-                workManager.enqueue(restartRequest)
-                
-                Log.i("service", "Manual service restart check triggered")
-            } catch (e: Exception) {
-                Log.e("service", "Failed to trigger service restart check: ${e.message}")
-            }
-        }
-    }
+//    fun triggerServiceRestartCheck() {
+//        viewModelScope.launch {
+//            try {
+//                // Cancel any existing restart requests to avoid duplicates
+//                workManager.cancelAllWorkByTag(SERVICE_RESTART_TAG)
+//
+//                // Schedule a new restart check
+//                val restartRequest = createServiceRestartRequest(delayMillis = 5_000L) // 5 seconds delay
+//                workManager.enqueue(restartRequest)
+//
+//                Log.i("service", "Manual service restart check triggered")
+//            } catch (e: Exception) {
+//                Log.e("service", "Failed to trigger service restart check: ${e.message}")
+//            }
+//        }
+//    }
 
     //endregion
 
