@@ -1,5 +1,6 @@
 package apc.appcradle.kotlinjc_friendsactivity_app
 
+import android.app.ActivityManager
 import android.content.Context
 import android.content.Intent
 import android.util.Log
@@ -97,7 +98,7 @@ class MainViewModel(
 
     private fun isServiceRunning(context: Context, serviceClass: Class<*>): Boolean {
         val manager =
-            context.getSystemService(Context.ACTIVITY_SERVICE) as android.app.ActivityManager
+            context.getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
         return manager.getRunningServices(Integer.MAX_VALUE)
             .any { it.service.className == serviceClass.name }
     }

@@ -87,12 +87,5 @@
     <string name="notification_message_four">Even a short walk reduces stress and boosts productivity.</string>
     <string name="notification_message_five">Your body was made to move!</string>
     <string name="notification_message_six">For every 20 minutes of sitting, take 2 minutes to walk. This simple rule protects your back and boosts your metabolism!</string>
-    <string name="steps_notification_format">Steps: %d</string>
-
-    <string-array name="random_messages">
-        <item>Привет!</item>
-        <item>Как дела?</item>
-        <item>Всё хорошо?</item>
-        <item>Удачи сегодня!</item>
-    </string-array>
+    <string name="notifications_weekly_steps">Your weekly: %s</string>
 </resources>

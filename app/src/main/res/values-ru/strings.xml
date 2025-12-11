@@ -68,5 +68,5 @@
     <string name="notification_message_four">Даже короткая прогулка снижает уровень стресса и повышает продуктивность.</string>
     <string name="notification_message_five">Твоё тело создано для движения!</string>
     <string name="notification_message_six">Каждые 20 минут сидения — 2 минуты ходьбы. Это простое правило спасает спину и улучшает обмен веществ!</string>
-    <string name="steps_notification_format">Шагов: %d</string>
+    <string name="notifications_weekly_steps">Твой результат: %s</string>
 </resources>

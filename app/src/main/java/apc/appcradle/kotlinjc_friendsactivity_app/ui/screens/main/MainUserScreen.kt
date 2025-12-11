@@ -40,9 +40,9 @@ fun MainUserScreen(
                     // Сначала запрашиваем runtime-разрешения
                     permissionLauncher.launch(permissionManager.requiredPermissions.toTypedArray())
                     // Затем, если точные будильники не разрешены, открываем системные настройки
-                    if (!permissionManager.isExactAlarmAllowed()) {
-                        permissionManager.openExactAlarmSettings()
-                    }
+//                    if (!permissionManager.isExactAlarmAllowed()) {
+//                        permissionManager.openExactAlarmSettings()
+//                    }
                 }
             )
         } else {
