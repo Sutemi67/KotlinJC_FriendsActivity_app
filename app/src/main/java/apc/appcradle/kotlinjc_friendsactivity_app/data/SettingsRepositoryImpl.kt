@@ -4,7 +4,6 @@ import android.content.SharedPreferences
 import android.util.Log
 import androidx.core.content.edit
 import apc.appcradle.kotlinjc_friendsactivity_app.domain.SettingsRepository
-import apc.appcradle.kotlinjc_friendsactivity_app.data.SharedPreferencesData
 import com.google.gson.Gson
 
 class SettingsRepositoryImpl(
@@ -28,8 +27,7 @@ class SettingsRepositoryImpl(
         return if (json != null) {
             Log.i("theme", "loaded:\n$json")
             gson.fromJson(json, SharedPreferencesData::class.java)
-        }
-        else
+        } else
             SharedPreferencesData()
     }
 
