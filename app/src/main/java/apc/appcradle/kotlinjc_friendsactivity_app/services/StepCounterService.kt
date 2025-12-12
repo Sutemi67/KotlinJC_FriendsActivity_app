@@ -124,7 +124,7 @@ class StepCounterService : Service() {
                 BitmapFactory.decodeResource(resources, R.mipmap.ic_launcher)
             )
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)
-            .setOnlyAlertOnce(true)
+//            .setOnlyAlertOnce(true)
             .setOngoing(true)
             .setSilent(true)
             .setContentIntent(

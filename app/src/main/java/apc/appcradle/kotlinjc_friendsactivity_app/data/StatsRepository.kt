@@ -4,7 +4,7 @@ import android.content.SharedPreferences
 import android.util.Log
 import androidx.core.content.edit
 import androidx.work.WorkManager
-import apc.appcradle.kotlinjc_friendsactivity_app.domain.NetworkClient
+import apc.appcradle.kotlinjc_friendsactivity_app.data.NetworkClient
 import apc.appcradle.kotlinjc_friendsactivity_app.domain.model.network.PlayerActivityData
 import apc.appcradle.kotlinjc_friendsactivity_app.domain.model.network.PlayersListSyncData
 import apc.appcradle.kotlinjc_friendsactivity_app.domain.model.network.Steps
@@ -50,7 +50,7 @@ class StatsRepository(
                 weeklySteps = weeklySteps
             )
             val newPlayersList = mutableListOf<PlayerActivityData>()
-            data.friendsList.forEach { it ->
+            data.friendsList.forEach {
                 newPlayersList.add(
                     PlayerActivityData(
                         login = it.login,

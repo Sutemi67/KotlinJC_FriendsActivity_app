@@ -1,6 +1,5 @@
-package apc.appcradle.kotlinjc_friendsactivity_app.domain
+package apc.appcradle.kotlinjc_friendsactivity_app.data
 
-import apc.appcradle.kotlinjc_friendsactivity_app.data.TokenRepositoryImpl
 import apc.appcradle.kotlinjc_friendsactivity_app.domain.model.network.DataTransferState
 import apc.appcradle.kotlinjc_friendsactivity_app.domain.model.network.requests.LoginChangeRequest
 import apc.appcradle.kotlinjc_friendsactivity_app.domain.model.network.requests.LoginRequest

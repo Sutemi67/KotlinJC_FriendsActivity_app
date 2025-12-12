@@ -9,7 +9,7 @@ import apc.appcradle.kotlinjc_friendsactivity_app.data.SensorsManager
 import apc.appcradle.kotlinjc_friendsactivity_app.data.SettingsRepositoryImpl
 import apc.appcradle.kotlinjc_friendsactivity_app.data.StatsRepository
 import apc.appcradle.kotlinjc_friendsactivity_app.data.TokenRepositoryImpl
-import apc.appcradle.kotlinjc_friendsactivity_app.domain.NetworkClient
+import apc.appcradle.kotlinjc_friendsactivity_app.data.NetworkClient
 import apc.appcradle.kotlinjc_friendsactivity_app.services.PermissionManager
 import apc.appcradle.kotlinjc_friendsactivity_app.domain.SettingsRepository
 import apc.appcradle.kotlinjc_friendsactivity_app.domain.TokenRepository

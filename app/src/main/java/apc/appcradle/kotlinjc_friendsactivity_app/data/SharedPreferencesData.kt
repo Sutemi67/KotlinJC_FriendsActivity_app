@@ -1,4 +1,6 @@
-package apc.appcradle.kotlinjc_friendsactivity_app.domain.model
+package apc.appcradle.kotlinjc_friendsactivity_app.data
+
+import apc.appcradle.kotlinjc_friendsactivity_app.domain.model.AppThemes
 
 data class SharedPreferencesData(
     val savedTheme: AppThemes = AppThemes.System,
