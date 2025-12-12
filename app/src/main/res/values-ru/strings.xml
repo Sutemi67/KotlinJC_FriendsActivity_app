@@ -2,7 +2,8 @@
 <resources>
     <string name="auth_screen_greeting">Привет, чемпион!\nЗалогинься или зарегистрируйся ниже.</string>
     <string name="auth_screen_offline">Пользоваться без интернета</string>
-    <string name="register_screen_greeting">Придумайте свой логин, по которому также вас смогут найти ваши друзья</string>
+    <string name="auth_screen_get_permissions">Получить разрешения</string>
+    <string name="register_screen_greeting">Придумай свой логин, по которому также тебя смогут найти твои друзья</string>
     <string name="auth_screen_login_placeholder">Твой логин</string>
     <string name="auth_screen_password_placeholder">Твой пароль</string>
     <string name="auth_screen_create">Создать аккаунт</string>
@@ -12,6 +13,7 @@
     <string name="main_screen_your_result">Твой результат на этой неделе</string>
     <string name="main_screen_km">Километров</string>
     <string name="main_screen_kkal">Ккал</string>
+    <string name="main_screen_remains">Осталось только:</string>
     <string name="main_screen_sensor_on">Включить счетчик</string>
     <string name="main_screen_kkal_range">от %s до %s</string>
     <string name="main_screen_destination_progress">%s км</string>
@@ -29,7 +31,7 @@
     <string name="ratings_screen_of_course_you">конечно ты ❤️</string>
     <string name="ratings_screen_all_distance">Всеми пройдено километров:️</string>
     <string name="ratings_screen_leader_diff">Текущее отставание от лидера::️</string>
-    <string name="settings_screen_login_hint">Ты можешь изменить свой логин. Учтите, что для входа в приложение так же нужно будет вводить именно новый логин.</string>
+    <string name="settings_screen_login_hint">Ты можешь изменить свой логин. Учти, что для входа в приложение так же нужно будет вводить именно новый логин.</string>
     <string name="settings_screen_your_step">Длина твоего шага</string>
     <string name="settings_screen_your_step_in_meters">%s м</string>
     <string name="settings_screen_step_length_hint">Если хочешь указать более точное значение, советую пройти известное расстояние (например, по карте) и разделить на число шагов</string>
@@ -62,4 +64,11 @@
     <string name="navigation_buttons_home">Главная</string>
     <string name="navigation_buttons_ratings">Статистика</string>
     <string name="navigation_buttons_settings">Настройки</string>
+    <string name="notification_message_one">Хочешь улучшить концентрацию? Прогуляйся! Движение запускает выработку нейромедиаторов, отвечающих за внимание.</string>
+    <string name="notification_message_two">Пройдись пару минут — это взбодрит мозг и улучшит настроение!</string>
+    <string name="notification_message_three">Знаешь ли ты? Уже 2 минуты ходьбы улучшают кровообращение и помогают глазам отдохнуть от экрана.</string>
+    <string name="notification_message_four">Даже короткая прогулка снижает уровень стресса и повышает продуктивность.</string>
+    <string name="notification_message_five">Твоё тело создано для движения!</string>
+    <string name="notification_message_six">Каждые 20 минут сидения — 2 минуты ходьбы. Это простое правило спасает спину и улучшает обмен веществ!</string>
+    <string name="notifications_weekly_steps">Твой результат: %d</string>
 </resources>
