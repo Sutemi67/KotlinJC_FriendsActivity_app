@@ -2,7 +2,8 @@
 <resources>
     <string name="auth_screen_greeting">Привет, чемпион!\nЗалогинься или зарегистрируйся ниже.</string>
     <string name="auth_screen_offline">Пользоваться без интернета</string>
-    <string name="register_screen_greeting">Придумайте свой логин, по которому также вас смогут найти ваши друзья</string>
+    <string name="auth_screen_get_permissions">Получить разрешения</string>
+    <string name="register_screen_greeting">Придумай свой логин, по которому также тебя смогут найти твои друзья</string>
     <string name="auth_screen_login_placeholder">Твой логин</string>
     <string name="auth_screen_password_placeholder">Твой пароль</string>
     <string name="auth_screen_create">Создать аккаунт</string>
@@ -30,7 +31,7 @@
     <string name="ratings_screen_of_course_you">конечно ты ❤️</string>
     <string name="ratings_screen_all_distance">Всеми пройдено километров:️</string>
     <string name="ratings_screen_leader_diff">Текущее отставание от лидера::️</string>
-    <string name="settings_screen_login_hint">Ты можешь изменить свой логин. Учтите, что для входа в приложение так же нужно будет вводить именно новый логин.</string>
+    <string name="settings_screen_login_hint">Ты можешь изменить свой логин. Учти, что для входа в приложение так же нужно будет вводить именно новый логин.</string>
     <string name="settings_screen_your_step">Длина твоего шага</string>
     <string name="settings_screen_your_step_in_meters">%s м</string>
     <string name="settings_screen_step_length_hint">Если хочешь указать более точное значение, советую пройти известное расстояние (например, по карте) и разделить на число шагов</string>

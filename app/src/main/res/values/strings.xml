@@ -8,6 +8,7 @@
     <string name="auth_screen_password_placeholder">Your password</string>
     <string name="auth_screen_create">Create account</string>
     <string name="auth_screen_offline">Go Offline</string>
+    <string name="auth_screen_get_permissions">Get permissions</string>
     <string name="register_screen_greeting">Please, enter your new login, which also can help your friends to find you</string>
 
 <!--    main screen-->

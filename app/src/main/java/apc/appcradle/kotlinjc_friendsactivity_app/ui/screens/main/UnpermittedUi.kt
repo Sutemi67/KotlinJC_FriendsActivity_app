@@ -10,6 +10,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import apc.appcradle.kotlinjc_friendsactivity_app.R
@@ -26,9 +27,10 @@ fun UnpermittedUi(
     ) {
         Text(
             modifier = Modifier.padding(15.dp),
+            textAlign = TextAlign.Center,
             text = stringResource(R.string.permissions_asking)
         )
-        ElevatedButton(onClick = { onGetPermissionsClick() }) { Text("Получить разрешения") }
+        ElevatedButton(onClick = { onGetPermissionsClick() }) { Text(stringResource(R.string.auth_screen_get_permissions)) }
     }
 }
 
