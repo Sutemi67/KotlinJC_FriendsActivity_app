@@ -1,4 +1,4 @@
-package apc.appcradle.kotlinjc_friendsactivity_app.services
+package apc.appcradle.kotlinjc_friendsactivity_app.services.workers
 
 import android.content.Context
 import android.content.Intent
@@ -8,6 +8,7 @@ import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkRequest
 import androidx.work.WorkerParameters
 import apc.appcradle.kotlinjc_friendsactivity_app.services.StepCounterService
+import apc.appcradle.kotlinjc_friendsactivity_app.utils.RESTART_WORKER_TAG
 
 class ServiceRestartWorker(
     context: Context,
@@ -31,5 +32,7 @@ class ServiceRestartWorker(
 }
 
 fun createRestartServiceWork(): WorkRequest {
-    return OneTimeWorkRequestBuilder<ServiceRestartWorker>().addTag("Restart worker").build()
+    return OneTimeWorkRequestBuilder<ServiceRestartWorker>()
+        .addTag(RESTART_WORKER_TAG)
+        .build()
 }

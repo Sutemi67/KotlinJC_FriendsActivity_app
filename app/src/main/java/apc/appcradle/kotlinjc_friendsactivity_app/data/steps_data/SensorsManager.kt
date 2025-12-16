@@ -1,7 +1,6 @@
-package apc.appcradle.kotlinjc_friendsactivity_app.data
+package apc.appcradle.kotlinjc_friendsactivity_app.data.steps_data
 
 import android.content.Context
-import android.content.Context.SENSOR_SERVICE
 import android.hardware.Sensor
 import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
@@ -20,7 +19,7 @@ class SensorsManager(
     private val statsRepository: StatsRepository
 ) : SensorEventListener {
 
-    private val sensorManager = context.getSystemService(SENSOR_SERVICE) as SensorManager
+    private val sensorManager = context.getSystemService(Context.SENSOR_SERVICE) as SensorManager
     private val stepCounterSensor: Sensor? =
         sensorManager.getDefaultSensor(Sensor.TYPE_STEP_COUNTER)
     private val stepDetectorSensor: Sensor? =

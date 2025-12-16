@@ -1,5 +1,6 @@
-package apc.appcradle.kotlinjc_friendsactivity_app.data
+package apc.appcradle.kotlinjc_friendsactivity_app.data.network
 
+import apc.appcradle.kotlinjc_friendsactivity_app.data.configs.TokenRepositoryImpl
 import apc.appcradle.kotlinjc_friendsactivity_app.domain.model.network.DataTransferState
 import apc.appcradle.kotlinjc_friendsactivity_app.domain.model.network.requests.LoginChangeRequest
 import apc.appcradle.kotlinjc_friendsactivity_app.domain.model.network.requests.LoginRequest
@@ -10,68 +11,60 @@ import apc.appcradle.kotlinjc_friendsactivity_app.domain.model.network.responses
 import apc.appcradle.kotlinjc_friendsactivity_app.domain.model.network.responses.UserActivityResponse
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
-import io.ktor.client.engine.android.Android
 import io.ktor.client.plugins.HttpRequestTimeoutException
-import io.ktor.client.plugins.HttpTimeout
-import io.ktor.client.plugins.auth.Auth
-import io.ktor.client.plugins.auth.providers.BearerTokens
-import io.ktor.client.plugins.auth.providers.bearer
-import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
 import io.ktor.http.ContentType
 import io.ktor.http.contentType
 import io.ktor.http.isSuccess
-import io.ktor.serialization.kotlinx.json.json
-import kotlinx.serialization.json.Json
 import java.net.ConnectException
 import java.net.SocketTimeoutException
 
 class NetworkClient(
-    private val tokenRepositoryImpl: TokenRepositoryImpl
+    private val tokenRepositoryImpl: TokenRepositoryImpl,
+    private val apiService: HttpClient
 ) {
-    private val networkService = HttpClient(engineFactory = Android) {
-        install(HttpTimeout) {
-            requestTimeoutMillis = 4000
-            connectTimeoutMillis = 4000
-            socketTimeoutMillis = 4000
-        }
-        install(ContentNegotiation) {
-            json(
-                Json {
-                    prettyPrint = true
-                    isLenient = true
-                    ignoreUnknownKeys = true
-                }
-            )
-        }
-        install(Auth) {
-            bearer {
-                loadTokens {
-                    val token = tokenRepositoryImpl.getToken()
-                    if (token != null) {
-                        BearerTokens(accessToken = token, refreshToken = "")
-                    } else {
-                        null
-                    }
-                }
-                refreshTokens {
-                    tokenRepositoryImpl.clearToken()
-                    null
-                }
-            }
-        }
-    }
+//    private val networkService = HttpClient(engineFactory = Android) {
+//        install(HttpTimeout) {
+//            requestTimeoutMillis = 4000
+//            connectTimeoutMillis = 4000
+//            socketTimeoutMillis = 4000
+//        }
+//        install(ContentNegotiation) {
+//            json(
+//                Json {
+//                    prettyPrint = true
+//                    isLenient = true
+//                    ignoreUnknownKeys = true
+//                }
+//            )
+//        }
+//        install(Auth) {
+//            bearer {
+//                loadTokens {
+//                    val token = tokenRepositoryImpl.getToken()
+//                    if (token != null) {
+//                        BearerTokens(accessToken = token, refreshToken = "")
+//                    } else {
+//                        null
+//                    }
+//                }
+//                refreshTokens {
+//                    tokenRepositoryImpl.clearToken()
+//                    null
+//                }
+//            }
+//        }
+//    }
 
-    private fun saveToken(login: String, token: String) {
+    private fun saveToken(login: String, token: String) =
         tokenRepositoryImpl.saveToken(login = login, token = token)
-    }
 
     suspend fun sendRegistrationInfo(login: String, password: String): DataTransferState {
         val body = RegisterRequest(login = login, password = password)
         return try {
             val response =
-                networkService.post(urlString = "$SERVER_URL$POST_USER_REGISTER_HANDLE") {
+                apiService.post(urlString = "$SERVER_URL$POST_USER_REGISTER_HANDLE") {
                     contentType(ContentType.Application.Json)
                     setBody(body)
                 }
@@ -85,7 +78,7 @@ class NetworkClient(
         } catch (_: SocketTimeoutException) {
             return try {
                 val response =
-                    networkService.post(urlString = "$HOME_URL$POST_USER_REGISTER_HANDLE") {
+                    apiService.post(urlString = "$HOME_URL$POST_USER_REGISTER_HANDLE") {
                         contentType(ContentType.Application.Json)
                         setBody(body)
                     }
@@ -105,7 +98,7 @@ class NetworkClient(
     suspend fun sendLoginInfo(login: String, password: String): DataTransferState {
         val body = LoginRequest(login, password)
         return try {
-            val response = networkService.post(urlString = "$SERVER_URL$POST_USER_LOGIN_HANDLE") {
+            val response = apiService.post(urlString = "$SERVER_URL$POST_USER_LOGIN_HANDLE") {
                 contentType(ContentType.Application.Json)
                 setBody(body)
             }
@@ -118,7 +111,7 @@ class NetworkClient(
             }
         } catch (_: SocketTimeoutException) {
             try {
-                val response = networkService.post(urlString = "$HOME_URL$POST_USER_LOGIN_HANDLE") {
+                val response = apiService.post(urlString = "$HOME_URL$POST_USER_LOGIN_HANDLE") {
                     contentType(ContentType.Application.Json)
                     setBody(body)
                 }
@@ -150,7 +143,7 @@ class NetworkClient(
     ): UserActivityResponse {
         val body = UserActivityRequest(login = login, steps = steps, weeklySteps = weeklySteps)
         return try {
-            val request = networkService.post(urlString = "$SERVER_URL$POST_ACTIVITY_HANDLE") {
+            val request = apiService.post(urlString = "$SERVER_URL$POST_ACTIVITY_HANDLE") {
                 contentType(ContentType.Application.Json)
                 setBody(body)
             }
@@ -162,7 +155,7 @@ class NetworkClient(
             }
         } catch (_: SocketTimeoutException) {
             try {
-                val request = networkService.post(urlString = "$HOME_URL$POST_ACTIVITY_HANDLE") {
+                val request = apiService.post(urlString = "$HOME_URL$POST_ACTIVITY_HANDLE") {
                     contentType(ContentType.Application.Json)
                     setBody(body)
                 }
@@ -204,7 +197,7 @@ class NetworkClient(
         val body = LoginChangeRequest(login, newLogin)
         try {
             val response =
-                networkService.post(urlString = "$SERVER_URL$POST_USER_LOGIN_CHANGE_HANDLE") {
+                apiService.post(urlString = "$SERVER_URL$POST_USER_LOGIN_CHANGE_HANDLE") {
                     contentType(ContentType.Application.Json)
                     setBody(body)
                 }

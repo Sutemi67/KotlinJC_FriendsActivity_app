@@ -19,10 +19,10 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import apc.appcradle.kotlinjc_friendsactivity_app.MainViewModel
-import apc.appcradle.kotlinjc_friendsactivity_app.data.StatsRepository
+import apc.appcradle.kotlinjc_friendsactivity_app.data.steps_data.StatsRepository
 import apc.appcradle.kotlinjc_friendsactivity_app.domain.model.AppState
 import apc.appcradle.kotlinjc_friendsactivity_app.domain.model.AppTextStyles
-import apc.appcradle.kotlinjc_friendsactivity_app.data.SensorsManager
+import apc.appcradle.kotlinjc_friendsactivity_app.data.steps_data.SensorsManager
 import apc.appcradle.kotlinjc_friendsactivity_app.ui.app_components.AppComponents
 import apc.appcradle.kotlinjc_friendsactivity_app.ui.screens.auth.authScreen
 import apc.appcradle.kotlinjc_friendsactivity_app.ui.screens.auth.registration.nav.registerScreen

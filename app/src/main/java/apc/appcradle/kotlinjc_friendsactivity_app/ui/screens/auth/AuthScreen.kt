@@ -1,10 +1,12 @@
 package apc.appcradle.kotlinjc_friendsactivity_app.ui.screens.auth
 
+import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -13,19 +15,28 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material3.ElevatedButton
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.sensitiveContent
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -36,7 +47,7 @@ import apc.appcradle.kotlinjc_friendsactivity_app.ui.app_components.AppComponent
 import apc.appcradle.kotlinjc_friendsactivity_app.ui.theme.KotlinJC_FriendsActivity_appTheme
 
 private enum class FieldState {
-    Login, Password
+    Login, Password, Loading
 }
 
 @Composable
@@ -46,9 +57,27 @@ fun AuthScreen(
     onRegisterClick: () -> Unit,
     onOfflineUseClick: () -> Unit
 ) {
+    val passwordFocusRequester = remember { FocusRequester() }
+
     var fieldState by rememberSaveable { mutableStateOf(FieldState.Login) }
     var loginText by rememberSaveable { mutableStateOf("") }
     var passwordText by rememberSaveable { mutableStateOf("") }
+
+    val isLoginValid by remember(loginText) {
+        derivedStateOf { loginText.isNotBlank() }
+    }
+
+    LaunchedEffect(fieldState) {
+        when (fieldState) {
+            FieldState.Password -> passwordFocusRequester.requestFocus()
+            else -> {}
+        }
+    }
+    LaunchedEffect(transferState) {
+        if (transferState.errorMessage != null && !transferState.isLoading) {
+            fieldState = FieldState.Login
+        }
+    }
 
     Scaffold { paddingValues ->
         Box(
@@ -66,37 +95,64 @@ fun AuthScreen(
                     text = stringResource(R.string.auth_screen_greeting),
                     textAlign = TextAlign.Center,
                 )
-                AnimatedVisibility(
-                    visible = fieldState == FieldState.Login,
-                    enter = fadeIn() + expandVertically(),
-                    exit = fadeOut() + shrinkVertically()
-                ) {
-                    AppComponents.AppInputField(
-                        label = stringResource(R.string.auth_screen_login_placeholder),
-                        value = loginText,
-                        onValueChange = { loginText = it },
-                        trailingIcon = if (loginText.isNotBlank()) Icons.Default.PlayArrow else null,
-                        onIconClick = { fieldState = FieldState.Password })
-                }
-                AnimatedVisibility(
-                    visible = fieldState == FieldState.Password,
-                    enter = fadeIn() + expandVertically(),
-                    exit = fadeOut() + shrinkVertically()
-                ) {
-                    AppComponents.AppInputField(
-                        label = stringResource(R.string.auth_screen_password_placeholder),
-                        value = passwordText,
-                        onValueChange = { passwordText = it },
-                        trailingIcon = if (passwordText.isNotBlank()) Icons.Default.PlayArrow else null,
-                        onIconClick = {
-                            sendLoginData(loginText, passwordText)
-                        },
-                        needLeadingBackIcon = true,
-                        onLeadingIconClick = { fieldState = FieldState.Login })
-                }
-                Box(Modifier.height(10.dp)) {
-                    if (transferState.isLoading) {
-                        LinearProgressIndicator(modifier = Modifier.padding(horizontal = 15.dp))
+                AnimatedContent(
+                    modifier = Modifier.padding(vertical = 15.dp),
+                    targetState = fieldState,
+                    transitionSpec = {
+                        fadeIn() + expandVertically() togetherWith fadeOut() + shrinkVertically()
+                    },
+                    label = "AuthFieldTransition"
+                ) { state ->
+                    when (state) {
+                        FieldState.Login -> {
+                            AppComponents.AppInputField(
+                                modifier = Modifier
+                                    .padding(vertical = 5.dp, horizontal = 35.dp)
+                                    .sensitiveContent(),
+                                label = stringResource(R.string.auth_screen_login_placeholder),
+                                value = loginText,
+                                onValueChange = { loginText = it },
+                                trailingIcon = {
+                                    if (isLoginValid) IconButton(onClick = {
+                                        fieldState = FieldState.Password
+                                    }) {
+                                        Icon(Icons.AutoMirrored.Filled.ArrowForward, null)
+                                    }
+                                },
+                            )
+                        }
+
+                        FieldState.Password -> {
+                            AppComponents.AppInputField(
+                                modifier = Modifier
+                                    .padding(vertical = 5.dp, horizontal = 35.dp)
+                                    .focusRequester(passwordFocusRequester)
+                                    .sensitiveContent(),
+                                label = stringResource(R.string.auth_screen_password_placeholder),
+                                value = passwordText,
+                                isPassword = true,
+                                onValueChange = { passwordText = it },
+                                trailingIcon = {
+                                    if (loginText.isNotBlank()) IconButton(onClick = {
+                                        fieldState = FieldState.Loading
+                                        sendLoginData(loginText, passwordText)
+                                    }) { Icon(Icons.AutoMirrored.Filled.ArrowForward, null) }
+                                },
+                                leadingIcon = {
+                                    IconButton(onClick = {
+                                        fieldState = FieldState.Login
+                                    }) { Icon(Icons.AutoMirrored.Filled.ArrowBack, null) }
+                                },
+                            )
+                        }
+
+                        FieldState.Loading -> {
+                            AnimatedVisibility(
+                                visible = transferState.isLoading
+                            ) {
+                                LinearProgressIndicator(modifier = Modifier.padding(horizontal = 15.dp))
+                            }
+                        }
                     }
                 }
                 ElevatedButton(

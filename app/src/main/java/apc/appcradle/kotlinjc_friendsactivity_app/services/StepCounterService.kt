@@ -16,7 +16,8 @@ import androidx.core.app.NotificationCompat
 import androidx.work.WorkManager
 import apc.appcradle.kotlinjc_friendsactivity_app.MainActivity
 import apc.appcradle.kotlinjc_friendsactivity_app.R
-import apc.appcradle.kotlinjc_friendsactivity_app.data.SensorsManager
+import apc.appcradle.kotlinjc_friendsactivity_app.data.steps_data.SensorsManager
+import apc.appcradle.kotlinjc_friendsactivity_app.services.workers.createRestartServiceWork
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -49,7 +50,6 @@ class StepCounterService : Service() {
 
     override fun onTaskRemoved(rootIntent: Intent?) {
         super.onTaskRemoved(rootIntent)
-//        scheduleAlarmSelfRestart()
         workManager.enqueue(createRestartServiceWork())
     }
 
@@ -61,7 +61,7 @@ class StepCounterService : Service() {
                 startForeground(
                     NOTIFICATION_ID,
                     createNotification(steps),
-                    ServiceInfo.FOREGROUND_SERVICE_TYPE_DATA_SYNC
+                    ServiceInfo.FOREGROUND_SERVICE_TYPE_HEALTH
                 )
             } else {
                 startForeground(NOTIFICATION_ID, createNotification(steps))
@@ -107,7 +107,7 @@ class StepCounterService : Service() {
                 if (isNotifyAllowed) {
                     isNotifyAllowed = false
                     manager.notify(NOTIFICATION_ID, createNotification(steps))
-                    delay(DEBOUNCE_NOTIFY)
+                    delay(DEBOUNCE_NEW_STEPS_NOTIFIER)
                     isNotifyAllowed = true
                 }
             }
@@ -124,7 +124,6 @@ class StepCounterService : Service() {
                 BitmapFactory.decodeResource(resources, R.mipmap.ic_launcher)
             )
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)
-//            .setOnlyAlertOnce(true)
             .setOngoing(true)
             .setSilent(true)
             .setContentIntent(
@@ -147,39 +146,9 @@ class StepCounterService : Service() {
         Log.i("service", "Service -> Destroyed")
     }
 
-//    private fun scheduleAlarmSelfRestart() {
-//        val settingsRepository by inject<SettingsRepository>(SettingsRepository::class.java)
-//        val permissionManager by inject<PermissionManager>(PermissionManager::class.java)
-//
-//        val isEnabled = try {
-//            settingsRepository.loadSettingsData().savedIsServiceEnabled
-//        } catch (e: Exception) {
-//            Log.e("service", "Service -> ${e.message}")
-//            false
-//        }
-//        if (!isEnabled || !permissionManager.arePermissionsGranted()) return
-//        val restartIntent = Intent(this, StepCounterService::class.java)
-//        val pendingIntent = PendingIntent.getService(
-//            this,
-//            0,
-//            restartIntent,
-//            PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_CANCEL_CURRENT
-//        )
-//        val alarmManager = getSystemService(ALARM_SERVICE) as AlarmManager
-//        try {
-//            alarmManager.setExactAndAllowWhileIdle(
-//                AlarmManager.ELAPSED_REALTIME_WAKEUP,
-//                SystemClock.elapsedRealtime() + 5_000L,
-//                pendingIntent
-//            )
-//        } catch (e: SecurityException) {
-//            Log.e("service", "Service -> ${e.message}")
-//        }
-//    }
-
     companion object {
         const val NOTIFICATION_ID: Int = 1
-        const val DEBOUNCE_NOTIFY: Long = 6000L
+        const val DEBOUNCE_NEW_STEPS_NOTIFIER: Long = 6000L
         const val CHANNEL_ID: String = "StepCounterChannel"
     }
 }

@@ -91,8 +91,8 @@ object AppDialogs {
             },
             text = {
                 ScaleSlider(
-                    initialValue = initialValue,
-                    valueReturn = {
+                    currentValue = initialValue,
+                    onValueChange = {
                         newValue = it
                     })
             },

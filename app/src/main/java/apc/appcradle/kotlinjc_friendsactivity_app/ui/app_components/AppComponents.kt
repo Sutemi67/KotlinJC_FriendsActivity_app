@@ -3,8 +3,6 @@ package apc.appcradle.kotlinjc_friendsactivity_app.ui.app_components
 import android.content.Intent
 import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.MailOutline
@@ -17,22 +15,21 @@ import androidx.compose.material3.Slider
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
 import apc.appcradle.kotlinjc_friendsactivity_app.LocalAppTypography
 import apc.appcradle.kotlinjc_friendsactivity_app.R
@@ -40,6 +37,8 @@ import apc.appcradle.kotlinjc_friendsactivity_app.domain.model.AppTextStyles
 import apc.appcradle.kotlinjc_friendsactivity_app.ui.app_components.AppDialogs.AppDonationDialog
 import apc.appcradle.kotlinjc_friendsactivity_app.ui.screens.Destinations
 import apc.appcradle.kotlinjc_friendsactivity_app.ui.theme.KotlinJC_FriendsActivity_appTheme
+import apc.appcradle.kotlinjc_friendsactivity_app.utils.APP_ROUNDED_SHAPE
+import apc.appcradle.kotlinjc_friendsactivity_app.utils.TELEGRAM_URL
 
 object AppComponents {
 
@@ -48,66 +47,35 @@ object AppComponents {
         modifier: Modifier = Modifier,
         label: String,
         value: String,
+        isPassword: Boolean = false,
         onValueChange: (String) -> Unit,
-        trailingIcon: ImageVector? = null,
-        onIconClick: () -> Unit = {},
-        needLeadingBackIcon: Boolean = false,
-        onLeadingIconClick: () -> Unit = {},
+        trailingIcon: (@Composable () -> Unit)? = null,
+        leadingIcon: (@Composable () -> Unit)? = null,
         isError: Boolean = false
     ) {
-        var inputText by rememberSaveable { mutableStateOf(value) }
-
+        val labelText =
+            if (isError) {
+                stringResource(R.string.components_inputs_labels_login_error)
+            } else label
+        val transformation =
+            if (isPassword) PasswordVisualTransformation() else VisualTransformation.None
         OutlinedTextField(
-            modifier = modifier
-                .fillMaxWidth()
-                .padding(horizontal = 50.dp, vertical = 5.dp),
-            value = inputText,
-            onValueChange = {
-                inputText = it
-                onValueChange(inputText)
-            },
+            modifier = modifier.fillMaxWidth(),
+            value = value,
+            onValueChange = onValueChange,
             singleLine = true,
-            trailingIcon = {
-                if (trailingIcon != null) {
-                    IconButton(onClick = { onIconClick() }) {
-                        Icon(
-                            imageVector = trailingIcon,
-                            contentDescription = null
-                        )
-                    }
-                }
-            },
             isError = isError,
+            visualTransformation = transformation,
             textStyle = LocalAppTypography.current.bodyText,
-            leadingIcon = {
-                if (needLeadingBackIcon)
-                    IconButton({ onLeadingIconClick() }) {
-                        Icon(
-                            modifier = Modifier.graphicsLayer(scaleX = -1f),
-                            imageVector = Icons.Default.PlayArrow,
-                            contentDescription = null
-                        )
-                    }
-            },
+            trailingIcon = trailingIcon,
+            leadingIcon = leadingIcon,
             label = {
-                when (isError) {
-                    true -> {
-                        AppText(
-                            text = stringResource(R.string.components_inputs_labels_login_error),
-                            appTextStyle = AppTextStyles.Body
-                        )
-                    }
-
-                    false -> {
-                        AppText(
-                            text = label,
-                            appTextStyle = AppTextStyles.Body
-                        )
-                    }
-                }
-
+                AppText(
+                    text = labelText,
+                    appTextStyle = AppTextStyles.Body
+                )
             },
-            shape = RoundedCornerShape(20.dp)
+            shape = APP_ROUNDED_SHAPE
         )
     }
 
@@ -141,7 +109,7 @@ object AppComponents {
             },
             actions = {
                 IconButton(onClick = {
-                    val intent = Intent(Intent.ACTION_VIEW, "https://t.me/appcradle".toUri())
+                    val intent = Intent(Intent.ACTION_VIEW, TELEGRAM_URL.toUri())
                     context.startActivity(intent)
                 }) {
                     Icon(
@@ -149,7 +117,7 @@ object AppComponents {
                         contentDescription = "send message",
                     )
                 }
-                IconButton(onClick = { isDialogVisible = !isDialogVisible }) {
+                IconButton(onClick = { !isDialogVisible }) {
                     Icon(
                         imageVector = Icons.Default.Favorite,
                         contentDescription = "donate",
@@ -162,21 +130,22 @@ object AppComponents {
 
     @Composable
     fun ScaleSlider(
-        initialValue: Float,
-        valueReturn: (Float) -> Unit
+        currentValue: Float,
+        onValueChange: (Float) -> Unit
     ) {
-        var sliderPosition by remember { mutableFloatStateOf(initialValue) }
+        var sliderPosition by remember { mutableFloatStateOf(currentValue) }
         Slider(
             value = sliderPosition,
             onValueChange = {
                 sliderPosition = it
-                valueReturn(sliderPosition)
+                onValueChange(sliderPosition)
             },
             valueRange = 0.5f..1.5f,
             steps = 1
         )
     }
 
+    @Stable
     @Composable
     fun AppText(
         text: String,
@@ -212,7 +181,8 @@ private fun InputFieldPreview() {
             label = "login",
             onValueChange = {},
             value = "sdfg",
-            needLeadingBackIcon = true
+            leadingIcon = { IconButton(onClick = {}) { Icon(Icons.Default.PlayArrow, null) } },
+            trailingIcon = {}
         )
     }
 }
@@ -222,5 +192,13 @@ private fun InputFieldPreview() {
 private fun AppTopBarPreview() {
     KotlinJC_FriendsActivity_appTheme {
         AppComponents.AppTopBar(screenRoute = Destinations.MAIN.route, login = "Alex")
+    }
+}
+
+@Preview
+@Composable
+private fun ScaleSliderPreview() {
+    KotlinJC_FriendsActivity_appTheme {
+        AppComponents.ScaleSlider(1.0f) { }
     }
 }

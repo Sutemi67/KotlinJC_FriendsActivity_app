@@ -1,13 +1,14 @@
-package apc.appcradle.kotlinjc_friendsactivity_app.data
+package apc.appcradle.kotlinjc_friendsactivity_app.data.steps_data
 
 import android.content.SharedPreferences
 import android.util.Log
 import androidx.core.content.edit
 import androidx.work.WorkManager
+import apc.appcradle.kotlinjc_friendsactivity_app.data.network.NetworkClient
 import apc.appcradle.kotlinjc_friendsactivity_app.domain.model.network.PlayerActivityData
 import apc.appcradle.kotlinjc_friendsactivity_app.domain.model.network.PlayersListSyncData
 import apc.appcradle.kotlinjc_friendsactivity_app.domain.model.network.Steps
-import apc.appcradle.kotlinjc_friendsactivity_app.services.trancateStepsRequest
+import apc.appcradle.kotlinjc_friendsactivity_app.services.workers.trancateStepsRequest
 import apc.appcradle.kotlinjc_friendsactivity_app.utils.USER_STEP_DEFAULT
 import apc.appcradle.kotlinjc_friendsactivity_app.utils.whenNextMonday
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -128,11 +129,9 @@ class StatsRepository(
         if (isFirstAppStart) {
             isFirstAppStart = false
             sharedPreferences.edit { putBoolean(FIRST_START_ID, false) }
-//            workManager.enqueue(trancateStepsRequest(Duration.ofMinutes(30).toMillis()))
             workManager.enqueue(trancateStepsRequest(whenNextMonday()))
             Log.d("worker", "statRepo,planningTrancateSteps -> ${whenNextMonday()}")
         }
-
     }
 
     fun trancate() {

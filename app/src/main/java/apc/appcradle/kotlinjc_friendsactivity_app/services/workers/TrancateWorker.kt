@@ -1,15 +1,14 @@
-package apc.appcradle.kotlinjc_friendsactivity_app.services
+package apc.appcradle.kotlinjc_friendsactivity_app.services.workers
 
 import android.content.Context
 import androidx.work.CoroutineWorker
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkerParameters
-import apc.appcradle.kotlinjc_friendsactivity_app.data.SensorsManager
+import apc.appcradle.kotlinjc_friendsactivity_app.data.steps_data.SensorsManager
+import apc.appcradle.kotlinjc_friendsactivity_app.utils.TRANCATE_WORKER_TAG
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import java.util.concurrent.TimeUnit
-
-const val WORKER_TAG = "trancate"
 
 class TrancateWorker(
     context: Context,
@@ -27,5 +26,5 @@ class TrancateWorker(
 
 fun trancateStepsRequest(delay: Long) = OneTimeWorkRequestBuilder<TrancateWorker>()
     .setInitialDelay(duration = delay, timeUnit = TimeUnit.MILLISECONDS)
-    .addTag(WORKER_TAG)
+    .addTag(TRANCATE_WORKER_TAG)
     .build()

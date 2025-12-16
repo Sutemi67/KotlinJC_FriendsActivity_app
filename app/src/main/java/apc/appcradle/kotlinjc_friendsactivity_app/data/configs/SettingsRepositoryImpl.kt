@@ -1,8 +1,9 @@
-package apc.appcradle.kotlinjc_friendsactivity_app.data
+package apc.appcradle.kotlinjc_friendsactivity_app.data.configs
 
 import android.content.SharedPreferences
 import android.util.Log
 import androidx.core.content.edit
+import apc.appcradle.kotlinjc_friendsactivity_app.data.configs.model.SharedPreferencesData
 import apc.appcradle.kotlinjc_friendsactivity_app.domain.SettingsRepository
 import com.google.gson.Gson
 
