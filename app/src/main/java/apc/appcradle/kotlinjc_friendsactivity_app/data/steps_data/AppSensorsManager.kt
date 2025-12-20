@@ -5,8 +5,9 @@ import android.hardware.Sensor
 import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
 import android.hardware.SensorManager
-import android.util.Log
 import apc.appcradle.kotlinjc_friendsactivity_app.domain.model.network.Steps
+import apc.appcradle.kotlinjc_friendsactivity_app.utils.LoggerType
+import apc.appcradle.kotlinjc_friendsactivity_app.utils.logger
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -62,7 +63,7 @@ class AppSensorsManager(
                 SensorManager.SENSOR_DELAY_UI
             )
         } else {
-            Log.e("sensors", "No step sensor available on this device!")
+            logger(LoggerType.Error, "No step sensor available on this device!")
         }
     }
 

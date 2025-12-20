@@ -24,39 +24,6 @@ class NetworkClient(
     private val tokenRepositoryImpl: TokenRepositoryImpl,
     private val apiService: HttpClient
 ) {
-//    private val networkService = HttpClient(engineFactory = Android) {
-//        install(HttpTimeout) {
-//            requestTimeoutMillis = 4000
-//            connectTimeoutMillis = 4000
-//            socketTimeoutMillis = 4000
-//        }
-//        install(ContentNegotiation) {
-//            json(
-//                Json {
-//                    prettyPrint = true
-//                    isLenient = true
-//                    ignoreUnknownKeys = true
-//                }
-//            )
-//        }
-//        install(Auth) {
-//            bearer {
-//                loadTokens {
-//                    val token = tokenRepositoryImpl.getToken()
-//                    if (token != null) {
-//                        BearerTokens(accessToken = token, refreshToken = "")
-//                    } else {
-//                        null
-//                    }
-//                }
-//                refreshTokens {
-//                    tokenRepositoryImpl.clearToken()
-//                    null
-//                }
-//            }
-//        }
-//    }
-
     private fun saveToken(login: String, token: String) =
         tokenRepositoryImpl.saveToken(login = login, token = token)
 

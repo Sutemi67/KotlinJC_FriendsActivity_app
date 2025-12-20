@@ -1,6 +1,5 @@
 package apc.appcradle.kotlinjc_friendsactivity_app.services
 
-import android.app.ForegroundServiceStartNotAllowedException
 import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
@@ -11,7 +10,6 @@ import android.content.pm.ServiceInfo
 import android.graphics.BitmapFactory
 import android.os.Build
 import android.os.IBinder
-import android.util.Log
 import androidx.core.app.NotificationCompat
 import apc.appcradle.kotlinjc_friendsactivity_app.MainActivity
 import apc.appcradle.kotlinjc_friendsactivity_app.R
@@ -61,22 +59,8 @@ class StepCounterService : Service() {
                 startForeground(NOTIFICATION_ID, createNotification(steps))
             }
         } catch (e: Exception) {
-            when (e) {
-                is ForegroundServiceStartNotAllowedException -> {
-                    Log.e("service", "Failed to start foreground service: ${e.message}")
-                    stopSelf()
-                }
-
-                else -> {
-                    Log.e("service", "Unknown error starting service: ${e.message}")
-                    try {
-                        startForeground(NOTIFICATION_ID, createNotification(steps))
-                    } catch (e2: Exception) {
-                        Log.e("service", "Failed fallback start: ${e2.message}")
-                        stopSelf()
-                    }
-                }
-            }
+            logger(LoggerType.Error, "Failed fallback start: ${e.message}")
+            stopSelf()
         }
     }
 
