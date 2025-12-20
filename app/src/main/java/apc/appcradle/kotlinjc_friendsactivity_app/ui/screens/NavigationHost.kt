@@ -22,7 +22,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.work.WorkInfo
 import apc.appcradle.kotlinjc_friendsactivity_app.MainViewModel
-import apc.appcradle.kotlinjc_friendsactivity_app.data.steps_data.SensorsManager
+import apc.appcradle.kotlinjc_friendsactivity_app.data.steps_data.AppSensorsManager
 import apc.appcradle.kotlinjc_friendsactivity_app.domain.model.AppState
 import apc.appcradle.kotlinjc_friendsactivity_app.domain.model.AppTextStyles
 import apc.appcradle.kotlinjc_friendsactivity_app.ui.app_components.AppComponents
@@ -38,7 +38,7 @@ import kotlinx.coroutines.launch
 import org.koin.compose.koinInject
 
 val LocalSensorManager =
-    compositionLocalOf<SensorsManager> { error("No sensor manager provided") }
+    compositionLocalOf<AppSensorsManager> { error("No sensor manager provided") }
 
 @Composable
 fun NavigationHost(
@@ -54,7 +54,7 @@ fun NavigationHost(
             Destinations.entries.filter { it != Destinations.AUTH && it != Destinations.REGISTER }
         }
 
-    val sensorManager: SensorsManager = koinInject<SensorsManager>()
+    val sensorManager: AppSensorsManager = koinInject<AppSensorsManager>()
     val transferState = viewModel.transferState.collectAsState().value
 
     val snackHostState = remember { SnackbarHostState() }

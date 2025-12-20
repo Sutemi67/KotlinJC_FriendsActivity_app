@@ -7,18 +7,15 @@ import android.app.NotificationManager
 import android.app.PendingIntent
 import android.app.Service
 import android.content.Intent
-import android.content.SharedPreferences
 import android.content.pm.ServiceInfo
 import android.graphics.BitmapFactory
 import android.os.Build
 import android.os.IBinder
 import android.util.Log
 import androidx.core.app.NotificationCompat
-import androidx.core.content.edit
 import apc.appcradle.kotlinjc_friendsactivity_app.MainActivity
 import apc.appcradle.kotlinjc_friendsactivity_app.R
-import apc.appcradle.kotlinjc_friendsactivity_app.data.steps_data.SensorsManager
-import apc.appcradle.kotlinjc_friendsactivity_app.utils.IS_SERVICE_WORKING_PREFERENSES_TAG
+import apc.appcradle.kotlinjc_friendsactivity_app.data.steps_data.AppSensorsManager
 import apc.appcradle.kotlinjc_friendsactivity_app.utils.LoggerType
 import apc.appcradle.kotlinjc_friendsactivity_app.utils.logger
 import kotlinx.coroutines.CoroutineScope
@@ -32,10 +29,7 @@ class StepCounterService : Service() {
 
     private lateinit var manager: NotificationManager
     private var steps = 0
-    private val sensorManager: SensorsManager by inject()
-    private val prefs: SharedPreferences by inject()
-
-    //    private val workManager: WorkManager by inject()
+    private val sensorManager: AppSensorsManager by inject()
     private var collectionJob: Job? = null
     private var isNotifyAllowed = true
 
@@ -50,15 +44,10 @@ class StepCounterService : Service() {
         sensorManager.registerSensors()
         startStepCollection()
         logger(LoggerType.Debug, "Step counter started")
-        saveServiceStatus(true)
         return START_STICKY
     }
 
     override fun onBind(intent: Intent?): IBinder? = null
-
-    private fun saveServiceStatus(isWorking: Boolean) {
-        prefs.edit { putBoolean(IS_SERVICE_WORKING_PREFERENSES_TAG, isWorking) }
-    }
 
     private fun startServiceInForeground() {
         try {
@@ -93,15 +82,13 @@ class StepCounterService : Service() {
 
     private fun createNotificationChannel() {
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val name = getString(R.string.app_name)
-            val descriptionText = "Tracks your steps in background"
-            val importance = NotificationManager.IMPORTANCE_DEFAULT
-            val channel = NotificationChannel(CHANNEL_ID, name, importance).apply {
-                description = descriptionText
-            }
-            manager.createNotificationChannel(channel)
+        val name = getString(R.string.app_name)
+        val descriptionText = "Tracks your steps in background"
+        val importance = NotificationManager.IMPORTANCE_DEFAULT
+        val channel = NotificationChannel(CHANNEL_ID, name, importance).apply {
+            description = descriptionText
         }
+        manager.createNotificationChannel(channel)
     }
 
     private fun startStepCollection() {
@@ -140,7 +127,7 @@ class StepCounterService : Service() {
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)
             .setOngoing(true)
             .setSilent(true)
-            .setCategory(HEALTHCONNECT_SERVICE)
+            .setCategory(SENSOR_SERVICE)
             .setContentIntent(openAppIntent)
             .build()
     }
@@ -150,7 +137,6 @@ class StepCounterService : Service() {
         sensorManager.unregisterSensors()
         collectionJob?.cancel()
         logger(LoggerType.Error, "Step counter service destroyed")
-        saveServiceStatus(false)
     }
 
     companion object {

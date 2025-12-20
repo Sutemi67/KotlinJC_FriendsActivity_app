@@ -4,7 +4,7 @@ import android.content.Context
 import android.content.SharedPreferences
 import androidx.work.WorkManager
 import apc.appcradle.kotlinjc_friendsactivity_app.MainViewModel
-import apc.appcradle.kotlinjc_friendsactivity_app.data.steps_data.SensorsManager
+import apc.appcradle.kotlinjc_friendsactivity_app.data.steps_data.AppSensorsManager
 import apc.appcradle.kotlinjc_friendsactivity_app.data.steps_data.StatsRepository
 import apc.appcradle.kotlinjc_friendsactivity_app.data.configs.TokenRepositoryImpl
 import apc.appcradle.kotlinjc_friendsactivity_app.data.configs.SettingsRepositoryImpl
@@ -30,7 +30,7 @@ import org.koin.dsl.module
 val koinAppModule = module {
     singleOf(::SettingsRepositoryImpl).bind<SettingsRepository>()
     singleOf(::TokenRepositoryImpl).bind<TokenRepository>()
-    singleOf(::SensorsManager)
+    singleOf(::AppSensorsManager)
     singleOf(::PermissionManager)
     singleOf(::NetworkClient)
     singleOf(::StatsRepository)
@@ -68,22 +68,12 @@ val koinAppModule = module {
                         tokenRepo.getToken()?.let { token ->
                             BearerTokens(accessToken = token, refreshToken = "")
                         }
-//                        val token = tokenRepositoryImpl.getToken()
-//                        if (token != null) {
-//                            BearerTokens(accessToken = token, refreshToken = "")
-//                        } else {
-//                            null
-//                        }
                     }
                     refreshTokens {
                         val tokenRepo = get<TokenRepository>()
                         tokenRepo.clearToken()
                         null
                     }
-//                    refreshTokens {
-//                        tokenRepositoryImpl.clearToken()
-//                        null
-//                    }
                 }
             }
         }

@@ -138,21 +138,21 @@ fun PermittedUi(
             )
             StatsColumn(kmAll)
         }
-        Column(modifier = Modifier.padding(20.dp)) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                AppText(
-                    text = stringResource(R.string.main_screen_sensor_on),
-                    appTextStyle = AppTextStyles.Header
-                )
-                Switch(
-                    checked = isServiceRunning,
-                    onCheckedChange = { counterCheckerCallback(it) }
-                )
-            }
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 20.dp, horizontal = 30.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            AppText(
+                text = stringResource(R.string.main_screen_sensor_on),
+                appTextStyle = AppTextStyles.Header
+            )
+            Switch(
+                checked = isServiceRunning,
+                onCheckedChange = { counterCheckerCallback(it) }
+            )
         }
     }
 }

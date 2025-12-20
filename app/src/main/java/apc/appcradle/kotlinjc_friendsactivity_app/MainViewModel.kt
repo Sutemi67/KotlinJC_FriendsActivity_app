@@ -2,7 +2,6 @@ package apc.appcradle.kotlinjc_friendsactivity_app
 
 import android.content.Context
 import android.content.Intent
-import android.content.SharedPreferences
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -19,7 +18,6 @@ import apc.appcradle.kotlinjc_friendsactivity_app.domain.model.network.DataTrans
 import apc.appcradle.kotlinjc_friendsactivity_app.domain.model.network.PlayersListSyncData
 import apc.appcradle.kotlinjc_friendsactivity_app.services.PermissionManager
 import apc.appcradle.kotlinjc_friendsactivity_app.services.StepCounterService
-import apc.appcradle.kotlinjc_friendsactivity_app.utils.IS_SERVICE_WORKING_PREFERENSES_TAG
 import apc.appcradle.kotlinjc_friendsactivity_app.utils.LoggerType
 import apc.appcradle.kotlinjc_friendsactivity_app.utils.TRANCATE_WORKER_TAG
 import apc.appcradle.kotlinjc_friendsactivity_app.utils.formatMillisecondsToDaysHoursMinutes
@@ -38,7 +36,6 @@ class MainViewModel(
     private val tokenRepositoryImpl: TokenRepositoryImpl,
     private val settingsPreferencesImpl: SettingsRepository,
     private val statsRepository: StatsRepository,
-    private val prefs: SharedPreferences,
     workManager: WorkManager
 ) : ViewModel() {
 
@@ -47,21 +44,14 @@ class MainViewModel(
 
     private var _transferState = MutableStateFlow(DataTransferState())
     val transferState: StateFlow<DataTransferState> = _transferState.asStateFlow()
-    val work: List<WorkInfo>? = workManager.getWorkInfosForUniqueWork(TRANCATE_WORKER_TAG).get()
+
+    private val work: List<WorkInfo>? = workManager.getWorkInfosForUniqueWork(TRANCATE_WORKER_TAG).get()
 
     init {
         showInfoMessage()
         checkPermanentAuth()
         checkPermissions()
         loadSettings()
-        _state.update {
-            it.copy(
-                isServiceRunning = prefs.getBoolean(
-                    IS_SERVICE_WORKING_PREFERENSES_TAG,
-                    false
-                )
-            )
-        }
     }
 
     private fun checkPermissions() {

@@ -5,7 +5,7 @@ import androidx.work.CoroutineWorker
 import androidx.work.OneTimeWorkRequest
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkerParameters
-import apc.appcradle.kotlinjc_friendsactivity_app.data.steps_data.SensorsManager
+import apc.appcradle.kotlinjc_friendsactivity_app.data.steps_data.AppSensorsManager
 import apc.appcradle.kotlinjc_friendsactivity_app.utils.TRANCATE_WORKER_TAG
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
@@ -17,10 +17,10 @@ class TrancateWorker(
 ) : CoroutineWorker(
     context, workerParams
 ), KoinComponent {
-    private val sensorsManager: SensorsManager by inject()
+    private val appSensorsManager: AppSensorsManager by inject()
 
     override suspend fun doWork(): Result {
-        sensorsManager.trancate()
+        appSensorsManager.trancate()
         return Result.success()
     }
 }
