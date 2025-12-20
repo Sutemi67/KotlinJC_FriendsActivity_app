@@ -19,15 +19,14 @@ import apc.appcradle.kotlinjc_friendsactivity_app.ui.theme.KotlinJC_FriendsActiv
 
 @Composable
 fun StatsTable(
+    modifier: Modifier = Modifier,
     distance: Double,
     leaderDifference: Double,
     leader: String?
 ) {
     Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 15.dp)
-            .padding(bottom = 15.dp),
+        modifier = modifier
+            .fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Row(
@@ -51,7 +50,7 @@ fun StatsTable(
             AppText(stringResource(R.string.ratings_screen_all_distance))
             AppText(stringResource(R.string.main_screen_destination_progress, distance.toInt()))
         }
-        HorizontalDivider(Modifier.padding(10.dp))
+        HorizontalDivider(Modifier.padding(horizontal = 33.dp, vertical = 9.dp))
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
@@ -78,6 +77,6 @@ fun StatsTable(
 @Composable
 private fun Preview() {
     KotlinJC_FriendsActivity_appTheme {
-        StatsTable(4334.3, leaderDifference = 3.0, leader = null)
+        StatsTable(distance = 4334.3, leaderDifference = 3.0, leader = null)
     }
 }

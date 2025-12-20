@@ -31,7 +31,6 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             val viewModel = koinViewModel<MainViewModel>()
-            val windowSizeClass = calculateWindowSizeClass(this)
             val state by viewModel.state.collectAsStateWithLifecycle()
 
             val appTypography = when (state.userScale) {
@@ -49,7 +48,6 @@ class MainActivity : ComponentActivity() {
 
             KotlinJC_FriendsActivity_appTheme(
                 darkTheme = theme,
-                windowSizeClass = windowSizeClass
             ) {
                 CompositionLocalProvider(
                     LocalAppTypography provides appTypography

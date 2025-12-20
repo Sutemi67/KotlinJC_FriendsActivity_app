@@ -7,17 +7,20 @@ import android.app.NotificationManager
 import android.app.PendingIntent
 import android.app.Service
 import android.content.Intent
+import android.content.SharedPreferences
 import android.content.pm.ServiceInfo
 import android.graphics.BitmapFactory
 import android.os.Build
 import android.os.IBinder
 import android.util.Log
 import androidx.core.app.NotificationCompat
-import androidx.work.WorkManager
+import androidx.core.content.edit
 import apc.appcradle.kotlinjc_friendsactivity_app.MainActivity
 import apc.appcradle.kotlinjc_friendsactivity_app.R
 import apc.appcradle.kotlinjc_friendsactivity_app.data.steps_data.SensorsManager
-import apc.appcradle.kotlinjc_friendsactivity_app.services.workers.createRestartServiceWork
+import apc.appcradle.kotlinjc_friendsactivity_app.utils.IS_SERVICE_WORKING_PREFERENSES_TAG
+import apc.appcradle.kotlinjc_friendsactivity_app.utils.LoggerType
+import apc.appcradle.kotlinjc_friendsactivity_app.utils.logger
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -30,7 +33,9 @@ class StepCounterService : Service() {
     private lateinit var manager: NotificationManager
     private var steps = 0
     private val sensorManager: SensorsManager by inject()
-    private val workManager: WorkManager by inject()
+    private val prefs: SharedPreferences by inject()
+
+    //    private val workManager: WorkManager by inject()
     private var collectionJob: Job? = null
     private var isNotifyAllowed = true
 
@@ -44,16 +49,16 @@ class StepCounterService : Service() {
         startServiceInForeground()
         sensorManager.registerSensors()
         startStepCollection()
-        Log.i("service", "Service -> onStartCommand")
+        logger(LoggerType.Debug, "Step counter started")
+        saveServiceStatus(true)
         return START_STICKY
     }
 
-    override fun onTaskRemoved(rootIntent: Intent?) {
-        super.onTaskRemoved(rootIntent)
-        workManager.enqueue(createRestartServiceWork())
-    }
-
     override fun onBind(intent: Intent?): IBinder? = null
+
+    private fun saveServiceStatus(isWorking: Boolean) {
+        prefs.edit { putBoolean(IS_SERVICE_WORKING_PREFERENSES_TAG, isWorking) }
+    }
 
     private fun startServiceInForeground() {
         try {
@@ -116,6 +121,15 @@ class StepCounterService : Service() {
 
     private fun createNotification(steps: Int): Notification {
 
+        val openAppIntent = PendingIntent.getActivity(
+            this,
+            0,
+            Intent(this, MainActivity::class.java).apply {
+                Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+            },
+            PendingIntent.FLAG_IMMUTABLE
+        )
+
         return NotificationCompat.Builder(this, CHANNEL_ID)
             .setContentTitle(resources.getString(R.string.app_name))
             .setContentText(getString(R.string.notifications_weekly_steps, steps))
@@ -126,16 +140,8 @@ class StepCounterService : Service() {
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)
             .setOngoing(true)
             .setSilent(true)
-            .setContentIntent(
-                PendingIntent.getActivity(
-                    this,
-                    0,
-                    Intent(this, MainActivity::class.java).apply {
-                        Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-                    },
-                    PendingIntent.FLAG_IMMUTABLE
-                )
-            )
+            .setCategory(HEALTHCONNECT_SERVICE)
+            .setContentIntent(openAppIntent)
             .build()
     }
 
@@ -143,7 +149,8 @@ class StepCounterService : Service() {
         super.onDestroy()
         sensorManager.unregisterSensors()
         collectionJob?.cancel()
-        Log.i("service", "Service -> Destroyed")
+        logger(LoggerType.Error, "Step counter service destroyed")
+        saveServiceStatus(false)
     }
 
     companion object {

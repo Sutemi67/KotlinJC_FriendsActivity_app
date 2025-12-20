@@ -2,6 +2,7 @@ package apc.appcradle.kotlinjc_friendsactivity_app.services.workers
 
 import android.content.Context
 import androidx.work.CoroutineWorker
+import androidx.work.OneTimeWorkRequest
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkerParameters
 import apc.appcradle.kotlinjc_friendsactivity_app.data.steps_data.SensorsManager
@@ -24,7 +25,9 @@ class TrancateWorker(
     }
 }
 
-fun trancateStepsRequest(delay: Long) = OneTimeWorkRequestBuilder<TrancateWorker>()
-    .setInitialDelay(duration = delay, timeUnit = TimeUnit.MILLISECONDS)
-    .addTag(TRANCATE_WORKER_TAG)
-    .build()
+fun trancateStepsRequest(delay: Long): OneTimeWorkRequest {
+    return OneTimeWorkRequestBuilder<TrancateWorker>()
+        .setInitialDelay(duration = delay, timeUnit = TimeUnit.MILLISECONDS)
+        .addTag(TRANCATE_WORKER_TAG)
+        .build()
+}

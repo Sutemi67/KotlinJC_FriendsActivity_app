@@ -51,26 +51,6 @@ class PermissionManager(private val context: Context) {
                 permission
             ) == PackageManager.PERMISSION_GRANTED
         }
-//        val exactAlarmOk = isExactAlarmAllowed()
         return runtimeOk
-//        return runtimeOk && exactAlarmOk
     }
-
-//    fun isExactAlarmAllowed(): Boolean {
-//        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S) return true
-//        val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
-//        return alarmManager.canScheduleExactAlarms()
-//    }
-//
-//    fun openExactAlarmSettings() {
-//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-//            try {
-//                context.startActivity(
-//                    Intent(Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM).apply {
-//                        addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-//                    }
-//                )
-//            } catch (_: Exception) {}
-//        }
-//    }
 }

@@ -1,28 +1,30 @@
 package apc.appcradle.kotlinjc_friendsactivity_app.ui.screens
 
-import android.util.Log
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import androidx.work.WorkInfo
 import apc.appcradle.kotlinjc_friendsactivity_app.MainViewModel
-import apc.appcradle.kotlinjc_friendsactivity_app.data.steps_data.StatsRepository
+import apc.appcradle.kotlinjc_friendsactivity_app.data.steps_data.SensorsManager
 import apc.appcradle.kotlinjc_friendsactivity_app.domain.model.AppState
 import apc.appcradle.kotlinjc_friendsactivity_app.domain.model.AppTextStyles
-import apc.appcradle.kotlinjc_friendsactivity_app.data.steps_data.SensorsManager
 import apc.appcradle.kotlinjc_friendsactivity_app.ui.app_components.AppComponents
 import apc.appcradle.kotlinjc_friendsactivity_app.ui.screens.auth.authScreen
 import apc.appcradle.kotlinjc_friendsactivity_app.ui.screens.auth.registration.nav.registerScreen
@@ -31,6 +33,8 @@ import apc.appcradle.kotlinjc_friendsactivity_app.ui.screens.main.nav.mainScreen
 import apc.appcradle.kotlinjc_friendsactivity_app.ui.screens.main.nav.toMainScreen
 import apc.appcradle.kotlinjc_friendsactivity_app.ui.screens.ratings.nav.ratingsScreen
 import apc.appcradle.kotlinjc_friendsactivity_app.ui.screens.settings.nav.settingsScreen
+import apc.appcradle.kotlinjc_friendsactivity_app.utils.formatMillisecondsToDaysHoursMinutes
+import kotlinx.coroutines.launch
 import org.koin.compose.koinInject
 
 val LocalSensorManager =
@@ -51,21 +55,48 @@ fun NavigationHost(
         }
 
     val sensorManager: SensorsManager = koinInject<SensorsManager>()
-    val statsRepository = koinInject<StatsRepository>()
-
-    val context = LocalContext.current
     val transferState = viewModel.transferState.collectAsState().value
-    val isSynced = statsRepository.syncStatus.collectAsState().value
 
-    LaunchedEffect(Unit) {
-        viewModel.isServiceRunning(context)
-        Log.d("sensors", sensorManager.isStepSensorAvailable.toString())
+    val snackHostState = remember { SnackbarHostState() }
+    val scope = rememberCoroutineScope()
+
+    LaunchedEffect(state.trancateWorkerStatus) {
+        scope.launch {
+            if (state.trancateWorkerStatus == null || state.trancateWorkerStatus.state.isFinished) {
+                snackHostState.showSnackbar(message = "Планируется еженедельное обнуление...\nИзменения вступят в силу после перезапуска.")
+            } else {
+                when (state.trancateWorkerStatus.state) {
+                    WorkInfo.State.ENQUEUED -> {
+                        snackHostState.showSnackbar(
+                            message = "Статус участия: Запланировано.\nПодведение итогов через: ${
+                                formatMillisecondsToDaysHoursMinutes(
+                                    state.trancateWorkerStatus.initialDelayMillis
+                                )
+                            }"
+                        )
+                    }
+
+                    else -> {
+                        snackHostState.showSnackbar(
+                            message = "Статус участия: ${state.trancateWorkerStatus.state}\nПодведение итогов через: ${
+                                formatMillisecondsToDaysHoursMinutes(
+                                    state.trancateWorkerStatus.initialDelayMillis
+                                )
+                            }"
+                        )
+                    }
+
+                }
+
+            }
+        }
     }
 
     CompositionLocalProvider(
         LocalSensorManager provides sensorManager,
     ) {
         Scaffold(
+            snackbarHost = { SnackbarHost(snackHostState) },
             topBar = {
                 if (navBackStackEntry?.destination?.route != Destinations.AUTH.route &&
                     navBackStackEntry?.destination?.route != Destinations.REGISTER.route
@@ -80,7 +111,7 @@ fun NavigationHost(
                     navBackStackEntry?.destination?.route != Destinations.REGISTER.route
                 )
                     NavigationBar {
-                        noAuthDestinations.forEachIndexed { index, item ->
+                        noAuthDestinations.forEach { item ->
                             NavigationBarItem(
                                 icon = {
                                     Icon(
@@ -122,7 +153,6 @@ fun NavigationHost(
                 )
                 ratingsScreen(
                     login = state.userLogin,
-                    isSynced = isSynced,
                     syncFun = {
                         val stepsNow = sensorManager.allSteps.value
                         val weeklyNow = sensorManager.weeklySteps.value
@@ -134,14 +164,11 @@ fun NavigationHost(
                     }
                 )
                 settingsScreen(
+                    state = state,
                     onLogoutClick = { viewModel.logout() },
-                    userLogin = state.userLogin,
-                    userStepLength = state.userStepLength,
-                    userScale = state.userScale,
                     onThemeClick = { viewModel.changeTheme(it) },
                     onNickNameClick = { login, newLogin -> viewModel.changeLogin(login, newLogin) },
                     onStepLengthClick = { viewModel.changeStepLength(it) },
-                    currentTheme = state.currentTheme,
                     onScaleClick = { viewModel.changeScale(it) }
                 )
             }

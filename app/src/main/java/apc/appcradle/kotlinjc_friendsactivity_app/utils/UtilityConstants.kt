@@ -15,3 +15,6 @@ const val TELEGRAM_URL = "https://t.me/appcradle"
 
 //UI
 val APP_ROUNDED_SHAPE = RoundedCornerShape(20.dp)
+
+//shared prefs tags
+val IS_SERVICE_WORKING_PREFERENSES_TAG = "is_service_working"

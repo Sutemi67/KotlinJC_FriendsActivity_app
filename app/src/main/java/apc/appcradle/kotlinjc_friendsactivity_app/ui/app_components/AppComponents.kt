@@ -15,7 +15,6 @@ import androidx.compose.material3.Slider
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -86,6 +85,7 @@ object AppComponents {
         screenRoute: String?,
     ) {
         val context = LocalContext.current
+
         val titleText = when (screenRoute) {
             Destinations.MAIN.route -> {
                 if (login != null) stringResource(R.string.appbar_greeting_logged, login)
@@ -96,6 +96,7 @@ object AppComponents {
             Destinations.SETTINGS.route -> stringResource(R.string.appbar_greeting_settings)
             else -> ""
         }
+
         var isDialogVisible by remember { mutableStateOf(false) }
         if (isDialogVisible)
             AppDonationDialog(
@@ -117,7 +118,7 @@ object AppComponents {
                         contentDescription = "send message",
                     )
                 }
-                IconButton(onClick = { !isDialogVisible }) {
+                IconButton(onClick = { isDialogVisible = !isDialogVisible }) {
                     Icon(
                         imageVector = Icons.Default.Favorite,
                         contentDescription = "donate",
@@ -129,24 +130,6 @@ object AppComponents {
     }
 
     @Composable
-    fun ScaleSlider(
-        currentValue: Float,
-        onValueChange: (Float) -> Unit
-    ) {
-        var sliderPosition by remember { mutableFloatStateOf(currentValue) }
-        Slider(
-            value = sliderPosition,
-            onValueChange = {
-                sliderPosition = it
-                onValueChange(sliderPosition)
-            },
-            valueRange = 0.5f..1.5f,
-            steps = 1
-        )
-    }
-
-    @Stable
-    @Composable
     fun AppText(
         text: String,
         modifier: Modifier = Modifier,
@@ -155,19 +138,20 @@ object AppComponents {
         textAlign: TextAlign = TextAlign.Start,
         appTextStyle: AppTextStyles = AppTextStyles.Body
     ) {
+        val typo = LocalAppTypography.current
         Text(
             modifier = modifier,
             text = text,
             color = color,
             overflow = TextOverflow.Ellipsis,
-            maxLines = if (singleLine) 1 else 200,
+            maxLines = if (singleLine) 1 else Int.MAX_VALUE,
             textAlign = textAlign,
             style = when (appTextStyle) {
-                AppTextStyles.Header -> LocalAppTypography.current.header
-                AppTextStyles.Body -> LocalAppTypography.current.bodyText
-                AppTextStyles.Label -> LocalAppTypography.current.labels
-                AppTextStyles.MainCounter -> LocalAppTypography.current.mainStepCounter
-                AppTextStyles.AppBarTitle -> LocalAppTypography.current.appBarTitle
+                AppTextStyles.Header -> typo.header
+                AppTextStyles.Body -> typo.bodyText
+                AppTextStyles.Label -> typo.labels
+                AppTextStyles.MainCounter -> typo.mainStepCounter
+                AppTextStyles.AppBarTitle -> typo.appBarTitle
             }
         )
     }
@@ -192,13 +176,5 @@ private fun InputFieldPreview() {
 private fun AppTopBarPreview() {
     KotlinJC_FriendsActivity_appTheme {
         AppComponents.AppTopBar(screenRoute = Destinations.MAIN.route, login = "Alex")
-    }
-}
-
-@Preview
-@Composable
-private fun ScaleSliderPreview() {
-    KotlinJC_FriendsActivity_appTheme {
-        AppComponents.ScaleSlider(1.0f) { }
     }
 }

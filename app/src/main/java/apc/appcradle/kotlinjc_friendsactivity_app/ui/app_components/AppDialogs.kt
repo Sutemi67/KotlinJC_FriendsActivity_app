@@ -14,6 +14,7 @@ import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.RadioButton
+import androidx.compose.material3.Slider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
@@ -34,11 +35,10 @@ import apc.appcradle.kotlinjc_friendsactivity_app.LocalAppTypography
 import apc.appcradle.kotlinjc_friendsactivity_app.R
 import apc.appcradle.kotlinjc_friendsactivity_app.domain.model.AppTextStyles
 import apc.appcradle.kotlinjc_friendsactivity_app.domain.model.AppThemes
-import apc.appcradle.kotlinjc_friendsactivity_app.utils.openDonate
 import apc.appcradle.kotlinjc_friendsactivity_app.ui.app_components.AppComponents.AppText
-import apc.appcradle.kotlinjc_friendsactivity_app.ui.app_components.AppComponents.ScaleSlider
 import apc.appcradle.kotlinjc_friendsactivity_app.ui.app_components.AppDialogs.AppDonationDialog
 import apc.appcradle.kotlinjc_friendsactivity_app.ui.theme.KotlinJC_FriendsActivity_appTheme
+import apc.appcradle.kotlinjc_friendsactivity_app.utils.openDonate
 
 object AppDialogs {
     @Composable
@@ -77,11 +77,11 @@ object AppDialogs {
 
     @Composable
     fun ScaleDialog(
-        initialValue: (Float),
+        initialValue: Float,
         onConfirm: (Float) -> Unit,
         onDismiss: () -> Unit,
     ) {
-        var newValue by remember { mutableFloatStateOf(initialValue) }
+        val newValue = remember { mutableFloatStateOf(initialValue) }
         AlertDialog(
             title = {
                 AppText(
@@ -90,16 +90,17 @@ object AppDialogs {
                 )
             },
             text = {
-                ScaleSlider(
-                    currentValue = initialValue,
-                    onValueChange = {
-                        newValue = it
-                    })
+                Slider(
+                    value = newValue.floatValue,
+                    onValueChange = { newValue.floatValue = it },
+                    valueRange = 0.5f..1.5f,
+                    steps = 1
+                )
             },
             onDismissRequest = onDismiss,
             confirmButton = {
                 ElevatedButton(onClick = {
-                    onConfirm(newValue)
+                    onConfirm(newValue.floatValue)
                     onDismiss()
                 }) { AppText(text = stringResource(R.string.dialogs_buttons_scale_yes)) }
             },

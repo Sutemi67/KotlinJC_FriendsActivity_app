@@ -1,6 +1,5 @@
 package apc.appcradle.kotlinjc_friendsactivity_app.ui.screens.main
 
-import android.icu.text.DecimalFormat
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -34,6 +33,7 @@ import apc.appcradle.kotlinjc_friendsactivity_app.R
 import apc.appcradle.kotlinjc_friendsactivity_app.domain.model.AppTextStyles
 import apc.appcradle.kotlinjc_friendsactivity_app.ui.app_components.AppComponents.AppText
 import apc.appcradle.kotlinjc_friendsactivity_app.ui.theme.KotlinJC_FriendsActivity_appTheme
+import apc.appcradle.kotlinjc_friendsactivity_app.utils.format
 import kotlin.math.roundToInt
 
 @Composable
@@ -43,8 +43,7 @@ fun PermittedUi(
     weeklySteps: Int = 0,
     userStepLength: Double,
     isServiceRunning: Boolean,
-    onTrueCallback: () -> Unit,
-    onFalseCallback: () -> Unit,
+    counterCheckerCallback: (Boolean) -> Unit,
 ) {
     var kmWeekly by remember { mutableDoubleStateOf(0.0) }
     var kmAll by remember { mutableDoubleStateOf(0.0) }
@@ -151,31 +150,11 @@ fun PermittedUi(
                 )
                 Switch(
                     checked = isServiceRunning,
-                    onCheckedChange = { state ->
-                        when (state) {
-                            true -> {
-                                onTrueCallback()
-                            }
-
-                            false -> {
-                                onFalseCallback()
-                            }
-                        }
-                    }
+                    onCheckedChange = { counterCheckerCallback(it) }
                 )
             }
         }
     }
-}
-
-private fun format(text: Int): String {
-    val ddd = DecimalFormat("###,###.##")
-    return ddd.format(text)
-}
-
-private fun format(text: Double): String {
-    val ddd = DecimalFormat("###,###.##")
-    return ddd.format(text)
 }
 
 private fun kkalCalc(userStepLength: Double, stepCount: Int): IntRange {
@@ -194,8 +173,7 @@ private fun Preview() {
             weeklySteps = 4433,
             isServiceRunning = true,
             userStepLength = 33.2,
-            onTrueCallback = {},
-            onFalseCallback = {}
+            counterCheckerCallback = {}
         )
     }
 }

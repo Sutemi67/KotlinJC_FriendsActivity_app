@@ -19,7 +19,7 @@ android {
 
     defaultConfig {
         applicationId = "apc.appcradle.kotlinjc_friendsactivity_app"
-        minSdk = 24
+        minSdk = 26
         targetSdk = 36
 
         // изменение от 08 декабря 2025

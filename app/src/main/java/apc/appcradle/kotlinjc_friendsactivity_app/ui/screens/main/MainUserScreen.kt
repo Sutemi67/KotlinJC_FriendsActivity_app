@@ -41,18 +41,17 @@ fun MainUserScreen(
                 }
             )
         } else {
-            LaunchedEffect(state.isServiceEnabled) {
-                if (state.isServiceEnabled && !state.isServiceRunning) {
-                    viewModel.startService(context)
-                }
-            }
+//            LaunchedEffect(state.isServiceEnabledByUser) {
+//                if (state.isServiceEnabledByUser && !state.isServiceRunning) {
+//                    viewModel.startService(context)
+//                }
+//            }
             PermittedUi(
                 isStepSensorsAvailable = sensorsManager.isStepSensorAvailable,
                 summarySteps = sensorsManager.allSteps.collectAsState().value,
                 weeklySteps = sensorsManager.weeklySteps.collectAsState().value,
-                isServiceRunning = state.isServiceRunning || state.isServiceEnabled,
-                onTrueCallback = { viewModel.startService(context) },
-                onFalseCallback = { viewModel.stopService(context) },
+                isServiceRunning = state.isServiceRunning,
+                counterCheckerCallback = { viewModel.userServiceCheckerListener(it, context) },
                 userStepLength = state.userStepLength
             )
         }

@@ -1,17 +1,17 @@
 package apc.appcradle.kotlinjc_friendsactivity_app
 
-import android.app.ActivityManager
 import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences
 import android.util.Log
-import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.work.WorkInfo
 import androidx.work.WorkManager
-import apc.appcradle.kotlinjc_friendsactivity_app.data.network.NetworkClient
-import apc.appcradle.kotlinjc_friendsactivity_app.data.configs.model.SharedPreferencesData
-import apc.appcradle.kotlinjc_friendsactivity_app.data.steps_data.StatsRepository
 import apc.appcradle.kotlinjc_friendsactivity_app.data.configs.TokenRepositoryImpl
+import apc.appcradle.kotlinjc_friendsactivity_app.data.configs.model.SharedPreferencesData
+import apc.appcradle.kotlinjc_friendsactivity_app.data.network.NetworkClient
+import apc.appcradle.kotlinjc_friendsactivity_app.data.steps_data.StatsRepository
 import apc.appcradle.kotlinjc_friendsactivity_app.domain.SettingsRepository
 import apc.appcradle.kotlinjc_friendsactivity_app.domain.model.AppState
 import apc.appcradle.kotlinjc_friendsactivity_app.domain.model.AppThemes
@@ -19,7 +19,11 @@ import apc.appcradle.kotlinjc_friendsactivity_app.domain.model.network.DataTrans
 import apc.appcradle.kotlinjc_friendsactivity_app.domain.model.network.PlayersListSyncData
 import apc.appcradle.kotlinjc_friendsactivity_app.services.PermissionManager
 import apc.appcradle.kotlinjc_friendsactivity_app.services.StepCounterService
+import apc.appcradle.kotlinjc_friendsactivity_app.utils.IS_SERVICE_WORKING_PREFERENSES_TAG
+import apc.appcradle.kotlinjc_friendsactivity_app.utils.LoggerType
 import apc.appcradle.kotlinjc_friendsactivity_app.utils.TRANCATE_WORKER_TAG
+import apc.appcradle.kotlinjc_friendsactivity_app.utils.formatMillisecondsToDaysHoursMinutes
+import apc.appcradle.kotlinjc_friendsactivity_app.utils.logger
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -34,7 +38,8 @@ class MainViewModel(
     private val tokenRepositoryImpl: TokenRepositoryImpl,
     private val settingsPreferencesImpl: SettingsRepository,
     private val statsRepository: StatsRepository,
-    private val workManager: WorkManager
+    private val prefs: SharedPreferences,
+    workManager: WorkManager
 ) : ViewModel() {
 
     private var _state = MutableStateFlow(AppState())
@@ -42,64 +47,71 @@ class MainViewModel(
 
     private var _transferState = MutableStateFlow(DataTransferState())
     val transferState: StateFlow<DataTransferState> = _transferState.asStateFlow()
+    val work: List<WorkInfo>? = workManager.getWorkInfosForUniqueWork(TRANCATE_WORKER_TAG).get()
 
     init {
+        showInfoMessage()
         checkPermanentAuth()
-
-        viewModelScope.launch {
-            workManager.pruneWork()
-            workManager.getWorkInfosByTagFlow(TRANCATE_WORKER_TAG).collect {
-                it.forEach { element ->
-                    Log.i(
-                        "worker",
-                        "statRepo,workerInfoAsync -> ${element.id}, ${element.state}, ${element.initialDelayMillis}"
-                    )
-                }
-            }
+        checkPermissions()
+        loadSettings()
+        _state.update {
+            it.copy(
+                isServiceRunning = prefs.getBoolean(
+                    IS_SERVICE_WORKING_PREFERENSES_TAG,
+                    false
+                )
+            )
         }
+    }
 
+    private fun checkPermissions() {
         viewModelScope.launch {
             permissionManager.permissionsGranted.collect { isGranted ->
                 _state.update { it.copy(isPermissionsGet = isGranted) }
             }
         }
+    }
 
-        loadSettings()
-        Log.i("scale", "${state.value.userScale} loaded")
+    private fun showInfoMessage() {
+        if (work == null) {
+            statsRepository.planNextTrancateSteps()
+            logger(LoggerType.Info, "trancate work not found. creating a new...")
+        } else {
+            work.forEach { work ->
+                _state.update { it.copy(trancateWorkerStatus = work) }
+                logger(
+                    LoggerType.Debug,
+                    "work status: ${work.state}, next trancate in: ${
+                        formatMillisecondsToDaysHoursMinutes(work.initialDelayMillis)
+                    }"
+                )
+            }
+        }
     }
 
     //region Service
-    fun isServiceRunning(context: Context) {
-        val isRun: Boolean = isServiceRunning(context, StepCounterService::class.java)
-        _state.update { it.copy(isServiceRunning = isRun) }
+    fun userServiceCheckerListener(turnState: Boolean, context: Context) {
+        if (turnState) startService(context) else stopService(context)
     }
 
     fun startService(context: Context) {
         val serviceIntent = Intent(context, StepCounterService::class.java)
         try {
-            ContextCompat.startForegroundService(context, serviceIntent)
-            isServiceRunning(context)
-            _state.update { it.copy(isServiceEnabled = true) }
+            context.startForegroundService(serviceIntent)
+            _state.update { it.copy(isServiceEnabledByUser = true, isServiceRunning = true) }
             saveSettings()
         } catch (e: Exception) {
-            Log.e("service", "Failed to start service: ${e.message}")
+            logger(LoggerType.Error, "Failed to start service: ${e.message}")
         }
     }
 
-    fun stopService(context: Context) {
+    private fun stopService(context: Context) {
         val serviceIntent = Intent(context, StepCounterService::class.java)
         context.stopService(serviceIntent)
-        isServiceRunning(context)
-        _state.update { it.copy(isServiceEnabled = false) }
+        _state.update { it.copy(isServiceEnabledByUser = false, isServiceRunning = false) }
         saveSettings()
     }
 
-    private fun isServiceRunning(context: Context, serviceClass: Class<*>): Boolean {
-        val manager =
-            context.getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
-        return manager.getRunningServices(Integer.MAX_VALUE)
-            .any { it.service.className == serviceClass.name }
-    }
     //endregion
 
     //region Authentification
@@ -190,7 +202,6 @@ class MainViewModel(
             _transferState.update { it.copy(isLoading = true) }
             val result = networkClient.sendRegistrationInfo(login, password)
             if (result.isSuccessful == true && result.errorMessage == null) {
-                Log.i("dataTransfer", "viewModel transfer - OK")
                 _transferState.update {
                     it.copy(
                         isLoading = false,
@@ -206,6 +217,7 @@ class MainViewModel(
                 }
             } else {
                 Log.e("dataTransfer", "viewModel transfer error: ${result.errorMessage}")
+
                 _transferState.update {
                     it.copy(
                         isLoading = false,
@@ -220,12 +232,10 @@ class MainViewModel(
     fun changeLogin(login: String, newLogin: String) {
         viewModelScope.launch {
             if (networkClient.changeUserLogin(login, newLogin)) {
-                Log.i("dataTransfer", "смена ника - ${true}")
                 _state.update { it.copy(userLogin = newLogin) }
                 tokenRepositoryImpl.saveNewLogin(newLogin)
                 return@launch
             }
-            Log.e("dataTransfer", "смена ника - ${false}")
         }
     }
     //endregion
@@ -234,7 +244,6 @@ class MainViewModel(
     fun changeTheme(currentTheme: AppThemes) {
         _state.update { it.copy(currentTheme = currentTheme) }
         saveSettings()
-        Log.d("theme", "viewModel theme is: ${state.value.currentTheme}")
     }
 
     fun changeScale(newValue: Float) {
@@ -253,7 +262,7 @@ class MainViewModel(
                 savedTheme = state.value.currentTheme,
                 savedScale = state.value.userScale,
                 savedUserStep = state.value.userStepLength,
-                savedIsServiceEnabled = state.value.isServiceEnabled
+                savedIsServiceEnabled = state.value.isServiceEnabledByUser
             )
         )
     }
@@ -265,7 +274,7 @@ class MainViewModel(
                 currentTheme = settings.savedTheme,
                 userStepLength = settings.savedUserStep,
                 userScale = settings.savedScale,
-                isServiceEnabled = settings.savedIsServiceEnabled
+                isServiceEnabledByUser = settings.savedIsServiceEnabled
             )
         }
     }

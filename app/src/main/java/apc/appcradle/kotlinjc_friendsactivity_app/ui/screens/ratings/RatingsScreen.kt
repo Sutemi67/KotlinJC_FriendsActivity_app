@@ -1,14 +1,12 @@
 package apc.appcradle.kotlinjc_friendsactivity_app.ui.screens.ratings
 
-import android.util.Log
-import androidx.compose.foundation.layout.Box
+import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -26,11 +24,16 @@ import apc.appcradle.kotlinjc_friendsactivity_app.domain.model.network.PlayerAct
 import apc.appcradle.kotlinjc_friendsactivity_app.domain.model.network.PlayersListSyncData
 import apc.appcradle.kotlinjc_friendsactivity_app.ui.app_components.AppComponents.AppText
 import apc.appcradle.kotlinjc_friendsactivity_app.ui.theme.KotlinJC_FriendsActivity_appTheme
+import apc.appcradle.kotlinjc_friendsactivity_app.utils.LoggerType
+import apc.appcradle.kotlinjc_friendsactivity_app.utils.logger
+
+private enum class ScreenState {
+    Loading, Error, Success
+}
 
 @Composable
 fun RatingsScreen(
     login: String?,
-    isSynced: Boolean,
     syncFun: suspend () -> PlayersListSyncData,
 ) {
     var errorMessage: String? by remember { mutableStateOf("") }
@@ -38,6 +41,7 @@ fun RatingsScreen(
     var kmWeekly by remember { mutableDoubleStateOf(0.0) }
     var leaderDifference by remember { mutableDoubleStateOf(0.0) }
     var list by remember { mutableStateOf<List<PlayerActivityData>>(emptyList()) }
+    var screen by remember { mutableStateOf(ScreenState.Loading) }
 
     LaunchedEffect(Unit) {
         if (login != null) {
@@ -48,42 +52,60 @@ fun RatingsScreen(
                 leaderDifference = response.leaderDifferenceKm
                 list = response.playersList.filter { it.weeklySteps > 0 }
                 leader = response.leader
+                screen = ScreenState.Success
             } catch (e: Exception) {
-                Log.e("dataTransfer", "RatingsScreen: error syncing data: ${e.message}")
+                logger(LoggerType.Error, e.message ?: "Connection error")
                 errorMessage = "${e.message}"
+                screen = ScreenState.Error
             }
         } else {
             list = emptyList()
             kmWeekly = 0.0
+            screen = ScreenState.Success
         }
     }
 
     Column(
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(horizontal = 15.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Box(Modifier.height(5.dp)) {
-            if (isSynced)
-                LinearProgressIndicator()
-        }
-        StatsTable(kmWeekly, leaderDifference, leader)
-        if (errorMessage == null) {
-            LazyColumn(
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                itemsIndexed(list) { index, item ->
-                    PlayerStatsView(
-                        login = login,
-                        playerActivityData = item
+        StatsTable(
+            modifier = Modifier.padding(bottom = 10.dp),
+            distance = kmWeekly,
+            leaderDifference = leaderDifference,
+            leader = leader
+        )
+        AnimatedContent(
+            targetState = screen,
+        ) { screen ->
+            when (screen) {
+
+                ScreenState.Loading -> {
+                    LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
+                }
+
+                ScreenState.Error -> {
+                    AppText(
+                        modifier = Modifier.padding(20.dp), color = Color.Red, text = errorMessage!!
                     )
                 }
+
+                ScreenState.Success -> {
+                    LazyColumn(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(top = 10.dp)
+                    ) {
+                        items(list) { element ->
+                            PlayerStatsView(
+                                login = login, playerActivityData = element
+                            )
+                        }
+                    }
+                }
             }
-        } else {
-            AppText(
-                modifier = Modifier.padding(20.dp),
-                color = Color.Red,
-                text = errorMessage!!
-            )
         }
     }
 }
@@ -94,7 +116,6 @@ private fun Preview2() {
     KotlinJC_FriendsActivity_appTheme {
         RatingsScreen(
             login = "AlexMagnuss",
-            isSynced = true,
             syncFun = {
                 PlayersListSyncData(
                     playersList = listOf(
@@ -103,17 +124,15 @@ private fun Preview2() {
                             33,
                             2333,
                             .4f,
-                        ),
-                        PlayerActivityData(
+                        ), PlayerActivityData(
                             "AlexMagnus",
                             33333,
                             23373,
                             .73f,
-                        ),
-                        PlayerActivityData(
+                        ), PlayerActivityData(
                             "Zero",
                             33333,
-                            0,
+                            2,
                             .3f,
                         )
                     ).sortedByDescending { it.weeklySteps },
