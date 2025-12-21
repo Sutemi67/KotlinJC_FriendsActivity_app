@@ -20,7 +20,7 @@ import apc.appcradle.kotlinjc_friendsactivity_app.services.PermissionManager
 import apc.appcradle.kotlinjc_friendsactivity_app.services.StepCounterService
 import apc.appcradle.kotlinjc_friendsactivity_app.utils.LoggerType
 import apc.appcradle.kotlinjc_friendsactivity_app.utils.TRANCATE_WORKER_TAG
-import apc.appcradle.kotlinjc_friendsactivity_app.utils.formatMillisecondsToDaysHoursMinutes
+import apc.appcradle.kotlinjc_friendsactivity_app.utils.formatDeadline
 import apc.appcradle.kotlinjc_friendsactivity_app.utils.logger
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -45,10 +45,11 @@ class MainViewModel(
     private var _transferState = MutableStateFlow(DataTransferState())
     val transferState: StateFlow<DataTransferState> = _transferState.asStateFlow()
 
-    private val work: List<WorkInfo>? = workManager.getWorkInfosForUniqueWork(TRANCATE_WORKER_TAG).get()
+    private val work: List<WorkInfo>? =
+        workManager.getWorkInfosForUniqueWork(TRANCATE_WORKER_TAG).get()
 
     init {
-        showInfoMessage()
+        planNextTrancate()
         checkPermanentAuth()
         checkPermissions()
         loadSettings()
@@ -62,8 +63,9 @@ class MainViewModel(
         }
     }
 
-    private fun showInfoMessage() {
-        if (work == null) {
+    private fun planNextTrancate() {
+        logger(LoggerType.Info, "$work")
+        if (work.isNullOrEmpty() || work.any { it.state == WorkInfo.State.SUCCEEDED }) {
             statsRepository.planNextTrancateSteps()
             logger(LoggerType.Info, "trancate work not found. creating a new...")
         } else {
@@ -71,8 +73,8 @@ class MainViewModel(
                 _state.update { it.copy(trancateWorkerStatus = work) }
                 logger(
                     LoggerType.Debug,
-                    "work status: ${work.state}, next trancate in: ${
-                        formatMillisecondsToDaysHoursMinutes(work.initialDelayMillis)
+                    "work status updated: ${work.state}, next trancate in: ${
+                        formatDeadline(work.nextScheduleTimeMillis)
                     }"
                 )
             }

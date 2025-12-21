@@ -5,6 +5,10 @@ import android.content.Intent
 import android.icu.text.DecimalFormat
 import android.util.Log
 import androidx.core.net.toUri
+import java.time.Duration
+import java.time.Instant
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
 import java.util.Calendar
 
 fun whenNextMonday(): Long {
@@ -62,27 +66,27 @@ fun format(text: Double): String {
     return ddd.format(text)
 }
 
-fun formatMillisecondsToDaysHoursMinutes(milliseconds: Long): String {
-    val totalSeconds = milliseconds / 1000
-    val totalMinutes = totalSeconds / 60
-    val totalHours = totalMinutes / 60
+fun formatDeadline(milliseconds: Long): String {
+    val deadline = Instant.ofEpochMilli(milliseconds)
+    val now = Instant.now()
 
-    val days = totalHours / 24
-    val hours = totalHours % 24
-    val minutes = totalMinutes % 60
+    return if (deadline.isAfter(now)) {
+        val duration = Duration.between(now, deadline)
+        "через ${formatDuration(duration)}"
+    } else {
+        val duration = Duration.between(deadline, now)
+        "${formatDuration(duration)} назад"
+    }
+}
 
-    return buildString {
-        if (days > 0) {
-            append("${days}д.")
-        }
-        if (hours > 0) {
-            append("${hours}ч.")
-        }
-        if (minutes > 0) {
-            append("${minutes}мин.")
-        }
-        if (isEmpty()) {
-            append("0 мин")
-        }
+private fun formatDuration(duration: Duration): String {
+    val days = duration.toDays()
+    val hours = duration.toHours() % 24
+    val minutes = duration.toMinutes() % 60
+
+    return when {
+        days > 0 -> "$days дн. $hours ч."
+        hours > 0 -> "$hours ч. $minutes мин."
+        else -> "$minutes мин."
     }
 }

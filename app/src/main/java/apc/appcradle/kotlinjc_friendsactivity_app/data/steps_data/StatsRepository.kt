@@ -87,10 +87,6 @@ class StatsRepository(
         return diffKm
     }
 
-    init {
-        planNextTrancateSteps()
-    }
-
     fun saveAllSteps(steps: Steps) {
         sharedPreferences.edit {
             putInt(STEPS_ID, steps.allSteps)

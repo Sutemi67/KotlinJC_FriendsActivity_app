@@ -33,7 +33,7 @@ import apc.appcradle.kotlinjc_friendsactivity_app.ui.screens.main.nav.mainScreen
 import apc.appcradle.kotlinjc_friendsactivity_app.ui.screens.main.nav.toMainScreen
 import apc.appcradle.kotlinjc_friendsactivity_app.ui.screens.ratings.nav.ratingsScreen
 import apc.appcradle.kotlinjc_friendsactivity_app.ui.screens.settings.nav.settingsScreen
-import apc.appcradle.kotlinjc_friendsactivity_app.utils.formatMillisecondsToDaysHoursMinutes
+import apc.appcradle.kotlinjc_friendsactivity_app.utils.formatDeadline
 import kotlinx.coroutines.launch
 import org.koin.compose.koinInject
 
@@ -62,15 +62,16 @@ fun NavigationHost(
 
     LaunchedEffect(state.trancateWorkerStatus) {
         scope.launch {
+            if (state.userLogin == null) return@launch
             if (state.trancateWorkerStatus == null || state.trancateWorkerStatus.state.isFinished) {
                 snackHostState.showSnackbar(message = "Планируется еженедельное обнуление...\nИзменения вступят в силу после перезапуска.")
             } else {
                 when (state.trancateWorkerStatus.state) {
                     WorkInfo.State.ENQUEUED -> {
                         snackHostState.showSnackbar(
-                            message = "Статус участия: Запланировано.\nПодведение итогов через: ${
-                                formatMillisecondsToDaysHoursMinutes(
-                                    state.trancateWorkerStatus.initialDelayMillis
+                            message = "Статус обнуления: Запланировано.\nПодведение итогов через: ${
+                                formatDeadline(
+                                    state.trancateWorkerStatus.nextScheduleTimeMillis
                                 )
                             }"
                         )
@@ -78,16 +79,14 @@ fun NavigationHost(
 
                     else -> {
                         snackHostState.showSnackbar(
-                            message = "Статус участия: ${state.trancateWorkerStatus.state}\nПодведение итогов через: ${
-                                formatMillisecondsToDaysHoursMinutes(
-                                    state.trancateWorkerStatus.initialDelayMillis
+                            message = "Статус обнуления: ${state.trancateWorkerStatus.state}\nПодведение итогов через: ${
+                                formatDeadline(
+                                    state.trancateWorkerStatus.nextScheduleTimeMillis
                                 )
                             }"
                         )
                     }
-
                 }
-
             }
         }
     }
