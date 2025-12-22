@@ -68,7 +68,7 @@ class StepCounterService : Service() {
 
         val name = getString(R.string.app_name)
         val descriptionText = "Tracks your steps in background"
-        val importance = NotificationManager.IMPORTANCE_HIGH
+        val importance = NotificationManager.IMPORTANCE_DEFAULT
 
         val channel = NotificationChannel(CHANNEL_ID, name, importance).apply {
             description = descriptionText
