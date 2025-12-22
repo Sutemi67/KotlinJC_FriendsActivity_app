@@ -3,8 +3,6 @@ package apc.appcradle.kotlinjc_friendsactivity_app.ui.app_components
 import android.content.Intent
 import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.MailOutline
@@ -13,26 +11,22 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Slider
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
 import apc.appcradle.kotlinjc_friendsactivity_app.LocalAppTypography
 import apc.appcradle.kotlinjc_friendsactivity_app.R
@@ -40,6 +34,8 @@ import apc.appcradle.kotlinjc_friendsactivity_app.domain.model.AppTextStyles
 import apc.appcradle.kotlinjc_friendsactivity_app.ui.app_components.AppDialogs.AppDonationDialog
 import apc.appcradle.kotlinjc_friendsactivity_app.ui.screens.Destinations
 import apc.appcradle.kotlinjc_friendsactivity_app.ui.theme.KotlinJC_FriendsActivity_appTheme
+import apc.appcradle.kotlinjc_friendsactivity_app.utils.APP_ROUNDED_SHAPE
+import apc.appcradle.kotlinjc_friendsactivity_app.utils.TELEGRAM_URL
 
 object AppComponents {
 
@@ -48,66 +44,35 @@ object AppComponents {
         modifier: Modifier = Modifier,
         label: String,
         value: String,
+        isPassword: Boolean = false,
         onValueChange: (String) -> Unit,
-        trailingIcon: ImageVector? = null,
-        onIconClick: () -> Unit = {},
-        needLeadingBackIcon: Boolean = false,
-        onLeadingIconClick: () -> Unit = {},
+        trailingIcon: (@Composable () -> Unit)? = null,
+        leadingIcon: (@Composable () -> Unit)? = null,
         isError: Boolean = false
     ) {
-        var inputText by rememberSaveable { mutableStateOf(value) }
-
+        val labelText =
+            if (isError) {
+                stringResource(R.string.components_inputs_labels_login_error)
+            } else label
+        val transformation =
+            if (isPassword) PasswordVisualTransformation() else VisualTransformation.None
         OutlinedTextField(
-            modifier = modifier
-                .fillMaxWidth()
-                .padding(horizontal = 50.dp, vertical = 5.dp),
-            value = inputText,
-            onValueChange = {
-                inputText = it
-                onValueChange(inputText)
-            },
+            modifier = modifier.fillMaxWidth(),
+            value = value,
+            onValueChange = onValueChange,
             singleLine = true,
-            trailingIcon = {
-                if (trailingIcon != null) {
-                    IconButton(onClick = { onIconClick() }) {
-                        Icon(
-                            imageVector = trailingIcon,
-                            contentDescription = null
-                        )
-                    }
-                }
-            },
             isError = isError,
+            visualTransformation = transformation,
             textStyle = LocalAppTypography.current.bodyText,
-            leadingIcon = {
-                if (needLeadingBackIcon)
-                    IconButton({ onLeadingIconClick() }) {
-                        Icon(
-                            modifier = Modifier.graphicsLayer(scaleX = -1f),
-                            imageVector = Icons.Default.PlayArrow,
-                            contentDescription = null
-                        )
-                    }
-            },
+            trailingIcon = trailingIcon,
+            leadingIcon = leadingIcon,
             label = {
-                when (isError) {
-                    true -> {
-                        AppText(
-                            text = stringResource(R.string.components_inputs_labels_login_error),
-                            appTextStyle = AppTextStyles.Body
-                        )
-                    }
-
-                    false -> {
-                        AppText(
-                            text = label,
-                            appTextStyle = AppTextStyles.Body
-                        )
-                    }
-                }
-
+                AppText(
+                    text = labelText,
+                    appTextStyle = AppTextStyles.Body
+                )
             },
-            shape = RoundedCornerShape(20.dp)
+            shape = APP_ROUNDED_SHAPE
         )
     }
 
@@ -118,6 +83,7 @@ object AppComponents {
         screenRoute: String?,
     ) {
         val context = LocalContext.current
+
         val titleText = when (screenRoute) {
             Destinations.MAIN.route -> {
                 if (login != null) stringResource(R.string.appbar_greeting_logged, login)
@@ -128,6 +94,7 @@ object AppComponents {
             Destinations.SETTINGS.route -> stringResource(R.string.appbar_greeting_settings)
             else -> ""
         }
+
         var isDialogVisible by remember { mutableStateOf(false) }
         if (isDialogVisible)
             AppDonationDialog(
@@ -141,7 +108,7 @@ object AppComponents {
             },
             actions = {
                 IconButton(onClick = {
-                    val intent = Intent(Intent.ACTION_VIEW, "https://t.me/appcradle".toUri())
+                    val intent = Intent(Intent.ACTION_VIEW, TELEGRAM_URL.toUri())
                     context.startActivity(intent)
                 }) {
                     Icon(
@@ -161,23 +128,6 @@ object AppComponents {
     }
 
     @Composable
-    fun ScaleSlider(
-        initialValue: Float,
-        valueReturn: (Float) -> Unit
-    ) {
-        var sliderPosition by remember { mutableFloatStateOf(initialValue) }
-        Slider(
-            value = sliderPosition,
-            onValueChange = {
-                sliderPosition = it
-                valueReturn(sliderPosition)
-            },
-            valueRange = 0.5f..1.5f,
-            steps = 1
-        )
-    }
-
-    @Composable
     fun AppText(
         text: String,
         modifier: Modifier = Modifier,
@@ -186,19 +136,20 @@ object AppComponents {
         textAlign: TextAlign = TextAlign.Start,
         appTextStyle: AppTextStyles = AppTextStyles.Body
     ) {
+        val typo = LocalAppTypography.current
         Text(
             modifier = modifier,
             text = text,
             color = color,
             overflow = TextOverflow.Ellipsis,
-            maxLines = if (singleLine) 1 else 200,
+            maxLines = if (singleLine) 1 else Int.MAX_VALUE,
             textAlign = textAlign,
             style = when (appTextStyle) {
-                AppTextStyles.Header -> LocalAppTypography.current.header
-                AppTextStyles.Body -> LocalAppTypography.current.bodyText
-                AppTextStyles.Label -> LocalAppTypography.current.labels
-                AppTextStyles.MainCounter -> LocalAppTypography.current.mainStepCounter
-                AppTextStyles.AppBarTitle -> LocalAppTypography.current.appBarTitle
+                AppTextStyles.Header -> typo.header
+                AppTextStyles.Body -> typo.bodyText
+                AppTextStyles.Label -> typo.labels
+                AppTextStyles.MainCounter -> typo.mainStepCounter
+                AppTextStyles.AppBarTitle -> typo.appBarTitle
             }
         )
     }
@@ -212,7 +163,8 @@ private fun InputFieldPreview() {
             label = "login",
             onValueChange = {},
             value = "sdfg",
-            needLeadingBackIcon = true
+            leadingIcon = { IconButton(onClick = {}) { Icon(Icons.Default.PlayArrow, null) } },
+            trailingIcon = {}
         )
     }
 }

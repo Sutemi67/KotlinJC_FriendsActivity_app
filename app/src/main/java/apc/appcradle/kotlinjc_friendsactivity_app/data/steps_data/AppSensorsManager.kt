@@ -1,13 +1,13 @@
-package apc.appcradle.kotlinjc_friendsactivity_app.data
+package apc.appcradle.kotlinjc_friendsactivity_app.data.steps_data
 
 import android.content.Context
-import android.content.Context.SENSOR_SERVICE
 import android.hardware.Sensor
 import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
 import android.hardware.SensorManager
-import android.util.Log
 import apc.appcradle.kotlinjc_friendsactivity_app.domain.model.network.Steps
+import apc.appcradle.kotlinjc_friendsactivity_app.utils.LoggerType
+import apc.appcradle.kotlinjc_friendsactivity_app.utils.logger
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -15,12 +15,12 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
-class SensorsManager(
+class AppSensorsManager(
     context: Context,
     private val statsRepository: StatsRepository
 ) : SensorEventListener {
 
-    private val sensorManager = context.getSystemService(SENSOR_SERVICE) as SensorManager
+    private val sensorManager = context.getSystemService(Context.SENSOR_SERVICE) as SensorManager
     private val stepCounterSensor: Sensor? =
         sensorManager.getDefaultSensor(Sensor.TYPE_STEP_COUNTER)
     private val stepDetectorSensor: Sensor? =
@@ -63,7 +63,7 @@ class SensorsManager(
                 SensorManager.SENSOR_DELAY_UI
             )
         } else {
-            Log.e("sensors", "No step sensor available on this device!")
+            logger(LoggerType.Error, "No step sensor available on this device!")
         }
     }
 

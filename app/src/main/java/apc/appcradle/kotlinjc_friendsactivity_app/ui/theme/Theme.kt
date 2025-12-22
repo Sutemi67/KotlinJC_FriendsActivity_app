@@ -48,8 +48,6 @@ private val LightColorScheme = lightColorScheme(
 @Composable
 fun KotlinJC_FriendsActivity_appTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
-    windowSizeClass: WindowSizeClass? = null,
-    // Dynamic color is available on Android 12+
     dynamicColor: Boolean = true,
     content: @Composable () -> Unit
 ) {

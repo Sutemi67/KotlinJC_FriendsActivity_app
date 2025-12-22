@@ -1,14 +1,15 @@
 package apc.appcradle.kotlinjc_friendsactivity_app.domain.model
 
-import apc.appcradle.kotlinjc_friendsactivity_app.utils.USER_STEP_DEFAULT
+import androidx.work.WorkInfo
 import apc.appcradle.kotlinjc_friendsactivity_app.ui.screens.Destinations
+import apc.appcradle.kotlinjc_friendsactivity_app.utils.USER_STEP_DEFAULT
 
 data class AppState(
 
     //Login and Permissions
     val isPermissionsGet: Boolean = false,
     val isServiceRunning: Boolean = false,
-    val isServiceEnabled: Boolean = false,
+    val isServiceEnabledByUser: Boolean = false,
     val isLoggedIn: Boolean = false,
     val userLogin: String? = null,
 
@@ -27,4 +28,7 @@ data class AppState(
 
     //LoadingState
     val isLoading: Boolean = false,
+
+    //Trancate worker status
+    val trancateWorkerStatus: WorkInfo? = null
 )

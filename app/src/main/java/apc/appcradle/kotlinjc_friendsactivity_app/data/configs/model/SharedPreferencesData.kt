@@ -1,4 +1,4 @@
-package apc.appcradle.kotlinjc_friendsactivity_app.data
+package apc.appcradle.kotlinjc_friendsactivity_app.data.configs.model
 
 import apc.appcradle.kotlinjc_friendsactivity_app.domain.model.AppThemes
 

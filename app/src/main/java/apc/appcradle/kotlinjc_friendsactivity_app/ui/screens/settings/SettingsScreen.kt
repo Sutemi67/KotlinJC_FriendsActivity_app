@@ -1,6 +1,5 @@
 package apc.appcradle.kotlinjc_friendsactivity_app.ui.screens.settings
 
-import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -19,7 +18,6 @@ import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -35,6 +33,7 @@ import androidx.compose.ui.unit.dp
 import apc.appcradle.kotlinjc_friendsactivity_app.BuildConfig
 import apc.appcradle.kotlinjc_friendsactivity_app.LocalAppTypography
 import apc.appcradle.kotlinjc_friendsactivity_app.R
+import apc.appcradle.kotlinjc_friendsactivity_app.domain.model.AppState
 import apc.appcradle.kotlinjc_friendsactivity_app.domain.model.AppThemes
 import apc.appcradle.kotlinjc_friendsactivity_app.ui.app_components.AppComponents.AppText
 import apc.appcradle.kotlinjc_friendsactivity_app.ui.app_components.AppDialogs
@@ -45,27 +44,17 @@ import apc.appcradle.kotlinjc_friendsactivity_app.ui.theme.MediumText
 
 @Composable
 fun SettingsScreen(
-    userLogin: String?,
-    userStepLength: Double,
-    userScale: Float,
     onLogoutClick: () -> Unit,
     onStepDistanceClick: (Double) -> Unit,
-    onNicknameClick: (String, String) -> Unit = { s1, s2 -> },
+    onNicknameClick: (String, String) -> Unit,
     onScaleClick: (Float) -> Unit,
-    currentTheme: AppThemes,
     onThemeClick: (AppThemes) -> Unit,
+    state: AppState,
 ) {
     var isThemeDialogVisible by remember { mutableStateOf(false) }
     var isStepDialogVisible by remember { mutableStateOf(false) }
     var isScaleDialogVisible by remember { mutableStateOf(false) }
     var isLoginDialogVisible by remember { mutableStateOf(false) }
-
-    LaunchedEffect(currentTheme, userLogin) {
-        Log.i(
-            "theme",
-            "settings screen -> painted to: $currentTheme, $userLogin"
-        )
-    }
 
     Column(
         modifier = Modifier
@@ -93,7 +82,7 @@ fun SettingsScreen(
                 ) {
                     AppText(
                         modifier = Modifier.padding(vertical = 10.dp, horizontal = 20.dp),
-                        text = userLogin ?: "-",
+                        text = state.userLogin ?: "-",
                     )
                 }
             }
@@ -124,7 +113,7 @@ fun SettingsScreen(
                         modifier = Modifier.padding(vertical = 10.dp, horizontal = 20.dp),
                         text = stringResource(
                             R.string.settings_screen_your_step_in_meters,
-                            userStepLength
+                            state.userStepLength
                         ),
                         singleLine = true
                     )
@@ -155,7 +144,7 @@ fun SettingsScreen(
                 ) {
                     AppText(
                         modifier = Modifier.padding(vertical = 10.dp, horizontal = 20.dp),
-                        text = when (userScale) {
+                        text = when (state.userScale) {
                             0.5f -> "50%"
                             1.0f -> "100%"
                             1.5f -> "150%"
@@ -218,7 +207,7 @@ fun SettingsScreen(
 
     if (isThemeDialogVisible)
         AppDialogs.ThemeDialog(
-            currentThemes = currentTheme,
+            currentThemes = state.currentTheme,
             onConfirmClick = { newTheme ->
                 onThemeClick(newTheme)
                 isThemeDialogVisible = false
@@ -232,14 +221,14 @@ fun SettingsScreen(
         )
     if (isScaleDialogVisible)
         AppDialogs.ScaleDialog(
-            initialValue = userScale,
+            initialValue = state.userScale,
             onConfirm = { newValue ->
                 onScaleClick(newValue)
             },
             onDismiss = { isScaleDialogVisible = false }
         )
     if (isLoginDialogVisible)
-        when (userLogin) {
+        when (state.userLogin) {
             null -> {
                 Toast.makeText(
                     LocalContext.current,
@@ -250,7 +239,7 @@ fun SettingsScreen(
 
             else -> {
                 AppDialogs.LoginChangeDialog(
-                    onConfirmClick = { newLogin -> onNicknameClick(userLogin, newLogin) },
+                    onConfirmClick = { newLogin -> onNicknameClick(state.userLogin, newLogin) },
                     onDismiss = { isLoginDialogVisible = false }
                 )
             }
@@ -266,14 +255,12 @@ private fun Preview() {
             LocalAppTypography provides CompactText
         ) {
             SettingsScreen(
-                userLogin = "Alexx",
                 onLogoutClick = {},
-                userStepLength = 032.3,
                 onStepDistanceClick = {},
-                onThemeClick = {},
-                currentTheme = AppThemes.Light,
-                userScale = 1f,
+                onNicknameClick = { _, _ -> {} },
                 onScaleClick = {},
+                onThemeClick = {},
+                state = AppState()
             )
         }
     }
@@ -288,14 +275,13 @@ private fun Preview2() {
             LocalAppTypography provides MediumText
         ) {
             SettingsScreen(
-                userLogin = null,
                 onLogoutClick = {},
-                userStepLength = 650.3,
                 onStepDistanceClick = {},
-                onThemeClick = {},
-                currentTheme = AppThemes.Light,
-                userScale = 1f,
+                onNicknameClick = { _, _ -> {} },
                 onScaleClick = {},
+                onThemeClick = {},
+                state = AppState()
+
             )
         }
     }
@@ -310,14 +296,12 @@ private fun Preview3() {
             LocalAppTypography provides ExpandedText
         ) {
             SettingsScreen(
-                userLogin = "Alexx",
                 onLogoutClick = {},
-                userStepLength = 330.3,
                 onStepDistanceClick = {},
-                onThemeClick = {},
-                currentTheme = AppThemes.Light,
-                userScale = 1f,
+                onNicknameClick = { _, _ -> {} },
                 onScaleClick = {},
+                onThemeClick = {},
+                state = AppState()
             )
         }
     }

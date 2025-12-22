@@ -19,12 +19,12 @@ android {
 
     defaultConfig {
         applicationId = "apc.appcradle.kotlinjc_friendsactivity_app"
-        minSdk = 24
+        minSdk = 26
         targetSdk = 36
 
-        // изменение от 08 декабря 2025
-        versionCode = 6
-        versionName = "1.0.5"
+        // изменение от 20 декабря 2025
+        versionCode = 7
+        versionName = "1.1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
