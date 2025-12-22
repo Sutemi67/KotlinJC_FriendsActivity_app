@@ -1,9 +1,7 @@
 package apc.appcradle.kotlinjc_friendsactivity_app.ui.screens
 
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Icon
-import androidx.compose.material3.NavigationBar
-import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
@@ -16,7 +14,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
@@ -24,7 +21,8 @@ import androidx.work.WorkInfo
 import apc.appcradle.kotlinjc_friendsactivity_app.MainViewModel
 import apc.appcradle.kotlinjc_friendsactivity_app.data.steps_data.AppSensorsManager
 import apc.appcradle.kotlinjc_friendsactivity_app.domain.model.AppState
-import apc.appcradle.kotlinjc_friendsactivity_app.domain.model.AppTextStyles
+import apc.appcradle.kotlinjc_friendsactivity_app.ui.app_components.AppBackgroundImage
+import apc.appcradle.kotlinjc_friendsactivity_app.ui.app_components.AppBottomNavBar
 import apc.appcradle.kotlinjc_friendsactivity_app.ui.app_components.AppComponents
 import apc.appcradle.kotlinjc_friendsactivity_app.ui.screens.auth.authScreen
 import apc.appcradle.kotlinjc_friendsactivity_app.ui.screens.auth.registration.nav.registerScreen
@@ -106,70 +104,65 @@ fun NavigationHost(
                     )
             },
             bottomBar = {
-                if (navBackStackEntry?.destination?.route != Destinations.AUTH.route &&
-                    navBackStackEntry?.destination?.route != Destinations.REGISTER.route
+                AppBottomNavBar(
+                    navBackStackEntry = navBackStackEntry,
+                    navController = navController,
+                    navDestinations = noAuthDestinations
                 )
-                    NavigationBar {
-                        noAuthDestinations.forEach { item ->
-                            NavigationBarItem(
-                                icon = {
-                                    Icon(
-                                        imageVector = if (navBackStackEntry?.destination?.route == item.route) item.iconSelected else item.iconUnselected,
-                                        contentDescription = stringResource(item.label),
-                                    )
-                                },
-                                label = {
-                                    AppComponents.AppText(
-                                        stringResource(item.label),
-                                        appTextStyle = AppTextStyles.Body
-                                    )
-                                },
-                                selected = navBackStackEntry?.destination?.route == item.route,
-                                onClick = { item.navigateOnClick(navController) },
-                            )
-                        }
-                    }
             }
         ) { contentPadding ->
             val startDestination =
                 if (state.isLoggedIn) Destinations.MAIN.route else Destinations.AUTH.route
-            NavHost(
-                modifier = Modifier.padding(contentPadding),
-                navController = navController,
-                startDestination = startDestination
-            ) {
-                authScreen(
-                    toRegisterScreen = { navController.toRegisterScreen() },
-                    transferState = transferState,
-                    sendLoginData = { login, password -> viewModel.sendLoginData(login, password) },
-                    onOfflineUseClick = { viewModel.goOfflineUse() }
-                )
-                registerScreen(
-                    toMainScreen = { navController.toMainScreen() }
-                )
-                mainScreen(
-                    viewModel = viewModel
-                )
-                ratingsScreen(
-                    login = state.userLogin,
-                    syncFun = {
-                        val stepsNow = sensorManager.allSteps.value
-                        val weeklyNow = sensorManager.weeklySteps.value
-                        viewModel.syncData(
-                            login = state.userLogin!!,
-                            steps = stepsNow,
-                            weeklySteps = weeklyNow
-                        )
-                    }
-                )
-                settingsScreen(
-                    state = state,
-                    onLogoutClick = { viewModel.logout() },
-                    onThemeClick = { viewModel.changeTheme(it) },
-                    onNickNameClick = { login, newLogin -> viewModel.changeLogin(login, newLogin) },
-                    onStepLengthClick = { viewModel.changeStepLength(it) },
-                    onScaleClick = { viewModel.changeScale(it) }
-                )
+            Box {
+                AppBackgroundImage()
+                NavHost(
+                    modifier = Modifier.padding(contentPadding),
+                    navController = navController,
+                    startDestination = startDestination
+                ) {
+                    authScreen(
+                        toRegisterScreen = { navController.toRegisterScreen() },
+                        transferState = transferState,
+                        sendLoginData = { login, password ->
+                            viewModel.sendLoginData(
+                                login,
+                                password
+                            )
+                        },
+                        onOfflineUseClick = { viewModel.goOfflineUse() }
+                    )
+                    registerScreen(
+                        toMainScreen = { navController.toMainScreen() }
+                    )
+                    mainScreen(
+                        viewModel = viewModel
+                    )
+                    ratingsScreen(
+                        login = state.userLogin,
+                        syncFun = {
+                            val stepsNow = sensorManager.allSteps.value
+                            val weeklyNow = sensorManager.weeklySteps.value
+                            viewModel.syncData(
+                                login = state.userLogin!!,
+                                steps = stepsNow,
+                                weeklySteps = weeklyNow
+                            )
+                        }
+                    )
+                    settingsScreen(
+                        state = state,
+                        onLogoutClick = { viewModel.logout() },
+                        onThemeClick = { viewModel.changeTheme(it) },
+                        onNickNameClick = { login, newLogin ->
+                            viewModel.changeLogin(
+                                login,
+                                newLogin
+                            )
+                        },
+                        onStepLengthClick = { viewModel.changeStepLength(it) },
+                        onScaleClick = { viewModel.changeScale(it) }
+                    )
+                }
             }
         }
     }

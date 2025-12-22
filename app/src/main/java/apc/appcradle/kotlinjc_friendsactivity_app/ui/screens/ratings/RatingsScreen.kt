@@ -18,14 +18,13 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import apc.appcradle.kotlinjc_friendsactivity_app.domain.model.network.PlayerActivityData
 import apc.appcradle.kotlinjc_friendsactivity_app.domain.model.network.PlayersListSyncData
 import apc.appcradle.kotlinjc_friendsactivity_app.ui.app_components.AppComponents.AppText
 import apc.appcradle.kotlinjc_friendsactivity_app.ui.theme.KotlinJC_FriendsActivity_appTheme
-import apc.appcradle.kotlinjc_friendsactivity_app.utils.LoggerType
-import apc.appcradle.kotlinjc_friendsactivity_app.utils.logger
 
 private enum class ScreenState {
     Loading, Error, Success
@@ -45,22 +44,14 @@ fun RatingsScreen(
 
     LaunchedEffect(Unit) {
         if (login != null) {
-            try {
-                val response = syncFun()
-                errorMessage = response.errorMessage
-                kmWeekly = response.summaryKm
-                leaderDifference = response.leaderDifferenceKm
-                list = response.playersList.filter { it.weeklySteps > 0 }
-                leader = response.leader
-                screen = ScreenState.Success
-            } catch (e: Exception) {
-                logger(LoggerType.Error, e.message ?: "Connection error")
-                errorMessage = "${e.message}"
-                screen = ScreenState.Error
-            }
+            val response = syncFun()
+            errorMessage = response.errorMessage
+            kmWeekly = response.summaryKm
+            leaderDifference = response.leaderDifferenceKm
+            list = response.playersList.filter { it.weeklySteps > 0 }
+            leader = response.leader
+            screen = if (response.errorMessage != null) ScreenState.Error else ScreenState.Success
         } else {
-            list = emptyList()
-            kmWeekly = 0.0
             screen = ScreenState.Success
         }
     }
@@ -88,7 +79,10 @@ fun RatingsScreen(
 
                 ScreenState.Error -> {
                     AppText(
-                        modifier = Modifier.padding(20.dp), color = Color.Red, text = errorMessage!!
+                        modifier = Modifier.padding(20.dp),
+                        color = Color.Red,
+                        textAlign = TextAlign.Center,
+                        text = errorMessage ?: "Error has occurred."
                     )
                 }
 

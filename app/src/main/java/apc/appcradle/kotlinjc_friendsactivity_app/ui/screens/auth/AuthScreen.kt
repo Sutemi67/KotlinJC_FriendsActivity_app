@@ -42,6 +42,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import apc.appcradle.kotlinjc_friendsactivity_app.R
 import apc.appcradle.kotlinjc_friendsactivity_app.domain.model.network.DataTransferState
+import apc.appcradle.kotlinjc_friendsactivity_app.ui.app_components.AppBackgroundImage
 import apc.appcradle.kotlinjc_friendsactivity_app.ui.app_components.AppComponents
 import apc.appcradle.kotlinjc_friendsactivity_app.ui.app_components.AppComponents.AppText
 import apc.appcradle.kotlinjc_friendsactivity_app.ui.theme.KotlinJC_FriendsActivity_appTheme
@@ -84,8 +85,9 @@ fun AuthScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues),
-            contentAlignment = Alignment.Center
+            contentAlignment = Alignment.Center,
         ) {
+            AppBackgroundImage()
             Column(
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally
@@ -179,7 +181,7 @@ fun AuthScreen(
 private fun Preview() {
     KotlinJC_FriendsActivity_appTheme {
         AuthScreen(
-            sendLoginData = { log, pass -> {} },
+            sendLoginData = { _, _ -> run {} },
             onRegisterClick = {},
             transferState = DataTransferState(),
             onOfflineUseClick = {}
