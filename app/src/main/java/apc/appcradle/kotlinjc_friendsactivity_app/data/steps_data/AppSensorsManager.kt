@@ -19,6 +19,7 @@ class AppSensorsManager(
     context: Context,
     private val statsRepository: StatsRepository
 ) : SensorEventListener {
+    private val scope = CoroutineScope(Dispatchers.IO)
 
     private val sensorManager = context.getSystemService(Context.SENSOR_SERVICE) as SensorManager
     private val stepCounterSensor: Sensor? =
@@ -84,15 +85,15 @@ class AppSensorsManager(
 
     private fun periodicalSaving() {
         if (!isSavingInProgress) {
-            CoroutineScope(Dispatchers.IO).launch {
+            scope.launch {
                 isSavingInProgress = true
-                delay(60000)
                 statsRepository.saveAllSteps(
                     Steps(
                         allSteps = allSteps.value,
                         weeklySteps = weeklySteps.value
                     )
                 )
+                delay(60000)
                 isSavingInProgress = false
             }
         }

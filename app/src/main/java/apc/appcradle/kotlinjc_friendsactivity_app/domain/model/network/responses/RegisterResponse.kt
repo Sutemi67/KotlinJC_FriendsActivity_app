@@ -2,7 +2,7 @@ package apc.appcradle.kotlinjc_friendsactivity_app.domain.model.network.response
 
 import kotlinx.serialization.Serializable
 
-@Serializable
-data class RegisterResponse(
-    val token: String
-)
+//@Serializable
+//data class RegisterResponse(
+//    val token: String
+//)

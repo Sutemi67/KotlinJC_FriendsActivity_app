@@ -4,11 +4,12 @@ import android.content.Context
 import android.content.SharedPreferences
 import androidx.work.WorkManager
 import apc.appcradle.kotlinjc_friendsactivity_app.MainViewModel
+import apc.appcradle.kotlinjc_friendsactivity_app.data.configs.SettingsRepositoryImpl
+import apc.appcradle.kotlinjc_friendsactivity_app.data.configs.TokenRepositoryImpl
+import apc.appcradle.kotlinjc_friendsactivity_app.data.network.NetworkClient
+import apc.appcradle.kotlinjc_friendsactivity_app.data.network.NetworkUtilsFunctions
 import apc.appcradle.kotlinjc_friendsactivity_app.data.steps_data.AppSensorsManager
 import apc.appcradle.kotlinjc_friendsactivity_app.data.steps_data.StatsRepository
-import apc.appcradle.kotlinjc_friendsactivity_app.data.configs.TokenRepositoryImpl
-import apc.appcradle.kotlinjc_friendsactivity_app.data.configs.SettingsRepositoryImpl
-import apc.appcradle.kotlinjc_friendsactivity_app.data.network.NetworkClient
 import apc.appcradle.kotlinjc_friendsactivity_app.domain.SettingsRepository
 import apc.appcradle.kotlinjc_friendsactivity_app.domain.TokenRepository
 import apc.appcradle.kotlinjc_friendsactivity_app.services.PermissionManager
@@ -34,6 +35,7 @@ val koinAppModule = module {
     singleOf(::PermissionManager)
     singleOf(::NetworkClient)
     singleOf(::StatsRepository)
+    singleOf(::NetworkUtilsFunctions)
 
     viewModelOf(::MainViewModel)
 

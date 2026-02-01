@@ -6,8 +6,8 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
-import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.getValue
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -18,20 +18,20 @@ import apc.appcradle.kotlinjc_friendsactivity_app.ui.theme.ExpandedText
 import apc.appcradle.kotlinjc_friendsactivity_app.ui.theme.KotlinJC_FriendsActivity_appTheme
 import apc.appcradle.kotlinjc_friendsactivity_app.ui.theme.MediumText
 import apc.appcradle.kotlinjc_friendsactivity_app.ui.theme.MyTypography
+import apc.appcradle.kotlinjc_friendsactivity_app.utils.LoggerType
+import apc.appcradle.kotlinjc_friendsactivity_app.utils.logger
 import org.koin.androidx.compose.koinViewModel
 
 val LocalAppTypography = compositionLocalOf<MyTypography> { error("no typography provided") }
 
 class MainActivity : ComponentActivity() {
-    @OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
-//        val splashScreen = installSplashScreen()
 
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            val viewModel = koinViewModel<MainViewModel>()
-            val state by viewModel.state.collectAsStateWithLifecycle()
+            val viewModel: MainViewModel = koinViewModel()
+            val state by viewModel.state.collectAsState()
 
             val appTypography = when (state.userScale) {
                 0.5f -> CompactText
@@ -52,6 +52,7 @@ class MainActivity : ComponentActivity() {
                 CompositionLocalProvider(
                     LocalAppTypography provides appTypography
                 ) {
+                    logger(LoggerType.Info, "navhost recomposed in activity")
                     NavigationHost(viewModel, state)
                 }
             }

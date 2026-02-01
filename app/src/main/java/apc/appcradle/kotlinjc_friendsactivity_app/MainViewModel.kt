@@ -162,7 +162,7 @@ class MainViewModel(
             _transferState.update { it.copy(isLoading = true) }
             val result = networkClient.sendLoginInfo(login, password)
             if (result.isSuccessful == true && result.errorMessage == null) {
-                Log.i("dataTransfer", "viewModel transfer - OK")
+
                 _transferState.update {
                     it.copy(
                         isLoading = false,
@@ -176,6 +176,7 @@ class MainViewModel(
                         userLogin = login
                     )
                 }
+
             } else {
                 _transferState.update {
                     it.copy(
@@ -194,22 +195,21 @@ class MainViewModel(
             _transferState.update { it.copy(isLoading = true) }
             val result = networkClient.sendRegistrationInfo(login, password)
             if (result.isSuccessful == true && result.errorMessage == null) {
-                _transferState.update {
-                    it.copy(
-                        isLoading = false,
-                        isSuccessful = true,
-                        errorMessage = result.errorMessage
-                    )
-                }
                 _state.update {
                     it.copy(
                         isLoggedIn = true,
                         userLogin = login
                     )
                 }
+                _transferState.update {
+                    it.copy(
+                        isLoading = false,
+                        isSuccessful = true
+                    )
+                }
+                logger(LoggerType.Debug, "success, ${state.value}")
             } else {
-                Log.e("dataTransfer", "viewModel transfer error: ${result.errorMessage}")
-
+                logger(LoggerType.Error, "viewModel transfer error: ${result.errorMessage}")
                 _transferState.update {
                     it.copy(
                         isLoading = false,
@@ -217,6 +217,7 @@ class MainViewModel(
                         errorMessage = result.errorMessage
                     )
                 }
+                logger(LoggerType.Info, state.value.toString())
             }
         }
     }
