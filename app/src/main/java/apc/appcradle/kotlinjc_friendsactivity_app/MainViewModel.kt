@@ -149,29 +149,29 @@ class MainViewModel(
     }
 
     private fun checkPermanentAuth() {
-        val token = tokenRepositoryImpl.getToken()
-        when (token) {
-            "offline" -> {
-                _state.update {
-                    it.copy(
-                        isLoggedIn = true,
-                        userLogin = null
-                    )
+        viewModelScope.launch {
+            val token = tokenRepositoryImpl.getToken()
+            when (token) {
+                "offline" -> {
+                    _state.update {
+                        it.copy(
+                            isLoggedIn = true,
+                            userLogin = null
+                        )
+                    }
                 }
-            }
 
-            null -> {
-                Log.d("dataTransfer", "Permanent token is not valid...")
-            }
-
-            else -> {
-                val login = tokenRepositoryImpl.getLogin()
-                _state.update {
-                    it.copy(
-                        isLoggedIn = true
-                    )
+                null -> {
+                    Log.d("dataTransfer", "Permanent token is not valid...")
                 }
-                Log.d("dataTransfer", "Token is valid. Loading main screen for login: $login")
+
+                else -> {
+                    val login = tokenRepositoryImpl.getLogin()
+                    _state.update {
+                        it.copy(isLoggedIn = true)
+                    }
+                    Log.d("dataTransfer", "Token is valid. Loading main screen for login: $login")
+                }
             }
         }
     }

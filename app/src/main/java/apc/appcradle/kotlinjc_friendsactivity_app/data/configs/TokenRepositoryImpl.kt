@@ -41,7 +41,8 @@ class TokenRepositoryImpl(
 
     override fun getLogin(): String? {
         val login = sharedPreferences.getString(LOGIN_ID, null)
-        updateLogin(login)
+        if (login != _loginFlow.value)
+            updateLogin(login)
         return login
     }
 

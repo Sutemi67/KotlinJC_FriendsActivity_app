@@ -45,11 +45,15 @@ class AppSensorsManager(
     private var isSavingInProgress = false
     private var lastTotalCounterSteps: Int? = null
 
+    @Volatile
+    private var isDataLoaded = false
+
     init {
         scope.launch {
-            loggedLoadingSteps()
             tokenRepository.loginFlow.collect { login ->
                 actualLogin = login
+                logger(LoggerType.Info, "login updated: $login")
+                if (isDataLoaded) loggedLoadingSteps()
             }
         }
     }
@@ -118,11 +122,20 @@ class AppSensorsManager(
     }
 
     private suspend fun loggedLoadingSteps() {
+        isDataLoaded = false
+
         val loadedSteps = statsRepository.fetchSteps(actualLogin)
         _allSteps.value = loadedSteps.allSteps
         _weeklySteps.value = loadedSteps.weeklySteps
         stepsInitialWeekly = loadedSteps.weeklySteps
         currentSteps = loadedSteps.weeklySteps
+
+        isFirstStart = true
+        logger(
+            LoggerType.Debug,
+            "DATA LOADED: initialsteps:$stepsInitialWeekly"
+        )
+        isDataLoaded = true
     }
 
     suspend fun refreshSteps() = loggedLoadingSteps()
@@ -137,21 +150,29 @@ class AppSensorsManager(
 
     override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) {}
     override fun onSensorChanged(event: SensorEvent?) {
+        if (!isDataLoaded) return
         event?.let { sensorEvent ->
             when (sensorEvent.sensor.type) {
                 Sensor.TYPE_STEP_COUNTER -> {
                     val totalSensorSteps = sensorEvent.values[0].toInt()
-                    if (isFirstStart && totalSensorSteps > 0) {
+
+                    if (isFirstStart) {
+                        // totalSensorSteps (например 5000) - stepsInitialWeekly (например 100)
+                        // stepsWithoutChecking будет 4900.
                         stepsWithoutChecking = totalSensorSteps - stepsInitialWeekly
-                        isFirstStart = false
                         lastTotalCounterSteps = totalSensorSteps
+                        isFirstStart = false
                     }
-                    if (!isFirstStart) {
+                    // Используем else, чтобы не выполнять этот блок в тот же такт, что и инициализацию
+                    // (хотя это не критично, но логичнее)
+                    else {
                         currentSteps = totalSensorSteps - stepsWithoutChecking
                         _weeklySteps.value = currentSteps
+
                         val previous = lastTotalCounterSteps ?: totalSensorSteps
                         val delta = (totalSensorSteps - previous).coerceAtLeast(0)
                         lastTotalCounterSteps = totalSensorSteps
+
                         if (delta > 0) {
                             _allSteps.value += delta
                             periodicalSaving()
