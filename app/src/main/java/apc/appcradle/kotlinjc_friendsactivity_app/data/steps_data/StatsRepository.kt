@@ -6,18 +6,21 @@ import androidx.core.content.edit
 import androidx.work.ExistingWorkPolicy
 import androidx.work.WorkManager
 import apc.appcradle.kotlinjc_friendsactivity_app.data.network.NetworkClient
-import apc.appcradle.kotlinjc_friendsactivity_app.domain.model.network.PlayerActivityData
-import apc.appcradle.kotlinjc_friendsactivity_app.domain.model.network.PlayersListSyncData
-import apc.appcradle.kotlinjc_friendsactivity_app.domain.model.network.Steps
+import apc.appcradle.kotlinjc_friendsactivity_app.data.network.model.PlayerActivityData
+import apc.appcradle.kotlinjc_friendsactivity_app.data.network.model.PlayersListSyncData
+import apc.appcradle.kotlinjc_friendsactivity_app.data.network.model.Steps
 import apc.appcradle.kotlinjc_friendsactivity_app.services.workers.trancateStepsRequest
+import apc.appcradle.kotlinjc_friendsactivity_app.utils.LoggerType
 import apc.appcradle.kotlinjc_friendsactivity_app.utils.TRANCATE_WORKER_TAG
 import apc.appcradle.kotlinjc_friendsactivity_app.utils.USER_STEP_DEFAULT
+import apc.appcradle.kotlinjc_friendsactivity_app.utils.logger
 import apc.appcradle.kotlinjc_friendsactivity_app.utils.whenNextMonday
+import kotlin.math.max
 
 class StatsRepository(
     private val networkClient: NetworkClient,
     private val workManager: WorkManager,
-    private val sharedPreferences: SharedPreferences
+    private val sharedPreferences: SharedPreferences,
 ) {
     private var playersList = mutableListOf<PlayerActivityData>()
     private var isFirstAppStart = true
@@ -87,17 +90,34 @@ class StatsRepository(
         return diffKm
     }
 
-    fun saveAllSteps(steps: Steps) {
+    fun saveAllSteps(steps: Steps, login: String?) {
         sharedPreferences.edit {
-            putInt(STEPS_ID, steps.allSteps)
-            putInt(STEPS_WEEKLY_ID, steps.weeklySteps)
+            putInt(generateStepsIdByLogin(login), steps.allSteps)
+            putInt(generateWeeklyStepsIdByLogin(login), steps.weeklySteps)
         }
     }
 
-    fun loadSteps(): Steps {
+    suspend fun fetchSteps(login: String?): Steps {
+        if (login != null) {
+            val serverSteps = networkClient.getUserStepsData(login)
+            val localSteps = getLocalSteps(login)
+            logger(LoggerType.Debug, "steps updated for $login, $serverSteps, $localSteps")
+            return Steps(
+                allSteps = max(serverSteps.steps ?: localSteps.allSteps, localSteps.allSteps),
+                weeklySteps = max(
+                    serverSteps.weeklySteps ?: localSteps.weeklySteps, localSteps.weeklySteps
+                )
+            )
+        } else {
+            logger(LoggerType.Error, "steps updated in NULL login")
+            return getLocalSteps(login)
+        }
+    }
+
+    fun getLocalSteps(login: String?): Steps {
         return Steps(
-            allSteps = sharedPreferences.getInt(STEPS_ID, 0),
-            weeklySteps = sharedPreferences.getInt(STEPS_WEEKLY_ID, 0)
+            allSteps = sharedPreferences.getInt(generateStepsIdByLogin(login), 0),
+            weeklySteps = sharedPreferences.getInt(generateWeeklyStepsIdByLogin(login), 0)
         )
     }
 
@@ -114,6 +134,22 @@ class StatsRepository(
         sharedPreferences.edit {
             putInt(STEPS_WEEKLY_ID, 0)
             putBoolean(FIRST_START_ID, true)
+        }
+    }
+
+    private fun generateStepsIdByLogin(login: String?): String? {
+        return if (login == null) {
+            "offline_user_steps"
+        } else {
+            "${login}_user_steps"
+        }
+    }
+
+    private fun generateWeeklyStepsIdByLogin(login: String?): String? {
+        return if (login == null) {
+            "offline_user__weekly_steps"
+        } else {
+            "${login}_user_weekly_steps"
         }
     }
 

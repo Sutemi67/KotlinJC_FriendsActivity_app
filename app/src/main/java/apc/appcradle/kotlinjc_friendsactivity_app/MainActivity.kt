@@ -5,9 +5,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.isSystemInDarkTheme
-import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
 import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.getValue
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -21,6 +19,9 @@ import apc.appcradle.kotlinjc_friendsactivity_app.ui.theme.MyTypography
 import apc.appcradle.kotlinjc_friendsactivity_app.utils.LoggerType
 import apc.appcradle.kotlinjc_friendsactivity_app.utils.logger
 import org.koin.androidx.compose.koinViewModel
+import java.lang.ref.PhantomReference
+import java.lang.ref.SoftReference
+import java.lang.ref.WeakReference
 
 val LocalAppTypography = compositionLocalOf<MyTypography> { error("no typography provided") }
 
@@ -31,7 +32,7 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             val viewModel: MainViewModel = koinViewModel()
-            val state by viewModel.state.collectAsState()
+            val state by viewModel.state.collectAsStateWithLifecycle()
 
             val appTypography = when (state.userScale) {
                 0.5f -> CompactText

@@ -1,6 +1,6 @@
-package apc.appcradle.kotlinjc_friendsactivity_app.domain.model.network.responses
+package apc.appcradle.kotlinjc_friendsactivity_app.data.network.model
 
-import apc.appcradle.kotlinjc_friendsactivity_app.domain.model.network.requests.Requests
+import io.ktor.http.HttpStatusCode
 import kotlinx.serialization.Serializable
 
 sealed interface Responses {
@@ -27,4 +27,10 @@ sealed interface Responses {
         val weeklySteps: Int? = null,
         val errorMessage: String? = null
     ) : Responses
+
+    @Serializable
+    data class LoginChangeResponse(
+        val message: String
+    ) : Responses
+
 }

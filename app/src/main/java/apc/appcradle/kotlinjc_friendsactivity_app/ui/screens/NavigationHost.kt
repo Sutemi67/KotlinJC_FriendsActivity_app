@@ -87,7 +87,7 @@ fun NavigationHost(
             }
         }
     }
-
+    LaunchedEffect(state.userLogin) { viewModel.refreshSteps() }
     CompositionLocalProvider(
         LocalSensorManager provides sensorManager,
     ) {

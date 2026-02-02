@@ -1,4 +1,4 @@
-package apc.appcradle.kotlinjc_friendsactivity_app.domain.model.network
+package apc.appcradle.kotlinjc_friendsactivity_app.data.network.model
 
 import androidx.compose.runtime.Immutable
 
@@ -6,5 +6,6 @@ import androidx.compose.runtime.Immutable
 data class DataTransferState(
     val isLoading: Boolean = false,
     val isSuccessful: Boolean? = null,
-    val errorMessage: String? = null
+    val errorMessage: String? = null,
+    val response: Responses? = null
 )

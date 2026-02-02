@@ -5,7 +5,8 @@ import android.hardware.Sensor
 import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
 import android.hardware.SensorManager
-import apc.appcradle.kotlinjc_friendsactivity_app.domain.model.network.Steps
+import apc.appcradle.kotlinjc_friendsactivity_app.data.configs.TokenRepositoryImpl
+import apc.appcradle.kotlinjc_friendsactivity_app.data.network.model.Steps
 import apc.appcradle.kotlinjc_friendsactivity_app.utils.LoggerType
 import apc.appcradle.kotlinjc_friendsactivity_app.utils.logger
 import kotlinx.coroutines.CoroutineScope
@@ -17,10 +18,11 @@ import kotlinx.coroutines.launch
 
 class AppSensorsManager(
     context: Context,
-    private val statsRepository: StatsRepository
+    private val statsRepository: StatsRepository,
+    private val tokenRepository: TokenRepositoryImpl
 ) : SensorEventListener {
     private val scope = CoroutineScope(Dispatchers.IO)
-
+    private var actualLogin: String? = null
     private val sensorManager = context.getSystemService(Context.SENSOR_SERVICE) as SensorManager
     private val stepCounterSensor: Sensor? =
         sensorManager.getDefaultSensor(Sensor.TYPE_STEP_COUNTER)
@@ -44,7 +46,12 @@ class AppSensorsManager(
     private var lastTotalCounterSteps: Int? = null
 
     init {
-        loadSteps()
+        scope.launch {
+            loggedLoadingSteps()
+            tokenRepository.loginFlow.collect { login ->
+                actualLogin = login
+            }
+        }
     }
 
     fun registerSensors() {
@@ -76,10 +83,11 @@ class AppSensorsManager(
             sensorManager.unregisterListener(this, sensor)
         }
         statsRepository.saveAllSteps(
-            Steps(
+            steps = Steps(
                 allSteps = allSteps.value,
                 weeklySteps = weeklySteps.value
-            )
+            ),
+            login = actualLogin
         )
     }
 
@@ -88,10 +96,11 @@ class AppSensorsManager(
             scope.launch {
                 isSavingInProgress = true
                 statsRepository.saveAllSteps(
-                    Steps(
+                    steps = Steps(
                         allSteps = allSteps.value,
                         weeklySteps = weeklySteps.value
-                    )
+                    ),
+                    login = actualLogin
                 )
                 delay(60000)
                 isSavingInProgress = false
@@ -105,11 +114,21 @@ class AppSensorsManager(
         stepsWithoutChecking = 0
         isFirstStart = true
         lastTotalCounterSteps = null
-        loadSteps()
+        truncateLoadingSteps()
     }
 
-    private fun loadSteps() {
-        val loadedSteps = statsRepository.loadSteps()
+    private suspend fun loggedLoadingSteps() {
+        val loadedSteps = statsRepository.fetchSteps(actualLogin)
+        _allSteps.value = loadedSteps.allSteps
+        _weeklySteps.value = loadedSteps.weeklySteps
+        stepsInitialWeekly = loadedSteps.weeklySteps
+        currentSteps = loadedSteps.weeklySteps
+    }
+
+    suspend fun refreshSteps() = loggedLoadingSteps()
+
+    private fun truncateLoadingSteps() {
+        val loadedSteps = statsRepository.getLocalSteps(actualLogin)
         _allSteps.value = loadedSteps.allSteps
         _weeklySteps.value = loadedSteps.weeklySteps
         stepsInitialWeekly = loadedSteps.weeklySteps
