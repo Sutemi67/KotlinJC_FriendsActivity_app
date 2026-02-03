@@ -12,7 +12,7 @@ class TokenRepositoryImpl(
     private val sharedPreferences: SharedPreferences
 ) : TokenRepository {
 
-    private val _loginFlow = MutableStateFlow<String?>(null)
+    private val _loginFlow = MutableStateFlow<String?>(getLogin())
     val loginFlow: StateFlow<String?> = _loginFlow.asStateFlow()
 
     private fun updateLogin(login: String?) {
@@ -41,8 +41,8 @@ class TokenRepositoryImpl(
 
     override fun getLogin(): String? {
         val login = sharedPreferences.getString(LOGIN_ID, null)
-        if (login != _loginFlow.value)
-            updateLogin(login)
+//        if (login != _loginFlow.value)
+//            updateLogin(login)
         return login
     }
 

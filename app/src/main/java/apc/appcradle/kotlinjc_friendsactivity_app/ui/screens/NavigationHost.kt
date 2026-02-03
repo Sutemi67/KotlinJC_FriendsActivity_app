@@ -51,6 +51,14 @@ fun NavigationHost(
     val isAuthScreen =
         currentRoute == Destinations.AUTH.route || currentRoute == Destinations.REGISTER.route
 
+    val bottomDestinations: List<Destinations> = remember(state.userLogin) {
+        if (state.userLogin == null) {
+            Destinations.offlineDestinations
+        } else {
+            Destinations.noAuthDestinations
+        }
+    }
+
     val sensorManager: AppSensorsManager = koinInject<AppSensorsManager>()
     val transferState = viewModel.transferState.collectAsState().value
 
@@ -109,9 +117,7 @@ fun NavigationHost(
                     AppBottomNavBar(
                         navBackStackEntry = navBackStackEntry,
                         navController = navController,
-                        navDestinations = Destinations.entries.filter {
-                            it != Destinations.AUTH && it != Destinations.REGISTER
-                        }
+                        navDestinations = bottomDestinations
                     )
             }
         ) { contentPadding ->

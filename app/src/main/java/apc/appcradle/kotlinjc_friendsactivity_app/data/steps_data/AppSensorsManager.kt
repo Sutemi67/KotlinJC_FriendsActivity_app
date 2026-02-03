@@ -14,7 +14,9 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
+import kotlin.time.Duration.Companion.seconds
 
 class AppSensorsManager(
     context: Context,
@@ -53,7 +55,7 @@ class AppSensorsManager(
             tokenRepository.loginFlow.collect { login ->
                 actualLogin = login
                 logger(LoggerType.Info, "login updated: $login")
-                if (isDataLoaded) loggedLoadingSteps()
+                loggedLoadingSteps()
             }
         }
     }
@@ -97,8 +99,8 @@ class AppSensorsManager(
 
     private fun periodicalSaving() {
         if (!isSavingInProgress) {
+            isSavingInProgress = true
             scope.launch {
-                isSavingInProgress = true
                 statsRepository.saveAllSteps(
                     steps = Steps(
                         allSteps = allSteps.value,
@@ -106,19 +108,24 @@ class AppSensorsManager(
                     ),
                     login = actualLogin
                 )
-                delay(60000)
+                delay(30.seconds)
                 isSavingInProgress = false
             }
         }
     }
 
-    fun trancate() {
-        statsRepository.trancate()
-        currentSteps = 0
-        stepsWithoutChecking = 0
-        isFirstStart = true
-        lastTotalCounterSteps = null
-        truncateLoadingSteps()
+    fun truncate() {
+        scope.launch {
+            // Ждем первое актуальное значение логина, прежде чем чистить
+            val currentLogin = tokenRepository.loginFlow.first()
+            statsRepository.truncate(currentLogin)
+//        statsRepository.truncate(actualLogin)
+            currentSteps = 0
+            stepsWithoutChecking = 0
+            isFirstStart = true
+            lastTotalCounterSteps = null
+            truncateLoadingSteps()
+        }
     }
 
     private suspend fun loggedLoadingSteps() {
@@ -131,10 +138,7 @@ class AppSensorsManager(
         currentSteps = loadedSteps.weeklySteps
 
         isFirstStart = true
-        logger(
-            LoggerType.Debug,
-            "DATA LOADED: initialsteps:$stepsInitialWeekly"
-        )
+
         isDataLoaded = true
     }
 
@@ -156,27 +160,51 @@ class AppSensorsManager(
                 Sensor.TYPE_STEP_COUNTER -> {
                     val totalSensorSteps = sensorEvent.values[0].toInt()
 
-                    if (isFirstStart) {
-                        // totalSensorSteps (например 5000) - stepsInitialWeekly (например 100)
-                        // stepsWithoutChecking будет 4900.
-                        stepsWithoutChecking = totalSensorSteps - stepsInitialWeekly
+//                    if (isFirstStart) {
+//                        stepsWithoutChecking = totalSensorSteps - stepsInitialWeekly
+//                        lastTotalCounterSteps = totalSensorSteps
+//                        isFirstStart = false
+//                    }
+//                    // Используем else, чтобы не выполнять этот блок в тот же такт, что и инициализацию
+//                    // (хотя это не критично, но логичнее)
+//                    else {
+//                        currentSteps = totalSensorSteps - stepsWithoutChecking
+//                        _weeklySteps.value = currentSteps
+//
+//                        val previous = lastTotalCounterSteps ?: totalSensorSteps
+//                        val delta = (totalSensorSteps - previous).coerceAtLeast(0)
+//                        lastTotalCounterSteps = totalSensorSteps
+//
+//                        if (delta > 0) {
+//                            _allSteps.value += delta
+//                            periodicalSaving()
+//                        }
+                    // 1. Проверка на перезагрузку устройства или первый запуск
+                    // Если текущее значение датчика меньше, чем то, что мы видели в последний раз,
+                    // значит счетчик обнулился системой.
+                    if (isFirstStart || (lastTotalCounterSteps != null && totalSensorSteps < lastTotalCounterSteps!!)) {
+
+                        // Пересчитываем оффсет:
+                        // Мы хотим, чтобы текущие недельные шаги остались прежними,
+                        // поэтому оффсет теперь равен новому значению датчика минус накопленные шаги.
+                        stepsWithoutChecking = totalSensorSteps - _weeklySteps.value
                         lastTotalCounterSteps = totalSensorSteps
                         isFirstStart = false
+                        return // Выходим, чтобы не считать шаги в этом цикле
                     }
-                    // Используем else, чтобы не выполнять этот блок в тот же такт, что и инициализацию
-                    // (хотя это не критично, но логичнее)
-                    else {
-                        currentSteps = totalSensorSteps - stepsWithoutChecking
+
+                    // 2. Расчет текущих шагов за неделю
+                    currentSteps = totalSensorSteps - stepsWithoutChecking
+
+                    // 3. Расчет дельты для общего счетчика (allSteps)
+                    val previous = lastTotalCounterSteps ?: totalSensorSteps
+                    val delta = (totalSensorSteps - previous).coerceAtLeast(0)
+
+                    if (delta > 0) {
                         _weeklySteps.value = currentSteps
-
-                        val previous = lastTotalCounterSteps ?: totalSensorSteps
-                        val delta = (totalSensorSteps - previous).coerceAtLeast(0)
+                        _allSteps.value += delta
                         lastTotalCounterSteps = totalSensorSteps
-
-                        if (delta > 0) {
-                            _allSteps.value += delta
-                            periodicalSaving()
-                        }
+                        periodicalSaving()
                     }
                 }
 
