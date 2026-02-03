@@ -25,6 +25,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import apc.appcradle.kotlinjc_friendsactivity_app.R
 import apc.appcradle.kotlinjc_friendsactivity_app.data.network.model.DataTransferState
+import apc.appcradle.kotlinjc_friendsactivity_app.ui.app_components.AppBackgroundImage
 import apc.appcradle.kotlinjc_friendsactivity_app.ui.app_components.AppComponents
 import apc.appcradle.kotlinjc_friendsactivity_app.ui.theme.KotlinJC_FriendsActivity_appTheme
 
@@ -46,9 +47,11 @@ fun RegistrationScreen(
     }
 
     Scaffold { paddingValues ->
+        AppBackgroundImage()
         Column(
             modifier = Modifier
                 .padding(paddingValues)
+                .padding(horizontal = 15.dp)
                 .fillMaxSize(),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
@@ -115,7 +118,7 @@ fun Preview() {
         RegistrationScreen(
             DataTransferState(),
             {},
-            { _, _ -> {} }
+            { _, _ -> run {} }
         )
     }
 }
