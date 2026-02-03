@@ -20,13 +20,14 @@ class TrancateWorker(
     private val appSensorsManager: AppSensorsManager by inject()
 
     override suspend fun doWork(): Result {
-        appSensorsManager.trancate()
+        appSensorsManager.truncate()
         return Result.success()
     }
 }
 
 fun trancateStepsRequest(delay: Long): OneTimeWorkRequest {
     return OneTimeWorkRequestBuilder<TrancateWorker>()
+//        .setInitialDelay(duration = 5, timeUnit = TimeUnit.MINUTES)
         .setInitialDelay(duration = delay, timeUnit = TimeUnit.MILLISECONDS)
         .addTag(TRANCATE_WORKER_TAG)
         .build()

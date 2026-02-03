@@ -1,22 +1,24 @@
 package apc.appcradle.kotlinjc_friendsactivity_app.ui.screens.auth.registration.nav
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import apc.appcradle.kotlinjc_friendsactivity_app.MainViewModel
+import apc.appcradle.kotlinjc_friendsactivity_app.data.network.model.DataTransferState
 import apc.appcradle.kotlinjc_friendsactivity_app.ui.screens.Destinations
 import apc.appcradle.kotlinjc_friendsactivity_app.ui.screens.auth.registration.RegistrationScreen
-import org.koin.androidx.compose.koinViewModel
 
 fun NavGraphBuilder.registerScreen(
+    viewModel: MainViewModel,
+    transferState: DataTransferState,
     toMainScreen: () -> Unit
 ) {
     composable(Destinations.REGISTER.route) {
         RegistrationRoute(
+            viewModel = viewModel,
+            transferState = transferState,
             toMainScreen = toMainScreen,
         )
     }
@@ -24,10 +26,10 @@ fun NavGraphBuilder.registerScreen(
 
 @Composable
 fun RegistrationRoute(
+    viewModel: MainViewModel,
+    transferState: DataTransferState,
     toMainScreen: () -> Unit,
 ) {
-    val viewModel: MainViewModel = koinViewModel()
-    val transferResult by viewModel.transferState.collectAsState()
     val sendRegisterCallback = remember(viewModel) {
         { login: String, password: String ->
             viewModel.sendRegisterData(
@@ -38,7 +40,7 @@ fun RegistrationRoute(
     }
 
     RegistrationScreen(
-        transferResult = transferResult,
+        transferResult = transferState,
         toMainScreen = toMainScreen,
         sendRegisterCallback = sendRegisterCallback
     )

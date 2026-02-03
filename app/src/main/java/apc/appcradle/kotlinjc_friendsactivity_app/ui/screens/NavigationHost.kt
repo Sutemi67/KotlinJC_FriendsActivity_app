@@ -31,7 +31,9 @@ import apc.appcradle.kotlinjc_friendsactivity_app.ui.screens.main.nav.mainScreen
 import apc.appcradle.kotlinjc_friendsactivity_app.ui.screens.main.nav.toMainScreen
 import apc.appcradle.kotlinjc_friendsactivity_app.ui.screens.ratings.nav.ratingsScreen
 import apc.appcradle.kotlinjc_friendsactivity_app.ui.screens.settings.nav.settingsScreen
+import apc.appcradle.kotlinjc_friendsactivity_app.utils.LoggerType
 import apc.appcradle.kotlinjc_friendsactivity_app.utils.formatDeadline
+import apc.appcradle.kotlinjc_friendsactivity_app.utils.logger
 import kotlinx.coroutines.launch
 import org.koin.compose.koinInject
 
@@ -45,12 +47,17 @@ fun NavigationHost(
 ) {
     val navController = rememberNavController()
     val navBackStackEntry by navController.currentBackStackEntryAsState()
-    val noAuthDestinations =
+    val currentRoute = navBackStackEntry?.destination?.route
+    val isAuthScreen =
+        currentRoute == Destinations.AUTH.route || currentRoute == Destinations.REGISTER.route
+
+    val bottomDestinations: List<Destinations> = remember(state.userLogin) {
         if (state.userLogin == null) {
-            Destinations.entries.filter { it != Destinations.AUTH && it != Destinations.REGISTER && it != Destinations.RATINGS }
+            Destinations.offlineDestinations
         } else {
-            Destinations.entries.filter { it != Destinations.AUTH && it != Destinations.REGISTER }
+            Destinations.noAuthDestinations
         }
+    }
 
     val sensorManager: AppSensorsManager = koinInject<AppSensorsManager>()
     val transferState = viewModel.transferState.collectAsState().value
@@ -88,27 +95,30 @@ fun NavigationHost(
             }
         }
     }
-
+    LaunchedEffect(state.userLogin) { viewModel.refreshSteps() }
     CompositionLocalProvider(
         LocalSensorManager provides sensorManager,
     ) {
+        logger(
+            LoggerType.Info,
+            "nav host recomposed inside -> ${state.userLogin}, ${state.isLoggedIn}, ${state.userScale}"
+        )
         Scaffold(
             snackbarHost = { SnackbarHost(snackHostState) },
             topBar = {
-                if (navBackStackEntry?.destination?.route != Destinations.AUTH.route &&
-                    navBackStackEntry?.destination?.route != Destinations.REGISTER.route
-                )
+                if (!isAuthScreen)
                     AppComponents.AppTopBar(
                         login = state.userLogin,
                         screenRoute = navBackStackEntry?.destination?.route
                     )
             },
             bottomBar = {
-                AppBottomNavBar(
-                    navBackStackEntry = navBackStackEntry,
-                    navController = navController,
-                    navDestinations = noAuthDestinations
-                )
+                if (!isAuthScreen)
+                    AppBottomNavBar(
+                        navBackStackEntry = navBackStackEntry,
+                        navController = navController,
+                        navDestinations = bottomDestinations
+                    )
             }
         ) { contentPadding ->
             val startDestination =
@@ -132,6 +142,8 @@ fun NavigationHost(
                         onOfflineUseClick = { viewModel.goOfflineUse() }
                     )
                     registerScreen(
+                        viewModel = viewModel,
+                        transferState = transferState,
                         toMainScreen = { navController.toMainScreen() }
                     )
                     mainScreen(

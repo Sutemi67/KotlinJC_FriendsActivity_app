@@ -49,7 +49,8 @@ fun MainUserScreen(
             weeklySteps = sensorsManager.weeklySteps.collectAsState().value,
             isServiceRunning = state.isServiceRunning,
             counterCheckerCallback = { viewModel.userServiceCheckerListener(it, context) },
-            userStepLength = state.userStepLength
+            userStepLength = state.userStepLength,
+            isLoading = state.isLoading
         )
     }
 }

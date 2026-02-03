@@ -50,5 +50,16 @@ enum class Destinations(
         Icons.Filled.Settings,
         Icons.Filled.Settings,
         "SettingsScreenRoute",
-        { it.toSettingsScreen() })
+        { it.toSettingsScreen() });
+
+    companion object
 }
+
+val Destinations.Companion.noAuthDestinations: List<Destinations>
+    get() = Destinations.entries.filter { route ->
+        route != Destinations.AUTH && route != Destinations.REGISTER
+    }
+val Destinations.Companion.offlineDestinations: List<Destinations>
+    get() = Destinations.entries.filter { route ->
+        route != Destinations.AUTH && route != Destinations.REGISTER && route != Destinations.RATINGS
+    }

@@ -1,11 +1,11 @@
 [versions]
-agp = "8.13.2"
+agp = "9.0.0"
 gson = "2.13.1"
 koinAndroidxCompose = "4.1.0"
 koinAndroidxComposeNavigation = "4.1.0"
 koinKtor = "4.1.0"
 koinTestJunit4 = "4.1.0"
-kotlin = "2.2.0"
+kotlin = "2.2.10"
 coreKtx = "1.16.0"
 junit = "4.13.2"
 junitVersion = "1.2.1"

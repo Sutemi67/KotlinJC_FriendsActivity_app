@@ -10,12 +10,13 @@ import androidx.work.WorkManager
 import apc.appcradle.kotlinjc_friendsactivity_app.data.configs.TokenRepositoryImpl
 import apc.appcradle.kotlinjc_friendsactivity_app.data.configs.model.SharedPreferencesData
 import apc.appcradle.kotlinjc_friendsactivity_app.data.network.NetworkClient
+import apc.appcradle.kotlinjc_friendsactivity_app.data.network.model.DataTransferState
+import apc.appcradle.kotlinjc_friendsactivity_app.data.network.model.PlayersListSyncData
+import apc.appcradle.kotlinjc_friendsactivity_app.data.steps_data.AppSensorsManager
 import apc.appcradle.kotlinjc_friendsactivity_app.data.steps_data.StatsRepository
 import apc.appcradle.kotlinjc_friendsactivity_app.domain.SettingsRepository
 import apc.appcradle.kotlinjc_friendsactivity_app.domain.model.AppState
 import apc.appcradle.kotlinjc_friendsactivity_app.domain.model.AppThemes
-import apc.appcradle.kotlinjc_friendsactivity_app.domain.model.network.DataTransferState
-import apc.appcradle.kotlinjc_friendsactivity_app.domain.model.network.PlayersListSyncData
 import apc.appcradle.kotlinjc_friendsactivity_app.services.PermissionManager
 import apc.appcradle.kotlinjc_friendsactivity_app.services.StepCounterService
 import apc.appcradle.kotlinjc_friendsactivity_app.utils.LoggerType
@@ -36,9 +37,9 @@ class MainViewModel(
     private val tokenRepositoryImpl: TokenRepositoryImpl,
     private val settingsPreferencesImpl: SettingsRepository,
     private val statsRepository: StatsRepository,
+    private val sensorsManager: AppSensorsManager,
     workManager: WorkManager
 ) : ViewModel() {
-
     private var _state = MutableStateFlow(AppState())
     val state: StateFlow<AppState> = _state.asStateFlow()
 
@@ -53,6 +54,25 @@ class MainViewModel(
         checkPermanentAuth()
         checkPermissions()
         loadSettings()
+        updateLoginState()
+    }
+
+    private fun updateLoginState() {
+        viewModelScope.launch {
+            tokenRepositoryImpl.loginFlow.collect { login ->
+                _state.update {
+                    it.copy(userLogin = login)
+                }
+            }
+        }
+    }
+
+    fun refreshSteps() {
+        viewModelScope.launch {
+            _state.update { it.copy(isLoading = true) }
+            sensorsManager.refreshSteps()
+            _state.update { it.copy(isLoading = false) }
+        }
     }
 
     private fun checkPermissions() {
@@ -129,30 +149,29 @@ class MainViewModel(
     }
 
     private fun checkPermanentAuth() {
-        val token = tokenRepositoryImpl.getToken()
-        when (token) {
-            "offline" -> {
-                _state.update {
-                    it.copy(
-                        isLoggedIn = true,
-                        userLogin = null
-                    )
+        viewModelScope.launch {
+            val token = tokenRepositoryImpl.getToken()
+            when (token) {
+                "offline" -> {
+                    _state.update {
+                        it.copy(
+                            isLoggedIn = true,
+                            userLogin = null
+                        )
+                    }
                 }
-            }
 
-            null -> {
-                Log.d("dataTransfer", "Permanent token is not valid...")
-            }
-
-            else -> {
-                val login = tokenRepositoryImpl.getLogin()
-                _state.update {
-                    it.copy(
-                        isLoggedIn = true,
-                        userLogin = login
-                    )
+                null -> {
+                    Log.d("dataTransfer", "Permanent token is not valid...")
                 }
-                Log.d("dataTransfer", "Token is valid. Loading main screen for login: $login")
+
+                else -> {
+                    val login = tokenRepositoryImpl.getLogin()
+                    _state.update {
+                        it.copy(isLoggedIn = true)
+                    }
+                    Log.d("dataTransfer", "Token is valid. Loading main screen for login: $login")
+                }
             }
         }
     }
@@ -162,7 +181,7 @@ class MainViewModel(
             _transferState.update { it.copy(isLoading = true) }
             val result = networkClient.sendLoginInfo(login, password)
             if (result.isSuccessful == true && result.errorMessage == null) {
-                Log.i("dataTransfer", "viewModel transfer - OK")
+
                 _transferState.update {
                     it.copy(
                         isLoading = false,
@@ -176,6 +195,7 @@ class MainViewModel(
                         userLogin = login
                     )
                 }
+
             } else {
                 _transferState.update {
                     it.copy(
@@ -194,22 +214,21 @@ class MainViewModel(
             _transferState.update { it.copy(isLoading = true) }
             val result = networkClient.sendRegistrationInfo(login, password)
             if (result.isSuccessful == true && result.errorMessage == null) {
-                _transferState.update {
-                    it.copy(
-                        isLoading = false,
-                        isSuccessful = true,
-                        errorMessage = result.errorMessage
-                    )
-                }
                 _state.update {
                     it.copy(
                         isLoggedIn = true,
                         userLogin = login
                     )
                 }
+                _transferState.update {
+                    it.copy(
+                        isLoading = false,
+                        isSuccessful = true
+                    )
+                }
+                logger(LoggerType.Debug, "success, ${state.value}")
             } else {
-                Log.e("dataTransfer", "viewModel transfer error: ${result.errorMessage}")
-
+                logger(LoggerType.Error, "viewModel transfer error: ${result.errorMessage}")
                 _transferState.update {
                     it.copy(
                         isLoading = false,
@@ -217,6 +236,7 @@ class MainViewModel(
                         errorMessage = result.errorMessage
                     )
                 }
+                logger(LoggerType.Info, state.value.toString())
             }
         }
     }
@@ -224,9 +244,7 @@ class MainViewModel(
     fun changeLogin(login: String, newLogin: String) {
         viewModelScope.launch {
             if (networkClient.changeUserLogin(login, newLogin)) {
-                _state.update { it.copy(userLogin = newLogin) }
                 tokenRepositoryImpl.saveNewLogin(newLogin)
-                return@launch
             }
         }
     }
@@ -276,11 +294,7 @@ class MainViewModel(
 
     suspend fun syncData(login: String, steps: Int, weeklySteps: Int): PlayersListSyncData {
         return withContext(Dispatchers.IO) {
-            val result = statsRepository.syncData(
-                login = login, steps = steps, weeklySteps = weeklySteps
-            )
-            Log.i("dataTransfer", "ViewModel sync result: $result")
-            result
+            statsRepository.syncData(login = login, steps = steps, weeklySteps = weeklySteps)
         }
     }
 //endregion

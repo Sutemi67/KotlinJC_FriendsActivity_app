@@ -1,4 +1,4 @@
-package apc.appcradle.kotlinjc_friendsactivity_app.domain.model.network
+package apc.appcradle.kotlinjc_friendsactivity_app.data.network.model
 
 data class PlayersListSyncData(
     val playersList: List<PlayerActivityData> = emptyList(),

@@ -8,7 +8,11 @@ import apc.appcradle.kotlinjc_friendsactivity_app.ui.screens.Destinations
 import apc.appcradle.kotlinjc_friendsactivity_app.ui.screens.main.MainUserScreen
 
 fun NavController.toMainScreen() {
-    navigate(route = Destinations.MAIN.route)
+    navigate(route = Destinations.MAIN.route) {
+        popUpTo(Destinations.MAIN.route) {
+            inclusive = true
+        }
+    }
 }
 
 fun NavGraphBuilder.mainScreen(viewModel: MainViewModel) {
