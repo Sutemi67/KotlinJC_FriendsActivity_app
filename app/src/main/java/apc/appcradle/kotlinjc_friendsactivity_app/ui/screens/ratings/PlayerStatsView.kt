@@ -26,8 +26,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import apc.appcradle.kotlinjc_friendsactivity_app.data.configs.Distances
-import apc.appcradle.kotlinjc_friendsactivity_app.domain.model.AppTextStyles
 import apc.appcradle.kotlinjc_friendsactivity_app.data.network.model.PlayerActivityData
+import apc.appcradle.kotlinjc_friendsactivity_app.domain.model.AppTextStyles
 import apc.appcradle.kotlinjc_friendsactivity_app.ui.app_components.AppComponents.AppText
 import apc.appcradle.kotlinjc_friendsactivity_app.ui.theme.KotlinJC_FriendsActivity_appTheme
 import apc.appcradle.kotlinjc_friendsactivity_app.utils.APP_ROUNDED_SHAPE
@@ -53,7 +53,7 @@ fun PlayerStatsView(
 
     val percentageAnimate by animateFloatAsState(
         targetValue = percentage,
-        animationSpec = tween(durationMillis = 2500)
+        animationSpec = tween(durationMillis = 3000)
     )
 
     val userBgColor =
@@ -121,7 +121,7 @@ private fun Preview() {
                 "Alexander",
                 3423,
                 weeklySteps = 27772,
-                .3f
+                0.4f //для корректного отображения поменять исходный percentage в функции
             ),
         )
     }
