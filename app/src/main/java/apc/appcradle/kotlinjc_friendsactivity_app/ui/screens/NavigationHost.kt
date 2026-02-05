@@ -8,6 +8,7 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.getValue
@@ -131,7 +132,7 @@ fun NavigationHost(
                     startDestination = startDestination
                 ) {
                     authScreen(
-                        toRegisterScreen = { navController.toRegisterScreen() },
+                        toRegisterScreen = navController::toRegisterScreen,
                         transferState = transferState,
                         sendLoginData = { login, password ->
                             viewModel.sendLoginData(
@@ -139,12 +140,12 @@ fun NavigationHost(
                                 password
                             )
                         },
-                        onOfflineUseClick = { viewModel.goOfflineUse() }
+                        onOfflineUseClick = viewModel::goOfflineUse
                     )
                     registerScreen(
                         viewModel = viewModel,
                         transferState = transferState,
-                        toMainScreen = { navController.toMainScreen() }
+                        toMainScreen = navController::toMainScreen
                     )
                     mainScreen(
                         viewModel = viewModel
@@ -163,7 +164,7 @@ fun NavigationHost(
                     )
                     settingsScreen(
                         state = state,
-                        onLogoutClick = { viewModel.logout() },
+                        onLogoutClick = viewModel::logout,
                         onThemeClick = { viewModel.changeTheme(it) },
                         onNickNameClick = { login, newLogin ->
                             viewModel.changeLogin(

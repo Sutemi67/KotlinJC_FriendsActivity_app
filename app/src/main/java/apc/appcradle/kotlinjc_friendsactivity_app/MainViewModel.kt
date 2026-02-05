@@ -128,26 +128,34 @@ class MainViewModel(
 
     //region Authentification
     fun logout() {
-        tokenRepositoryImpl.clearToken()
-        _state.update {
-            it.copy(
-                isLoggedIn = false,
-                userLogin = null
-            )
+        viewModelScope.launch {
+            tokenRepositoryImpl.clearToken()
+            _state.update {
+                it.copy(
+                    isLoggedIn = false,
+                    userLogin = null
+                )
+            }
+            _transferState.update { it.copy(isSuccessful = null, errorMessage = null) }
         }
-        _transferState.update { it.copy(isSuccessful = null, errorMessage = null) }
     }
 
     fun goOfflineUse() {
-        tokenRepositoryImpl.saveOfflineToken()
-        _state.update {
-            it.copy(
-                isLoggedIn = true,
-                userLogin = null
-            )
+        viewModelScope.launch {
+            tokenRepositoryImpl.saveOfflineToken()
+            _state.update {
+                it.copy(
+                    isLoggedIn = true,
+                    userLogin = null
+                )
+            }
         }
     }
 
+    /**
+     * TODO: переписать метод на withContext, а так же проверить необходимость
+     * самой проверки, а так же перенести логику в репозиторий
+     */
     private fun checkPermanentAuth() {
         viewModelScope.launch {
             val token = tokenRepositoryImpl.getToken()

@@ -15,6 +15,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlin.time.Duration.Companion.seconds
 
@@ -23,7 +24,7 @@ class AppSensorsManager(
     private val statsRepository: StatsRepository,
     private val tokenRepository: TokenRepositoryImpl
 ) : SensorEventListener {
-    private val scope = CoroutineScope(Dispatchers.IO)
+    private val scopeIO = CoroutineScope(Dispatchers.IO)
     private var actualLogin: String? = null
     private val sensorManager = context.getSystemService(Context.SENSOR_SERVICE) as SensorManager
     private val stepCounterSensor: Sensor? =
@@ -44,14 +45,16 @@ class AppSensorsManager(
     private var currentSteps = 0
     private var stepsWithoutChecking = 0
     private var isFirstStart = true
-    private var isSavingInProgress = false
     private var lastTotalCounterSteps: Int? = null
+
+    @Volatile
+    private var isSavingInProgress = false
 
     @Volatile
     private var isDataLoaded = false
 
     init {
-        scope.launch {
+        scopeIO.launch {
             tokenRepository.loginFlow.collect { login ->
                 actualLogin = login
                 logger(LoggerType.Info, "login updated: $login")
@@ -100,7 +103,7 @@ class AppSensorsManager(
     private fun periodicalSaving() {
         if (!isSavingInProgress) {
             isSavingInProgress = true
-            scope.launch {
+            scopeIO.launch {
                 statsRepository.saveAllSteps(
                     steps = Steps(
                         allSteps = allSteps.value,
@@ -115,7 +118,7 @@ class AppSensorsManager(
     }
 
     fun truncate() {
-        scope.launch {
+        scopeIO.launch {
             // Ждем первое актуальное значение логина, прежде чем чистить
             val currentLogin = tokenRepository.loginFlow.first()
             statsRepository.truncate(currentLogin)
@@ -128,28 +131,32 @@ class AppSensorsManager(
         }
     }
 
-    private suspend fun loggedLoadingSteps() {
-        isDataLoaded = false
+    private fun loggedLoadingSteps() {
+        scopeIO.launch {
+            isDataLoaded = false
 
-        val loadedSteps = statsRepository.fetchSteps(actualLogin)
-        _allSteps.value = loadedSteps.allSteps
-        _weeklySteps.value = loadedSteps.weeklySteps
-        stepsInitialWeekly = loadedSteps.weeklySteps
-        currentSteps = loadedSteps.weeklySteps
+            val loadedSteps = statsRepository.fetchSteps(actualLogin)
+            _allSteps.value = loadedSteps.allSteps
+            _weeklySteps.value = loadedSteps.weeklySteps
+            stepsInitialWeekly = loadedSteps.weeklySteps
+            currentSteps = loadedSteps.weeklySteps
 
-        isFirstStart = true
+            isFirstStart = true
 
-        isDataLoaded = true
+            isDataLoaded = true
+        }
     }
 
-    suspend fun refreshSteps() = loggedLoadingSteps()
+    fun refreshSteps() = loggedLoadingSteps()
 
     private fun truncateLoadingSteps() {
-        val loadedSteps = statsRepository.getLocalSteps(actualLogin)
-        _allSteps.value = loadedSteps.allSteps
-        _weeklySteps.value = loadedSteps.weeklySteps
-        stepsInitialWeekly = loadedSteps.weeklySteps
-        currentSteps = loadedSteps.weeklySteps
+        scopeIO.launch {
+            val loadedSteps = statsRepository.getLocalSteps(actualLogin)
+            _allSteps.value = loadedSteps.allSteps
+            _weeklySteps.value = loadedSteps.weeklySteps
+            stepsInitialWeekly = loadedSteps.weeklySteps
+            currentSteps = loadedSteps.weeklySteps
+        }
     }
 
     override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) {}
@@ -160,25 +167,6 @@ class AppSensorsManager(
                 Sensor.TYPE_STEP_COUNTER -> {
                     val totalSensorSteps = sensorEvent.values[0].toInt()
 
-//                    if (isFirstStart) {
-//                        stepsWithoutChecking = totalSensorSteps - stepsInitialWeekly
-//                        lastTotalCounterSteps = totalSensorSteps
-//                        isFirstStart = false
-//                    }
-//                    // Используем else, чтобы не выполнять этот блок в тот же такт, что и инициализацию
-//                    // (хотя это не критично, но логичнее)
-//                    else {
-//                        currentSteps = totalSensorSteps - stepsWithoutChecking
-//                        _weeklySteps.value = currentSteps
-//
-//                        val previous = lastTotalCounterSteps ?: totalSensorSteps
-//                        val delta = (totalSensorSteps - previous).coerceAtLeast(0)
-//                        lastTotalCounterSteps = totalSensorSteps
-//
-//                        if (delta > 0) {
-//                            _allSteps.value += delta
-//                            periodicalSaving()
-//                        }
                     // 1. Проверка на перезагрузку устройства или первый запуск
                     // Если текущее значение датчика меньше, чем то, что мы видели в последний раз,
                     // значит счетчик обнулился системой.
@@ -201,8 +189,10 @@ class AppSensorsManager(
                     val delta = (totalSensorSteps - previous).coerceAtLeast(0)
 
                     if (delta > 0) {
-                        _weeklySteps.value = currentSteps
-                        _allSteps.value += delta
+                        _weeklySteps.update { currentSteps }
+//                        _weeklySteps.value = currentSteps
+                        _allSteps.update { it + delta }
+//                        _allSteps.value += delta
                         lastTotalCounterSteps = totalSensorSteps
                         periodicalSaving()
                     }
@@ -210,8 +200,10 @@ class AppSensorsManager(
 
                 Sensor.TYPE_STEP_DETECTOR -> {
                     currentSteps += 1
-                    _weeklySteps.value = currentSteps
-                    _allSteps.value++
+                    _weeklySteps.update { currentSteps }
+//                    _weeklySteps.value = currentSteps
+                    _allSteps.update { it + 1 }
+//                    _allSteps.value++
                     periodicalSaving()
                 }
             }
