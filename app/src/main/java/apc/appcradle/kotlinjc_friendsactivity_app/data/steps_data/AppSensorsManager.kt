@@ -11,12 +11,14 @@ import apc.appcradle.kotlinjc_friendsactivity_app.utils.LoggerType
 import apc.appcradle.kotlinjc_friendsactivity_app.utils.logger
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import java.util.concurrent.atomic.AtomicInteger
 import kotlin.time.Duration.Companion.seconds
 
 class AppSensorsManager(
@@ -24,7 +26,7 @@ class AppSensorsManager(
     private val statsRepository: StatsRepository,
     private val tokenRepository: TokenRepositoryImpl
 ) : SensorEventListener {
-    private val scopeIO = CoroutineScope(Dispatchers.IO)
+    private val scopeIO = CoroutineScope(Dispatchers.IO + SupervisorJob())
     private var actualLogin: String? = null
     private val sensorManager = context.getSystemService(Context.SENSOR_SERVICE) as SensorManager
     private val stepCounterSensor: Sensor? =
@@ -42,7 +44,7 @@ class AppSensorsManager(
     val weeklySteps = _weeklySteps.asStateFlow()
 
     private var stepsInitialWeekly: Int = 0
-    private var currentSteps = 0
+    private var currentSteps = AtomicInteger(0)
     private var stepsWithoutChecking = 0
     private var isFirstStart = true
     private var lastTotalCounterSteps: Int? = null
@@ -71,6 +73,7 @@ class AppSensorsManager(
                 SensorManager.SENSOR_DELAY_NORMAL,
                 SensorManager.SENSOR_DELAY_UI
             )
+            logger(LoggerType.Error, "step counter initialized!")
             return
         } else if (stepDetectorSensor != null) {
             sensorManager.registerListener(
@@ -79,6 +82,7 @@ class AppSensorsManager(
                 SensorManager.SENSOR_DELAY_NORMAL,
                 SensorManager.SENSOR_DELAY_UI
             )
+            logger(LoggerType.Error, "step detector initialized!")
         } else {
             logger(LoggerType.Error, "No step sensor available on this device!")
         }
@@ -122,8 +126,8 @@ class AppSensorsManager(
             // Ждем первое актуальное значение логина, прежде чем чистить
             val currentLogin = tokenRepository.loginFlow.first()
             statsRepository.truncate(currentLogin)
-//        statsRepository.truncate(actualLogin)
-            currentSteps = 0
+            currentSteps.set(0)
+//            currentSteps = 0
             stepsWithoutChecking = 0
             isFirstStart = true
             lastTotalCounterSteps = null
@@ -139,7 +143,8 @@ class AppSensorsManager(
             _allSteps.value = loadedSteps.allSteps
             _weeklySteps.value = loadedSteps.weeklySteps
             stepsInitialWeekly = loadedSteps.weeklySteps
-            currentSteps = loadedSteps.weeklySteps
+            currentSteps.set(loadedSteps.weeklySteps)
+//            currentSteps = loadedSteps.weeklySteps
 
             isFirstStart = true
 
@@ -155,7 +160,8 @@ class AppSensorsManager(
             _allSteps.value = loadedSteps.allSteps
             _weeklySteps.value = loadedSteps.weeklySteps
             stepsInitialWeekly = loadedSteps.weeklySteps
-            currentSteps = loadedSteps.weeklySteps
+            currentSteps.set(loadedSteps.weeklySteps)
+//            currentSteps = loadedSteps.weeklySteps
         }
     }
 
@@ -182,28 +188,24 @@ class AppSensorsManager(
                     }
 
                     // 2. Расчет текущих шагов за неделю
-                    currentSteps = totalSensorSteps - stepsWithoutChecking
+                    currentSteps.set(totalSensorSteps - stepsWithoutChecking)
 
                     // 3. Расчет дельты для общего счетчика (allSteps)
                     val previous = lastTotalCounterSteps ?: totalSensorSteps
                     val delta = (totalSensorSteps - previous).coerceAtLeast(0)
 
                     if (delta > 0) {
-                        _weeklySteps.update { currentSteps }
-//                        _weeklySteps.value = currentSteps
+                        _weeklySteps.update { currentSteps.get() }
                         _allSteps.update { it + delta }
-//                        _allSteps.value += delta
                         lastTotalCounterSteps = totalSensorSteps
                         periodicalSaving()
                     }
                 }
 
                 Sensor.TYPE_STEP_DETECTOR -> {
-                    currentSteps += 1
-                    _weeklySteps.update { currentSteps }
-//                    _weeklySteps.value = currentSteps
+                    currentSteps.getAndAdd(1)
+                    _weeklySteps.update { currentSteps.get() }
                     _allSteps.update { it + 1 }
-//                    _allSteps.value++
                     periodicalSaving()
                 }
             }
