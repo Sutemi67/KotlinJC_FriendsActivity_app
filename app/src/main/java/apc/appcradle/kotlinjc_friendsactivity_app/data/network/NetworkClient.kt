@@ -21,7 +21,7 @@ class NetworkClient(
     private val tokenRepositoryImpl: TokenRepositoryImpl,
     private val utils: NetworkUtilsFunctions
 ) {
-    private fun saveToken(login: String, token: String) =
+    private suspend fun saveToken(login: String, token: String) =
         tokenRepositoryImpl.saveToken(login = login, token = token)
 
     suspend fun sendRegistrationInfo(login: String, password: String): DataTransferState {

@@ -121,7 +121,6 @@ class StatsRepository(
         workManager.enqueueUniqueWork(
             uniqueWorkName = TRANCATE_WORKER_TAG,
             existingWorkPolicy = ExistingWorkPolicy.REPLACE,
-//            request = trancateStepsRequest(delay = )
             request = trancateStepsRequest(delay = whenNextMonday())
         )
     }
