@@ -18,10 +18,8 @@ import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -51,10 +49,10 @@ fun SettingsScreen(
     onThemeClick: (AppThemes) -> Unit,
     state: AppState,
 ) {
-    var isThemeDialogVisible by remember { mutableStateOf(false) }
-    var isStepDialogVisible by remember { mutableStateOf(false) }
-    var isScaleDialogVisible by remember { mutableStateOf(false) }
-    var isLoginDialogVisible by remember { mutableStateOf(false) }
+    val isThemeDialogVisible = remember { mutableStateOf(false) }
+    val isStepDialogVisible = remember { mutableStateOf(false) }
+    val isScaleDialogVisible = remember { mutableStateOf(false) }
+    val isLoginDialogVisible = remember { mutableStateOf(false) }
 
     Column(
         modifier = Modifier
@@ -78,7 +76,7 @@ fun SettingsScreen(
                     text = stringResource(R.string.auth_screen_login_placeholder),
                 )
                 Card(
-                    modifier = Modifier.clickable { isLoginDialogVisible = true }
+                    modifier = Modifier.clickable { isLoginDialogVisible.value = true }
                 ) {
                     AppText(
                         modifier = Modifier.padding(vertical = 10.dp, horizontal = 20.dp),
@@ -107,7 +105,7 @@ fun SettingsScreen(
             ) {
                 AppText(text = stringResource(R.string.settings_screen_your_step))
                 Card(
-                    modifier = Modifier.clickable { isStepDialogVisible = true }
+                    modifier = Modifier.clickable { isStepDialogVisible.value = true }
                 ) {
                     AppText(
                         modifier = Modifier.padding(vertical = 10.dp, horizontal = 20.dp),
@@ -140,7 +138,7 @@ fun SettingsScreen(
             ) {
                 AppText(text = stringResource(R.string.settings_screen_type_scale))
                 Card(
-                    modifier = Modifier.clickable { isScaleDialogVisible = true }
+                    modifier = Modifier.clickable { isScaleDialogVisible.value = true }
                 ) {
                     AppText(
                         modifier = Modifier.padding(vertical = 10.dp, horizontal = 20.dp),
@@ -153,7 +151,7 @@ fun SettingsScreen(
                     )
                 }
             }
-            HorizontalDivider(Modifier.padding(horizontal = 15.dp))
+            HorizontalDivider(Modifier.padding(horizontal = 10.dp))
             AppText(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -163,7 +161,7 @@ fun SettingsScreen(
             )
         }
         ElevatedCard(
-            modifier = Modifier.padding(vertical = 5.dp, horizontal = 20.dp)
+            modifier = Modifier.padding(vertical = 5.dp)
         ) {
             Row(
                 modifier = Modifier
@@ -189,7 +187,7 @@ fun SettingsScreen(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 20.dp),
-            onClick = { isThemeDialogVisible = true }
+            onClick = { isThemeDialogVisible.value = true }
         ) {
             AppText(text = stringResource(R.string.settings_screen_change_theme))
         }
@@ -204,29 +202,29 @@ fun SettingsScreen(
         }
     }
 
-    if (isThemeDialogVisible)
+    if (isThemeDialogVisible.value)
         AppDialogs.ThemeDialog(
             currentThemes = state.currentTheme,
             onConfirmClick = { newTheme ->
                 onThemeClick(newTheme)
-                isThemeDialogVisible = false
+                isThemeDialogVisible.value = false
             },
-            onDismiss = { isThemeDialogVisible = false }
+            onDismiss = { isThemeDialogVisible.value = false }
         )
-    if (isStepDialogVisible)
+    if (isStepDialogVisible.value)
         AppDialogs.NewStepValueDialog(
             onConfirmClick = { newStep -> onStepDistanceClick(newStep) },
-            onDismiss = { isStepDialogVisible = false }
+            onDismiss = { isStepDialogVisible.value = false }
         )
-    if (isScaleDialogVisible)
+    if (isScaleDialogVisible.value)
         AppDialogs.ScaleDialog(
             initialValue = state.userScale,
             onConfirm = { newValue ->
                 onScaleClick(newValue)
             },
-            onDismiss = { isScaleDialogVisible = false }
+            onDismiss = { isScaleDialogVisible.value = false }
         )
-    if (isLoginDialogVisible)
+    if (isLoginDialogVisible.value)
         when (state.userLogin) {
             null -> {
                 Toast.makeText(
@@ -239,7 +237,7 @@ fun SettingsScreen(
             else -> {
                 AppDialogs.LoginChangeDialog(
                     onConfirmClick = { newLogin -> onNicknameClick(state.userLogin, newLogin) },
-                    onDismiss = { isLoginDialogVisible = false }
+                    onDismiss = { isLoginDialogVisible.value = false }
                 )
             }
         }
@@ -256,7 +254,7 @@ private fun Preview() {
             SettingsScreen(
                 onLogoutClick = {},
                 onStepDistanceClick = {},
-                onNicknameClick = { _, _ -> {} },
+                onNicknameClick = { _, _ -> },
                 onScaleClick = {},
                 onThemeClick = {},
                 state = AppState()
@@ -276,7 +274,7 @@ private fun Preview2() {
             SettingsScreen(
                 onLogoutClick = {},
                 onStepDistanceClick = {},
-                onNicknameClick = { _, _ -> {} },
+                onNicknameClick = { _, _ -> },
                 onScaleClick = {},
                 onThemeClick = {},
                 state = AppState()
@@ -297,7 +295,7 @@ private fun Preview3() {
             SettingsScreen(
                 onLogoutClick = {},
                 onStepDistanceClick = {},
-                onNicknameClick = { _, _ -> {} },
+                onNicknameClick = { _, _ -> },
                 onScaleClick = {},
                 onThemeClick = {},
                 state = AppState()
