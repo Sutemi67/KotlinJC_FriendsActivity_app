@@ -1,26 +1,49 @@
 package apc.appcradle.kotlinjc_friendsactivity_app.ui.screens.main
 
+import android.content.Context
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import apc.appcradle.kotlinjc_friendsactivity_app.MainViewModel
+import apc.appcradle.kotlinjc_friendsactivity_app.domain.model.AppState
 import apc.appcradle.kotlinjc_friendsactivity_app.services.PermissionManager
 import apc.appcradle.kotlinjc_friendsactivity_app.ui.screens.LocalSensorManager
+import apc.appcradle.kotlinjc_friendsactivity_app.utils.LoggerType
+import apc.appcradle.kotlinjc_friendsactivity_app.utils.logger
 import org.koin.compose.koinInject
 
 @Composable
 fun MainUserScreen(
-    viewModel: MainViewModel
+    vm: MainViewModel
+) {
+    val state = vm.state.collectAsState().value
+    logger(LoggerType.Info, "isLoading = ${state.isUserStepsLoading}")
+    MainUserScreenUi(
+        state = state,
+        startService = { vm.startService(it) },
+        serviceCheckerCallback = { boolean, context ->
+            vm.userServiceCheckerListener(
+                boolean,
+                context
+            )
+        }
+    )
+}
+
+@Composable
+fun MainUserScreenUi(
+    state: AppState,
+    startService: (Context) -> Unit,
+    serviceCheckerCallback: (Boolean, Context) -> Unit
 ) {
     val sensorsManager = LocalSensorManager.current
     val permissionManager = koinInject<PermissionManager>()
-    val state by viewModel.state.collectAsState()
     val context = LocalContext.current
 
     val permissionLauncher = rememberLauncherForActivityResult(
@@ -40,18 +63,20 @@ fun MainUserScreen(
                 }
             )
         } else {
-            if (state.isServiceEnabledByUser && !state.isServiceRunning)
-                viewModel.startService(context)
+            LaunchedEffect(state.isServiceEnabledByUser, state.isServiceRunning) {
+                if (state.isServiceEnabledByUser && !state.isServiceRunning) {
+                    startService(context)
+                }
+            }
         }
         PermittedUi(
             isStepSensorsAvailable = sensorsManager.isStepSensorAvailable,
             summarySteps = sensorsManager.allSteps.collectAsState().value,
             weeklySteps = sensorsManager.weeklySteps.collectAsState().value,
             isServiceRunning = state.isServiceRunning,
-            counterCheckerCallback = { viewModel.userServiceCheckerListener(it, context) },
+            counterCheckerCallback = { serviceCheckerCallback(it, context) },
             userStepLength = state.userStepLength,
-            isLoading = state.isLoading
+            isLoading = state.isUserStepsLoading
         )
     }
 }
-

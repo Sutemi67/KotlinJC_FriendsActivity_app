@@ -3,7 +3,9 @@ package apc.appcradle.kotlinjc_friendsactivity_app.data.configs
 import android.content.SharedPreferences
 import androidx.core.content.edit
 import apc.appcradle.kotlinjc_friendsactivity_app.domain.TokenRepository
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -36,8 +38,10 @@ class TokenRepositoryImpl(
         updateLogin(null)
     }
 
-    override suspend fun getLogin(): String? = withContext(Dispatchers.IO) {
-        sharedPreferences.getString(LOGIN_ID, null)
+    override suspend fun getSavedLogin(): String? = withContext(Dispatchers.IO) {
+        val login = sharedPreferences.getString(LOGIN_ID, null)
+        updateLogin(login)
+        login
     }
 
     override suspend fun getToken(): String? = withContext(Dispatchers.IO) {

@@ -8,7 +8,6 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.getValue
@@ -21,7 +20,6 @@ import androidx.navigation.compose.rememberNavController
 import androidx.work.WorkInfo
 import apc.appcradle.kotlinjc_friendsactivity_app.MainViewModel
 import apc.appcradle.kotlinjc_friendsactivity_app.data.steps_data.AppSensorsManager
-import apc.appcradle.kotlinjc_friendsactivity_app.domain.model.AppState
 import apc.appcradle.kotlinjc_friendsactivity_app.ui.app_components.AppBackgroundImage
 import apc.appcradle.kotlinjc_friendsactivity_app.ui.app_components.AppBottomNavBar
 import apc.appcradle.kotlinjc_friendsactivity_app.ui.app_components.AppComponents
@@ -37,23 +35,24 @@ import apc.appcradle.kotlinjc_friendsactivity_app.utils.formatDeadline
 import apc.appcradle.kotlinjc_friendsactivity_app.utils.logger
 import kotlinx.coroutines.launch
 import org.koin.compose.koinInject
+import org.koin.compose.viewmodel.koinViewModel
 
 val LocalSensorManager =
     compositionLocalOf<AppSensorsManager> { error("No sensor manager provided") }
 
 @Composable
-fun NavigationHost(
-    viewModel: MainViewModel,
-    state: AppState
-) {
+fun NavigationHost() {
+    val viewModel: MainViewModel = koinViewModel()
+    val state = viewModel.state.collectAsState()
+    val authState = viewModel.authState.collectAsState().value
     val navController = rememberNavController()
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
     val isAuthScreen =
         currentRoute == Destinations.AUTH.route || currentRoute == Destinations.REGISTER.route
 
-    val bottomDestinations: List<Destinations> = remember(state.userLogin) {
-        if (state.userLogin == null) {
+    val bottomDestinations: List<Destinations> = remember(authState.userLogin) {
+        if (authState.userLogin == null) {
             Destinations.offlineDestinations
         } else {
             Destinations.noAuthDestinations
@@ -66,18 +65,18 @@ fun NavigationHost(
     val snackHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
 
-    LaunchedEffect(state.trancateWorkerStatus) {
+    LaunchedEffect(state.value.trancateWorkerStatus) {
         scope.launch {
-            if (state.userLogin == null) return@launch
-            if (state.trancateWorkerStatus == null || state.trancateWorkerStatus.state.isFinished) {
+            if (authState.userLogin == null) return@launch
+            if (state.value.trancateWorkerStatus == null || state.value.trancateWorkerStatus!!.state.isFinished) {
                 snackHostState.showSnackbar(message = "Планируется еженедельное обнуление...\nИзменения вступят в силу после перезапуска.")
             } else {
-                when (state.trancateWorkerStatus.state) {
+                when (state.value.trancateWorkerStatus!!.state) {
                     WorkInfo.State.ENQUEUED -> {
                         snackHostState.showSnackbar(
                             message = "Статус обнуления: Запланировано.\nПодведение итогов через: ${
                                 formatDeadline(
-                                    state.trancateWorkerStatus.nextScheduleTimeMillis
+                                    state.value.trancateWorkerStatus!!.nextScheduleTimeMillis
                                 )
                             }"
                         )
@@ -85,9 +84,9 @@ fun NavigationHost(
 
                     else -> {
                         snackHostState.showSnackbar(
-                            message = "Статус обнуления: ${state.trancateWorkerStatus.state}\nПодведение итогов через: ${
+                            message = "Статус обнуления: ${state.value.trancateWorkerStatus!!.state}\nПодведение итогов через: ${
                                 formatDeadline(
-                                    state.trancateWorkerStatus.nextScheduleTimeMillis
+                                    state.value.trancateWorkerStatus!!.nextScheduleTimeMillis
                                 )
                             }"
                         )
@@ -96,34 +95,34 @@ fun NavigationHost(
             }
         }
     }
-    LaunchedEffect(state.userLogin) { viewModel.refreshSteps() }
+    LaunchedEffect(authState.userLogin) { viewModel.refreshSteps() }
     CompositionLocalProvider(
         LocalSensorManager provides sensorManager,
     ) {
         logger(
             LoggerType.Info,
-            "nav host recomposed inside -> ${state.userLogin}, ${state.isLoggedIn}, ${state.userScale}"
+            "nav host recomposed inside -> ${authState.userLogin}, ${authState.isLoggedIn}"
         )
         Scaffold(
             snackbarHost = { SnackbarHost(snackHostState) },
             topBar = {
                 if (!isAuthScreen)
                     AppComponents.AppTopBar(
-                        login = state.userLogin,
+                        login = authState.userLogin,
                         screenRoute = navBackStackEntry?.destination?.route
                     )
             },
             bottomBar = {
                 if (!isAuthScreen)
                     AppBottomNavBar(
-                        navBackStackEntry = navBackStackEntry,
-                        navController = navController,
-                        navDestinations = bottomDestinations
+                        navDestinations = bottomDestinations,
+                        currentRoute = currentRoute,
+                        onNavigate = { navController.navigate(it.route) }
                     )
             }
         ) { contentPadding ->
             val startDestination =
-                if (state.isLoggedIn) Destinations.MAIN.route else Destinations.AUTH.route
+                if (authState.isLoggedIn) Destinations.MAIN.route else Destinations.AUTH.route
             Box {
                 AppBackgroundImage()
                 NavHost(
@@ -147,23 +146,21 @@ fun NavigationHost(
                         transferState = transferState,
                         toMainScreen = navController::toMainScreen
                     )
-                    mainScreen(
-                        viewModel = viewModel
-                    )
+                    mainScreen(viewModel)
                     ratingsScreen(
-                        login = state.userLogin,
+                        login = authState.userLogin,
                         syncFun = {
                             val stepsNow = sensorManager.allSteps.value
                             val weeklyNow = sensorManager.weeklySteps.value
                             viewModel.syncData(
-                                login = state.userLogin!!,
+                                login = authState.userLogin!!,
                                 steps = stepsNow,
                                 weeklySteps = weeklyNow
                             )
                         }
                     )
                     settingsScreen(
-                        state = state,
+                        state = state.value,
                         onLogoutClick = viewModel::logout,
                         onThemeClick = { viewModel.changeTheme(it) },
                         onNickNameClick = { login, newLogin ->

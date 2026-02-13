@@ -6,9 +6,8 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.compositionLocalOf
-import androidx.compose.runtime.getValue
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import apc.appcradle.kotlinjc_friendsactivity_app.domain.model.AppThemes
 import apc.appcradle.kotlinjc_friendsactivity_app.ui.screens.NavigationHost
 import apc.appcradle.kotlinjc_friendsactivity_app.ui.theme.CompactText
@@ -18,10 +17,7 @@ import apc.appcradle.kotlinjc_friendsactivity_app.ui.theme.MediumText
 import apc.appcradle.kotlinjc_friendsactivity_app.ui.theme.MyTypography
 import apc.appcradle.kotlinjc_friendsactivity_app.utils.LoggerType
 import apc.appcradle.kotlinjc_friendsactivity_app.utils.logger
-import org.koin.androidx.compose.koinViewModel
-import java.lang.ref.PhantomReference
-import java.lang.ref.SoftReference
-import java.lang.ref.WeakReference
+import org.koin.compose.viewmodel.koinViewModel
 
 val LocalAppTypography = compositionLocalOf<MyTypography> { error("no typography provided") }
 
@@ -32,16 +28,16 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             val viewModel: MainViewModel = koinViewModel()
-            val state by viewModel.state.collectAsStateWithLifecycle()
+            val settings = viewModel.settingsState.collectAsState().value
 
-            val appTypography = when (state.userScale) {
+            val appTypography = when (settings.userScale) {
                 0.5f -> CompactText
                 1.0f -> MediumText
                 1.5f -> ExpandedText
                 else -> MediumText
             }
 
-            val theme = when (state.currentTheme) {
+            val theme = when (settings.currentTheme) {
                 AppThemes.Dark -> true
                 AppThemes.Light -> false
                 AppThemes.System -> isSystemInDarkTheme()
@@ -53,8 +49,8 @@ class MainActivity : ComponentActivity() {
                 CompositionLocalProvider(
                     LocalAppTypography provides appTypography
                 ) {
-                    logger(LoggerType.Info, "navhost recomposed in activity")
-                    NavigationHost(viewModel, state)
+                    logger(LoggerType.Error, "navhost recomposed in activity")
+                    NavigationHost()
                 }
             }
         }

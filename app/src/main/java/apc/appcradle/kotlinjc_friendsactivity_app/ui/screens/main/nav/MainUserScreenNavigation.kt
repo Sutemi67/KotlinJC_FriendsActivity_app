@@ -15,10 +15,8 @@ fun NavController.toMainScreen() {
     }
 }
 
-fun NavGraphBuilder.mainScreen(viewModel: MainViewModel) {
+fun NavGraphBuilder.mainScreen(vm: MainViewModel) {
     composable(Destinations.MAIN.route) {
-        MainUserScreen(
-            viewModel = viewModel,
-        )
+        MainUserScreen(vm = vm)
     }
 }

@@ -2,10 +2,14 @@ package apc.appcradle.kotlinjc_friendsactivity_app.ui.app_components
 
 import android.content.Intent
 import androidx.compose.animation.Crossfade
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
-import androidx.compose.material.icons.filled.MailOutline
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -14,6 +18,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -21,12 +26,14 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
 import apc.appcradle.kotlinjc_friendsactivity_app.LocalAppTypography
 import apc.appcradle.kotlinjc_friendsactivity_app.R
@@ -82,6 +89,7 @@ object AppComponents {
         login: String?,
         screenRoute: String?,
     ) {
+        val iconsPadding = 6.dp
         val context = LocalContext.current
 
         val titleText = when (screenRoute) {
@@ -111,17 +119,34 @@ object AppComponents {
                     val intent = Intent(Intent.ACTION_VIEW, TELEGRAM_URL.toUri())
                     context.startActivity(intent)
                 }) {
-                    Icon(
-                        imageVector = Icons.Default.MailOutline,
-                        contentDescription = "send message",
-                    )
+                    Box(
+                        Modifier
+                            .padding(iconsPadding)
+                            .fillMaxHeight()
+                            .aspectRatio(1f)
+                    ) {
+                        Icon(
+                            modifier = Modifier.fillMaxSize(),
+                            painter = painterResource(R.drawable.telegram),
+                            tint = Color(0xFF0088CC),
+                            contentDescription = "send message",
+                        )
+                    }
                 }
                 IconButton(onClick = { isDialogVisible = !isDialogVisible }) {
-                    Icon(
-                        imageVector = Icons.Default.Favorite,
-                        contentDescription = "donate",
-                        tint = Color.Red
-                    )
+                    Box(
+                        Modifier
+                            .padding(iconsPadding)
+                            .fillMaxHeight()
+                            .aspectRatio(1f)
+                    ) {
+                        Icon(
+                            modifier = Modifier.fillMaxSize(),
+                            imageVector = Icons.Default.Favorite,
+                            contentDescription = "donate",
+                            tint = Color.Red
+                        )
+                    }
                 }
             }
         )

@@ -11,6 +11,7 @@ import apc.appcradle.kotlinjc_friendsactivity_app.utils.LoggerType
 import apc.appcradle.kotlinjc_friendsactivity_app.utils.logger
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -18,6 +19,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.util.concurrent.atomic.AtomicInteger
 import kotlin.time.Duration.Companion.seconds
 
@@ -48,6 +50,8 @@ class AppSensorsManager(
     private var stepsWithoutChecking = 0
     private var isFirstStart = true
     private var lastTotalCounterSteps: Int? = null
+
+    private var refreshJob: Job? = null
 
     @Volatile
     private var isSavingInProgress = false
@@ -127,7 +131,6 @@ class AppSensorsManager(
             val currentLogin = tokenRepository.loginFlow.first()
             statsRepository.truncate(currentLogin)
             currentSteps.set(0)
-//            currentSteps = 0
             stepsWithoutChecking = 0
             isFirstStart = true
             lastTotalCounterSteps = null
@@ -135,24 +138,24 @@ class AppSensorsManager(
         }
     }
 
-    private fun loggedLoadingSteps() {
-        scopeIO.launch {
-            isDataLoaded = false
+    private suspend fun loggedLoadingSteps() = withContext(Dispatchers.IO) {
+        isDataLoaded = false
 
-            val loadedSteps = statsRepository.fetchSteps(actualLogin)
-            _allSteps.value = loadedSteps.allSteps
-            _weeklySteps.value = loadedSteps.weeklySteps
-            stepsInitialWeekly = loadedSteps.weeklySteps
-            currentSteps.set(loadedSteps.weeklySteps)
-//            currentSteps = loadedSteps.weeklySteps
+        val loadedSteps = statsRepository.fetchSteps(actualLogin)
+        _allSteps.value = loadedSteps.allSteps
+        _weeklySteps.value = loadedSteps.weeklySteps
+        stepsInitialWeekly = loadedSteps.weeklySteps
+        currentSteps.set(loadedSteps.weeklySteps)
 
-            isFirstStart = true
+        isFirstStart = true
 
-            isDataLoaded = true
-        }
+        isDataLoaded = true
     }
 
-    fun refreshSteps() = loggedLoadingSteps()
+    suspend fun refreshSteps() {
+        refreshJob?.cancel()
+        loggedLoadingSteps()
+    }
 
     private fun truncateLoadingSteps() {
         scopeIO.launch {
@@ -161,7 +164,6 @@ class AppSensorsManager(
             _weeklySteps.value = loadedSteps.weeklySteps
             stepsInitialWeekly = loadedSteps.weeklySteps
             currentSteps.set(loadedSteps.weeklySteps)
-//            currentSteps = loadedSteps.weeklySteps
         }
     }
 
