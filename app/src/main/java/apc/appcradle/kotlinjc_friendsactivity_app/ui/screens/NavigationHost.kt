@@ -15,6 +15,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.work.WorkInfo
@@ -22,7 +23,7 @@ import apc.appcradle.kotlinjc_friendsactivity_app.MainViewModel
 import apc.appcradle.kotlinjc_friendsactivity_app.data.steps_data.AppSensorsManager
 import apc.appcradle.kotlinjc_friendsactivity_app.ui.app_components.AppBackgroundImage
 import apc.appcradle.kotlinjc_friendsactivity_app.ui.app_components.AppBottomNavBar
-import apc.appcradle.kotlinjc_friendsactivity_app.ui.app_components.AppComponents
+import apc.appcradle.kotlinjc_friendsactivity_app.ui.app_components.AppTopBar
 import apc.appcradle.kotlinjc_friendsactivity_app.ui.screens.auth.authScreen
 import apc.appcradle.kotlinjc_friendsactivity_app.ui.screens.auth.registration.nav.registerScreen
 import apc.appcradle.kotlinjc_friendsactivity_app.ui.screens.auth.registration.nav.toRegisterScreen
@@ -30,6 +31,7 @@ import apc.appcradle.kotlinjc_friendsactivity_app.ui.screens.main.nav.mainScreen
 import apc.appcradle.kotlinjc_friendsactivity_app.ui.screens.main.nav.toMainScreen
 import apc.appcradle.kotlinjc_friendsactivity_app.ui.screens.ratings.nav.ratingsScreen
 import apc.appcradle.kotlinjc_friendsactivity_app.ui.screens.settings.nav.settingsScreen
+import apc.appcradle.kotlinjc_friendsactivity_app.ui.screens.splash.SplashScreenUi
 import apc.appcradle.kotlinjc_friendsactivity_app.utils.LoggerType
 import apc.appcradle.kotlinjc_friendsactivity_app.utils.formatDeadline
 import apc.appcradle.kotlinjc_friendsactivity_app.utils.logger
@@ -96,6 +98,7 @@ fun NavigationHost() {
         }
     }
     LaunchedEffect(authState.userLogin) { viewModel.refreshSteps() }
+
     CompositionLocalProvider(
         LocalSensorManager provides sensorManager,
     ) {
@@ -107,7 +110,7 @@ fun NavigationHost() {
             snackbarHost = { SnackbarHost(snackHostState) },
             topBar = {
                 if (!isAuthScreen)
-                    AppComponents.AppTopBar(
+                    AppTopBar(
                         login = authState.userLogin,
                         screenRoute = navBackStackEntry?.destination?.route
                     )
@@ -122,7 +125,14 @@ fun NavigationHost() {
             }
         ) { contentPadding ->
             val startDestination =
-                if (authState.isLoggedIn) Destinations.MAIN.route else Destinations.AUTH.route
+                if (state.value.isAppReady && authState.isLoggedIn) {
+                    Destinations.MAIN.route
+                } else if (state.value.isAppReady && !authState.isLoggedIn) {
+                    Destinations.AUTH.route
+                } else {
+                    Destinations.SPLASH.route
+                }
+//            val startDestination = if (authState.isLoggedIn) Destinations.MAIN.route else Destinations.AUTH.route
             Box {
                 AppBackgroundImage()
                 NavHost(
@@ -130,6 +140,9 @@ fun NavigationHost() {
                     navController = navController,
                     startDestination = startDestination
                 ) {
+                    composable(route = Destinations.SPLASH.route) {
+                        SplashScreenUi()
+                    }
                     authScreen(
                         toRegisterScreen = navController::toRegisterScreen,
                         transferState = transferState,

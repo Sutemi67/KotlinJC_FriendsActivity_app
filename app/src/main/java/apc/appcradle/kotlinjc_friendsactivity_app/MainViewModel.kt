@@ -89,9 +89,7 @@ class MainViewModel(
     private fun updateLoginState() {
         viewModelScope.launch {
             tokenRepositoryImpl.loginFlow.collect { login ->
-                _state.update {
-                    it.copy(userLogin = login)
-                }
+                _state.update { it.copy(userLogin = login) }
             }
         }
     }
@@ -175,7 +173,7 @@ class MainViewModel(
             _state.update {
                 it.copy(
                     isLoggedIn = true,
-                    userLogin = null
+                    userLogin = null, isAppReady = true
                 )
             }
         }
@@ -193,7 +191,8 @@ class MainViewModel(
                     _state.update {
                         it.copy(
                             isLoggedIn = true,
-                            userLogin = null
+                            userLogin = null,
+                            isAppReady = true
                         )
                     }
                 }
@@ -205,7 +204,7 @@ class MainViewModel(
                 else -> {
                     val login = tokenRepositoryImpl.getSavedLogin()
                     _state.update {
-                        it.copy(isLoggedIn = true)
+                        it.copy(isLoggedIn = true, isAppReady = true)
                     }
                     Log.d("dataTransfer", "Token is valid. Loading main screen for login: $login")
                 }

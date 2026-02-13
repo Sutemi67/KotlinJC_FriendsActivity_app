@@ -30,6 +30,7 @@ data class AppState(
 
     //LoadingState
     val isUserStepsLoading: Boolean = false,
+    val isAppReady: Boolean = false,
 
     //Trancate worker status
     val trancateWorkerStatus: WorkInfo? = null

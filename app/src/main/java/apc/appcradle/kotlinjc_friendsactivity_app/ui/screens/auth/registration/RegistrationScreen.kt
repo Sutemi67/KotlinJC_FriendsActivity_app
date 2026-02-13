@@ -26,7 +26,7 @@ import androidx.compose.ui.unit.dp
 import apc.appcradle.kotlinjc_friendsactivity_app.R
 import apc.appcradle.kotlinjc_friendsactivity_app.data.network.model.DataTransferState
 import apc.appcradle.kotlinjc_friendsactivity_app.ui.app_components.AppBackgroundImage
-import apc.appcradle.kotlinjc_friendsactivity_app.ui.app_components.AppComponents
+import apc.appcradle.kotlinjc_friendsactivity_app.ui.app_components.AppInputField
 import apc.appcradle.kotlinjc_friendsactivity_app.ui.theme.KotlinJC_FriendsActivity_appTheme
 
 @Composable
@@ -61,7 +61,7 @@ fun RegistrationScreen(
                 text = stringResource(R.string.register_screen_greeting),
                 textAlign = TextAlign.Center
             )
-            AppComponents.AppInputField(
+            AppInputField(
                 label = stringResource(R.string.auth_screen_login_placeholder),
                 value = loginText,
                 isError = isLoginError,
@@ -70,7 +70,7 @@ fun RegistrationScreen(
                     isLoginError = false
                 }
             )
-            AppComponents.AppInputField(
+            AppInputField(
                 label = stringResource(R.string.auth_screen_password_placeholder),
                 value = passText,
                 isError = isPasswordError,

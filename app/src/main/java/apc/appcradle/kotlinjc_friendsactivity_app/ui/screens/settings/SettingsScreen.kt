@@ -35,8 +35,8 @@ import apc.appcradle.kotlinjc_friendsactivity_app.LocalAppTypography
 import apc.appcradle.kotlinjc_friendsactivity_app.R
 import apc.appcradle.kotlinjc_friendsactivity_app.domain.model.AppState
 import apc.appcradle.kotlinjc_friendsactivity_app.domain.model.AppThemes
-import apc.appcradle.kotlinjc_friendsactivity_app.ui.app_components.AppComponents.AppText
 import apc.appcradle.kotlinjc_friendsactivity_app.ui.app_components.AppDialogs
+import apc.appcradle.kotlinjc_friendsactivity_app.ui.app_components.AppText
 import apc.appcradle.kotlinjc_friendsactivity_app.ui.theme.CompactText
 import apc.appcradle.kotlinjc_friendsactivity_app.ui.theme.ExpandedText
 import apc.appcradle.kotlinjc_friendsactivity_app.ui.theme.KotlinJC_FriendsActivity_appTheme

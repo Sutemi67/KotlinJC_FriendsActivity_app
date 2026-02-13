@@ -38,7 +38,7 @@ fun AppBottomNavBar(
                     )
                 },
                 label = {
-                    AppComponents.AppText(
+                    AppText(
                         stringResource(item.label),
                         appTextStyle = AppTextStyles.Body
                     )
