@@ -22,9 +22,9 @@ android {
         minSdk = 26
         targetSdk = 36
 
-        // изменение от 02 января 2026
-        versionCode = 10
-        versionName = "2.0.1"
+        // изменение от 13 февраля 2026
+        versionCode = 11
+        versionName = "2.0.2"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -50,6 +50,10 @@ android {
     buildFeatures {
         compose = true
         buildConfig = true
+    }
+    composeCompiler {
+        reportsDestination = layout.buildDirectory.dir("compose_compiler")
+        metricsDestination = layout.buildDirectory.dir("compose_compiler")
     }
 }
 

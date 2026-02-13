@@ -50,6 +50,12 @@ enum class Destinations(
         Icons.Filled.Settings,
         Icons.Filled.Settings,
         "SettingsScreenRoute",
+        { it.toSettingsScreen() }),
+    SPLASH(
+        R.string.navigation_buttons_settings,
+        Icons.Filled.Settings,
+        Icons.Filled.Settings,
+        "SplashScreenRoute",
         { it.toSettingsScreen() });
 
     companion object
@@ -57,9 +63,12 @@ enum class Destinations(
 
 val Destinations.Companion.noAuthDestinations: List<Destinations>
     get() = Destinations.entries.filter { route ->
-        route != Destinations.AUTH && route != Destinations.REGISTER
+        route != Destinations.AUTH && route != Destinations.REGISTER && route != Destinations.SPLASH
     }
 val Destinations.Companion.offlineDestinations: List<Destinations>
     get() = Destinations.entries.filter { route ->
-        route != Destinations.AUTH && route != Destinations.REGISTER && route != Destinations.RATINGS
+        route != Destinations.AUTH &&
+                route != Destinations.REGISTER &&
+                route != Destinations.RATINGS &&
+                route != Destinations.SPLASH
     }

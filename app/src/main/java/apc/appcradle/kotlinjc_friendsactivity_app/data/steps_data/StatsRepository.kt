@@ -20,17 +20,24 @@ class StatsRepository(
     private val workManager: WorkManager,
     private val sharedPreferences: SharedPreferences,
 ) {
-    private var playersList = mutableListOf<PlayerActivityData>()
     private var isFirstAppStart = true
 
-    private fun percentageMax() {
+    private fun setPercentageAndSort(playersList: List<PlayerActivityData>): List<PlayerActivityData> {
         val maxSteps = playersList.maxOfOrNull { it.weeklySteps } ?: 0
-        playersList.forEach { player ->
-            player.percentage = if (maxSteps > 0) {
-                player.weeklySteps.toFloat() / maxSteps
-            } else 0f
-        }
-        playersList.sortByDescending { it.weeklySteps }
+        return playersList
+            .toMutableList()
+            .map { player ->
+                PlayerActivityData(
+                    login = player.login,
+                    steps = player.steps,
+                    weeklySteps = player.weeklySteps,
+                    percentage = if (maxSteps > 0) {
+                        player.weeklySteps.toFloat() / maxSteps
+                    } else 0f
+                )
+            }
+            .sortedByDescending { it.weeklySteps }
+            .toList()
     }
 
     suspend fun syncData(login: String, steps: Int, weeklySteps: Int): PlayersListSyncData {
@@ -51,12 +58,11 @@ class StatsRepository(
                     )
                 )
             }
-            playersList = newPlayersList
-            percentageMax()
-            val sumKm = calcSumKm()
-            val difference = calcLeaderDiff(login)
+            val sortedList = setPercentageAndSort(newPlayersList)
+            val sumKm = calcSumKm(sortedList)
+            val difference = calcLeaderDiff(login, sortedList)
             return PlayersListSyncData(
-                playersList = playersList,
+                playersList = sortedList,
                 summaryKm = sumKm,
                 leaderDifferenceKm = difference,
                 errorMessage = data.errorMessage,
@@ -69,20 +75,20 @@ class StatsRepository(
         }
     }
 
-    private fun calcSumKm(): Double {
+    private fun calcSumKm(sortedList: List<PlayerActivityData>): Double {
         var stepsSum = 0
-        if (playersList.isNotEmpty()) {
-            playersList.forEach { player ->
+        if (sortedList.isNotEmpty()) {
+            sortedList.forEach { player ->
                 stepsSum += player.weeklySteps
             }
         }
         return stepsSum * USER_STEP_DEFAULT / 1000
     }
 
-    private fun calcLeaderDiff(login: String?): Double {
-        if (playersList.isEmpty() || login.isNullOrBlank()) return 0.0
-        val leader = playersList.maxByOrNull { it.weeklySteps } ?: return 0.0
-        val player = playersList.firstOrNull { it.login == login } ?: return 0.0
+    private fun calcLeaderDiff(login: String?, sortedList: List<PlayerActivityData>): Double {
+        if (sortedList.isEmpty() || login.isNullOrBlank()) return 0.0
+        val leader = sortedList.maxByOrNull { it.weeklySteps } ?: return 0.0
+        val player = sortedList.firstOrNull { it.login == login } ?: return 0.0
         val diffKm = (leader.weeklySteps - player.weeklySteps) * USER_STEP_DEFAULT / 1000
         Log.e("difference", "$leader\n$player\n$diffKm")
         return diffKm

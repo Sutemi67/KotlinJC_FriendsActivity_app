@@ -1,9 +1,11 @@
 package apc.appcradle.kotlinjc_friendsactivity_app.domain.model
 
+import androidx.compose.runtime.Stable
 import androidx.work.WorkInfo
 import apc.appcradle.kotlinjc_friendsactivity_app.ui.screens.Destinations
 import apc.appcradle.kotlinjc_friendsactivity_app.utils.USER_STEP_DEFAULT
 
+@Stable
 data class AppState(
 
     //Login and Permissions
@@ -27,7 +29,8 @@ data class AppState(
     val userChampionCount: Int = 0,
 
     //LoadingState
-    val isLoading: Boolean = false,
+    val isUserStepsLoading: Boolean = false,
+    val isAppReady: Boolean = false,
 
     //Trancate worker status
     val trancateWorkerStatus: WorkInfo? = null

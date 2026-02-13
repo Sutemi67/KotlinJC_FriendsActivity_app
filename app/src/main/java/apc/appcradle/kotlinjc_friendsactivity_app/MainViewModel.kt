@@ -17,6 +17,8 @@ import apc.appcradle.kotlinjc_friendsactivity_app.data.steps_data.StatsRepositor
 import apc.appcradle.kotlinjc_friendsactivity_app.domain.SettingsRepository
 import apc.appcradle.kotlinjc_friendsactivity_app.domain.model.AppState
 import apc.appcradle.kotlinjc_friendsactivity_app.domain.model.AppThemes
+import apc.appcradle.kotlinjc_friendsactivity_app.domain.model.AuthData
+import apc.appcradle.kotlinjc_friendsactivity_app.domain.model.SettingsData
 import apc.appcradle.kotlinjc_friendsactivity_app.services.PermissionManager
 import apc.appcradle.kotlinjc_friendsactivity_app.services.StepCounterService
 import apc.appcradle.kotlinjc_friendsactivity_app.utils.LoggerType
@@ -25,8 +27,12 @@ import apc.appcradle.kotlinjc_friendsactivity_app.utils.formatDeadline
 import apc.appcradle.kotlinjc_friendsactivity_app.utils.logger
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -42,6 +48,29 @@ class MainViewModel(
 ) : ViewModel() {
     private var _state = MutableStateFlow(AppState())
     val state: StateFlow<AppState> = _state.asStateFlow()
+
+    // 1. Поток чисто для темы и настроек (нужен в MainActivity)
+    val settingsState: StateFlow<SettingsData> = _state
+        .map {
+            // Превращаем AppState в SettingsData
+            SettingsData(it.currentTheme, it.userScale, it.userStepLength)
+        }
+        .distinctUntilChanged() // <--- ГЛАВНЫЙ ИГРОК: пропускает только если данные РЕАЛЬНО изменились
+        .stateIn(
+            scope = viewModelScope, // Жизненный цикл
+            started = SharingStarted.WhileSubscribed(5000), // Оптимизация ресурсов
+            initialValue = SettingsData()
+        )
+
+
+    // 2. Поток чисто для логина/навигации (нужен в NavigationHost)
+    val authState: StateFlow<AuthData> = _state
+        .map { AuthData(it.isLoggedIn, it.userLogin) }
+        .distinctUntilChanged().stateIn(
+            scope = viewModelScope, // Жизненный цикл
+            started = SharingStarted.WhileSubscribed(5000), // Оптимизация ресурсов
+            initialValue = AuthData()
+        )
 
     private var _transferState = MutableStateFlow(DataTransferState())
     val transferState: StateFlow<DataTransferState> = _transferState.asStateFlow()
@@ -60,18 +89,16 @@ class MainViewModel(
     private fun updateLoginState() {
         viewModelScope.launch {
             tokenRepositoryImpl.loginFlow.collect { login ->
-                _state.update {
-                    it.copy(userLogin = login)
-                }
+                _state.update { it.copy(userLogin = login) }
             }
         }
     }
 
     fun refreshSteps() {
         viewModelScope.launch {
-            _state.update { it.copy(isLoading = true) }
+            _state.update { it.copy(isUserStepsLoading = true) }
             sensorsManager.refreshSteps()
-            _state.update { it.copy(isLoading = false) }
+            _state.update { it.copy(isUserStepsLoading = false) }
         }
     }
 
@@ -124,7 +151,7 @@ class MainViewModel(
         saveSettings()
     }
 
-    //endregion
+//endregion
 
     //region Authentification
     fun logout() {
@@ -146,7 +173,7 @@ class MainViewModel(
             _state.update {
                 it.copy(
                     isLoggedIn = true,
-                    userLogin = null
+                    userLogin = null, isAppReady = true
                 )
             }
         }
@@ -164,19 +191,30 @@ class MainViewModel(
                     _state.update {
                         it.copy(
                             isLoggedIn = true,
-                            userLogin = null
+//                            userLogin = null,
+                            isAppReady = true
                         )
                     }
                 }
 
                 null -> {
+                    _state.update {
+                        it.copy(
+                            isLoggedIn = false,
+//                            userLogin = null,
+                            isAppReady = true
+                        )
+                    }
                     Log.d("dataTransfer", "Permanent token is not valid...")
                 }
 
                 else -> {
-                    val login = tokenRepositoryImpl.getLogin()
+                    val login = tokenRepositoryImpl.getSavedLogin()
                     _state.update {
-                        it.copy(isLoggedIn = true)
+                        it.copy(
+                            isLoggedIn = true,
+                            isAppReady = true
+                        )
                     }
                     Log.d("dataTransfer", "Token is valid. Loading main screen for login: $login")
                 }
@@ -256,7 +294,7 @@ class MainViewModel(
             }
         }
     }
-    //endregion
+//endregion
 
     //region Settings
     fun changeTheme(currentTheme: AppThemes) {
@@ -296,9 +334,9 @@ class MainViewModel(
             )
         }
     }
-    //endregion
+//endregion
 
-    //region Sync Data
+//region Sync Data
 
     suspend fun syncData(login: String, steps: Int, weeklySteps: Int): PlayersListSyncData {
         return withContext(Dispatchers.IO) {

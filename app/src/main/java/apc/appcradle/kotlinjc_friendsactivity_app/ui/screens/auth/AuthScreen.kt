@@ -43,8 +43,8 @@ import androidx.compose.ui.unit.dp
 import apc.appcradle.kotlinjc_friendsactivity_app.R
 import apc.appcradle.kotlinjc_friendsactivity_app.data.network.model.DataTransferState
 import apc.appcradle.kotlinjc_friendsactivity_app.ui.app_components.AppBackgroundImage
-import apc.appcradle.kotlinjc_friendsactivity_app.ui.app_components.AppComponents
-import apc.appcradle.kotlinjc_friendsactivity_app.ui.app_components.AppComponents.AppText
+import apc.appcradle.kotlinjc_friendsactivity_app.ui.app_components.AppInputField
+import apc.appcradle.kotlinjc_friendsactivity_app.ui.app_components.AppText
 import apc.appcradle.kotlinjc_friendsactivity_app.ui.theme.KotlinJC_FriendsActivity_appTheme
 
 private enum class FieldState {
@@ -107,7 +107,7 @@ fun AuthScreen(
                 ) { state ->
                     when (state) {
                         FieldState.Login -> {
-                            AppComponents.AppInputField(
+                            AppInputField(
                                 modifier = Modifier
                                     .padding(vertical = 5.dp, horizontal = 35.dp)
                                     .sensitiveContent(),
@@ -125,7 +125,7 @@ fun AuthScreen(
                         }
 
                         FieldState.Password -> {
-                            AppComponents.AppInputField(
+                            AppInputField(
                                 modifier = Modifier
                                     .padding(vertical = 5.dp, horizontal = 35.dp)
                                     .focusRequester(passwordFocusRequester)
