@@ -191,20 +191,30 @@ class MainViewModel(
                     _state.update {
                         it.copy(
                             isLoggedIn = true,
-                            userLogin = null,
+//                            userLogin = null,
                             isAppReady = true
                         )
                     }
                 }
 
                 null -> {
+                    _state.update {
+                        it.copy(
+                            isLoggedIn = false,
+//                            userLogin = null,
+                            isAppReady = true
+                        )
+                    }
                     Log.d("dataTransfer", "Permanent token is not valid...")
                 }
 
                 else -> {
                     val login = tokenRepositoryImpl.getSavedLogin()
                     _state.update {
-                        it.copy(isLoggedIn = true, isAppReady = true)
+                        it.copy(
+                            isLoggedIn = true,
+                            isAppReady = true
+                        )
                     }
                     Log.d("dataTransfer", "Token is valid. Loading main screen for login: $login")
                 }

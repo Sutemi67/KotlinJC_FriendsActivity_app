@@ -163,9 +163,7 @@ fun SettingsScreen(
             )
         }
         ElevatedCard(
-            modifier = Modifier
-                .padding(vertical = 5.dp)
-                .alpha(0.4f),
+            modifier = Modifier.padding(vertical = 5.dp, horizontal = 20.dp)
         ) {
             Row(
                 modifier = Modifier
@@ -191,17 +189,18 @@ fun SettingsScreen(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 20.dp),
-            onClick = onLogoutClick
+            onClick = { isThemeDialogVisible = true }
         ) {
-            AppText(text = stringResource(R.string.settings_screen_logout))
+            AppText(text = stringResource(R.string.settings_screen_change_theme))
         }
         ElevatedButton(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 20.dp),
-            onClick = { isThemeDialogVisible = true }
+                .padding(horizontal = 70.dp)
+                .alpha(0.6f),
+            onClick = onLogoutClick
         ) {
-            AppText(text = stringResource(R.string.settings_screen_change_theme))
+            AppText(text = stringResource(R.string.settings_screen_logout))
         }
     }
 

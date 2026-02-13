@@ -45,7 +45,7 @@ val LocalSensorManager =
 @Composable
 fun NavigationHost() {
     val viewModel: MainViewModel = koinViewModel()
-    val state = viewModel.state.collectAsState()
+    val state = viewModel.state.collectAsState().value
     val authState = viewModel.authState.collectAsState().value
     val navController = rememberNavController()
     val navBackStackEntry by navController.currentBackStackEntryAsState()
@@ -67,18 +67,18 @@ fun NavigationHost() {
     val snackHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
 
-    LaunchedEffect(state.value.trancateWorkerStatus) {
+    LaunchedEffect(state.trancateWorkerStatus) {
         scope.launch {
             if (authState.userLogin == null) return@launch
-            if (state.value.trancateWorkerStatus == null || state.value.trancateWorkerStatus!!.state.isFinished) {
+            if (state.trancateWorkerStatus == null || state.trancateWorkerStatus.state.isFinished) {
                 snackHostState.showSnackbar(message = "Планируется еженедельное обнуление...\nИзменения вступят в силу после перезапуска.")
             } else {
-                when (state.value.trancateWorkerStatus!!.state) {
+                when (state.trancateWorkerStatus.state) {
                     WorkInfo.State.ENQUEUED -> {
                         snackHostState.showSnackbar(
                             message = "Статус обнуления: Запланировано.\nПодведение итогов через: ${
                                 formatDeadline(
-                                    state.value.trancateWorkerStatus!!.nextScheduleTimeMillis
+                                    state.trancateWorkerStatus.nextScheduleTimeMillis
                                 )
                             }"
                         )
@@ -86,9 +86,9 @@ fun NavigationHost() {
 
                     else -> {
                         snackHostState.showSnackbar(
-                            message = "Статус обнуления: ${state.value.trancateWorkerStatus!!.state}\nПодведение итогов через: ${
+                            message = "Статус обнуления: ${state.trancateWorkerStatus.state}\nПодведение итогов через: ${
                                 formatDeadline(
-                                    state.value.trancateWorkerStatus!!.nextScheduleTimeMillis
+                                    state.trancateWorkerStatus.nextScheduleTimeMillis
                                 )
                             }"
                         )
@@ -125,14 +125,13 @@ fun NavigationHost() {
             }
         ) { contentPadding ->
             val startDestination =
-                if (state.value.isAppReady && authState.isLoggedIn) {
+                if (state.isAppReady && authState.isLoggedIn) {
                     Destinations.MAIN.route
-                } else if (state.value.isAppReady && !authState.isLoggedIn) {
+                } else if (state.isAppReady) {
                     Destinations.AUTH.route
                 } else {
                     Destinations.SPLASH.route
                 }
-//            val startDestination = if (authState.isLoggedIn) Destinations.MAIN.route else Destinations.AUTH.route
             Box {
                 AppBackgroundImage()
                 NavHost(
@@ -173,7 +172,7 @@ fun NavigationHost() {
                         }
                     )
                     settingsScreen(
-                        state = state.value,
+                        state = state,
                         onLogoutClick = viewModel::logout,
                         onThemeClick = { viewModel.changeTheme(it) },
                         onNickNameClick = { login, newLogin ->
