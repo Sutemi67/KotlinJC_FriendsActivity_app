@@ -20,7 +20,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.work.WorkInfo
 import apc.appcradle.kotlinjc_friendsactivity_app.features.main.MainViewModel
-import apc.appcradle.kotlinjc_friendsactivity_app.data.steps_data.AppSensorsManager
+import apc.appcradle.kotlinjc_friendsactivity_app.core.services.AppSensorsManager
 import apc.appcradle.kotlinjc_friendsactivity_app.features._common_components.AppBackgroundImage
 import apc.appcradle.kotlinjc_friendsactivity_app.features._common_components.AppBottomNavBar
 import apc.appcradle.kotlinjc_friendsactivity_app.features._common_components.AppTopBar

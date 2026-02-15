@@ -3,8 +3,8 @@ package apc.appcradle.kotlinjc_friendsactivity_app.features.settings.nav
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
-import apc.appcradle.kotlinjc_friendsactivity_app.domain.model.AppState
-import apc.appcradle.kotlinjc_friendsactivity_app.core.theme.AppThemes
+import apc.appcradle.kotlinjc_friendsactivity_app.features.main.model.AppState
+import apc.appcradle.kotlinjc_friendsactivity_app.core.app_theme.AppThemes
 import apc.appcradle.kotlinjc_friendsactivity_app.features.Destinations
 import apc.appcradle.kotlinjc_friendsactivity_app.features.settings.SettingsScreen
 

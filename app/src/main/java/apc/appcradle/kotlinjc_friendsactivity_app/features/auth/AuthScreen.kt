@@ -37,8 +37,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import apc.appcradle.kotlinjc_friendsactivity_app.R
-import apc.appcradle.kotlinjc_friendsactivity_app.core.theme.KotlinJC_FriendsActivity_appTheme
-import apc.appcradle.kotlinjc_friendsactivity_app.data.network.model.DataTransferState
+import apc.appcradle.kotlinjc_friendsactivity_app.core.app_theme.KotlinJC_FriendsActivity_appTheme
+import apc.appcradle.kotlinjc_friendsactivity_app.network.model.DataTransferState
 import apc.appcradle.kotlinjc_friendsactivity_app.features._common_components.AppBackgroundImage
 import apc.appcradle.kotlinjc_friendsactivity_app.features._common_components.AppInputField
 import apc.appcradle.kotlinjc_friendsactivity_app.features._common_components.AppText

@@ -10,7 +10,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import apc.appcradle.kotlinjc_friendsactivity_app.domain.model.AppState
+import apc.appcradle.kotlinjc_friendsactivity_app.features.main.model.AppState
 import apc.appcradle.kotlinjc_friendsactivity_app.core.services.PermissionManager
 import apc.appcradle.kotlinjc_friendsactivity_app.features.LocalSensorManager
 import apc.appcradle.kotlinjc_friendsactivity_app.core.utils.LoggerType

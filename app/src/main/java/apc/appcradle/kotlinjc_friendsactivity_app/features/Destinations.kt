@@ -8,8 +8,8 @@ import androidx.compose.material.icons.filled.Settings
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.navigation.NavController
 import apc.appcradle.kotlinjc_friendsactivity_app.R
-import apc.appcradle.kotlinjc_friendsactivity_app.features.auth.nav.toRegisterScreen
 import apc.appcradle.kotlinjc_friendsactivity_app.features.auth.nav.toAuthScreen
+import apc.appcradle.kotlinjc_friendsactivity_app.features.auth.nav.toRegisterScreen
 import apc.appcradle.kotlinjc_friendsactivity_app.features.main.nav.toMainScreen
 import apc.appcradle.kotlinjc_friendsactivity_app.features.ratings.nav.toRatingsScreen
 import apc.appcradle.kotlinjc_friendsactivity_app.features.settings.nav.toSettingsScreen
@@ -63,8 +63,11 @@ enum class Destinations(
 
 val Destinations.Companion.noAuthDestinations: List<Destinations>
     get() = Destinations.entries.filter { route ->
-        route != Destinations.AUTH && route != Destinations.REGISTER && route != Destinations.SPLASH
+        route != Destinations.AUTH &&
+                route != Destinations.REGISTER &&
+                route != Destinations.SPLASH
     }
+
 val Destinations.Companion.offlineDestinations: List<Destinations>
     get() = Destinations.entries.filter { route ->
         route != Destinations.AUTH &&

@@ -29,16 +29,16 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import apc.appcradle.kotlinjc_friendsactivity_app.BuildConfig
-import apc.appcradle.kotlinjc_friendsactivity_app.core.LocalAppTypography
+import apc.appcradle.kotlinjc_friendsactivity_app.LocalAppTypography
 import apc.appcradle.kotlinjc_friendsactivity_app.R
-import apc.appcradle.kotlinjc_friendsactivity_app.domain.model.AppState
-import apc.appcradle.kotlinjc_friendsactivity_app.core.theme.AppThemes
+import apc.appcradle.kotlinjc_friendsactivity_app.features.main.model.AppState
+import apc.appcradle.kotlinjc_friendsactivity_app.core.app_theme.AppThemes
 import apc.appcradle.kotlinjc_friendsactivity_app.features._common_components.AppDialogs
 import apc.appcradle.kotlinjc_friendsactivity_app.features._common_components.AppText
-import apc.appcradle.kotlinjc_friendsactivity_app.core.theme.CompactText
-import apc.appcradle.kotlinjc_friendsactivity_app.core.theme.ExpandedText
-import apc.appcradle.kotlinjc_friendsactivity_app.core.theme.KotlinJC_FriendsActivity_appTheme
-import apc.appcradle.kotlinjc_friendsactivity_app.core.theme.MediumText
+import apc.appcradle.kotlinjc_friendsactivity_app.core.app_theme.CompactText
+import apc.appcradle.kotlinjc_friendsactivity_app.core.app_theme.ExpandedText
+import apc.appcradle.kotlinjc_friendsactivity_app.core.app_theme.KotlinJC_FriendsActivity_appTheme
+import apc.appcradle.kotlinjc_friendsactivity_app.core.app_theme.MediumText
 
 @Composable
 fun SettingsScreen(

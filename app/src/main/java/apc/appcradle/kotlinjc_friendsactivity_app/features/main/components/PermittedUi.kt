@@ -33,9 +33,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import apc.appcradle.kotlinjc_friendsactivity_app.R
-import apc.appcradle.kotlinjc_friendsactivity_app.core.theme.AppTextStyles
+import apc.appcradle.kotlinjc_friendsactivity_app.core.app_theme.AppTextStyles
 import apc.appcradle.kotlinjc_friendsactivity_app.features._common_components.AppText
-import apc.appcradle.kotlinjc_friendsactivity_app.core.theme.KotlinJC_FriendsActivity_appTheme
+import apc.appcradle.kotlinjc_friendsactivity_app.core.app_theme.KotlinJC_FriendsActivity_appTheme
 import apc.appcradle.kotlinjc_friendsactivity_app.core.utils.format
 import kotlin.math.roundToInt
 

@@ -25,11 +25,11 @@ import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import apc.appcradle.kotlinjc_friendsactivity_app.data.configs.Distances
-import apc.appcradle.kotlinjc_friendsactivity_app.data.network.model.PlayerActivityData
-import apc.appcradle.kotlinjc_friendsactivity_app.core.theme.AppTextStyles
+import apc.appcradle.kotlinjc_friendsactivity_app.features._common_components.Distances
+import apc.appcradle.kotlinjc_friendsactivity_app.network.model.PlayerActivityData
+import apc.appcradle.kotlinjc_friendsactivity_app.core.app_theme.AppTextStyles
 import apc.appcradle.kotlinjc_friendsactivity_app.features._common_components.AppText
-import apc.appcradle.kotlinjc_friendsactivity_app.core.theme.KotlinJC_FriendsActivity_appTheme
+import apc.appcradle.kotlinjc_friendsactivity_app.core.app_theme.KotlinJC_FriendsActivity_appTheme
 import apc.appcradle.kotlinjc_friendsactivity_app.core.utils.APP_ROUNDED_SHAPE
 import apc.appcradle.kotlinjc_friendsactivity_app.core.utils.USER_STEP_DEFAULT
 import apc.appcradle.kotlinjc_friendsactivity_app.core.utils.format
