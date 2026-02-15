@@ -67,7 +67,7 @@ fun NavigationHost() {
     val snackHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
 
-    LaunchedEffect(state.trancateWorkerStatus) {
+    LaunchedEffect(state.trancateWorkerStatus, state.userLogin) {
         scope.launch {
             if (authState.userLogin == null) return@launch
             if (state.trancateWorkerStatus == null || state.trancateWorkerStatus.state.isFinished) {
