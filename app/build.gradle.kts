@@ -22,9 +22,9 @@ android {
         minSdk = 26
         targetSdk = 36
 
-        // изменение от 13 февраля 2026
-        versionCode = 11
-        versionName = "2.0.2"
+        // изменение от 15 февраля 2026
+        versionCode = 12
+        versionName = "2.0.3"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
