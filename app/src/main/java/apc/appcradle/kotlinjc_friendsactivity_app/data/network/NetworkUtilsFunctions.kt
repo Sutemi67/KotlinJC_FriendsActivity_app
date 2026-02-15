@@ -15,9 +15,7 @@ import io.ktor.http.ContentType
 import io.ktor.http.contentType
 import io.ktor.http.isSuccess
 
-enum class RequestsType {
-    GET, POST
-}
+enum class RequestsType { GET, POST }
 
 class NetworkUtilsFunctions(
     val apiService: HttpClient

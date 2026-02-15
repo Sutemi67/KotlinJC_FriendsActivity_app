@@ -2,8 +2,9 @@ package apc.appcradle.kotlinjc_friendsactivity_app.domain.model
 
 import androidx.compose.runtime.Stable
 import androidx.work.WorkInfo
-import apc.appcradle.kotlinjc_friendsactivity_app.ui.screens.Destinations
-import apc.appcradle.kotlinjc_friendsactivity_app.utils.USER_STEP_DEFAULT
+import apc.appcradle.kotlinjc_friendsactivity_app.core.theme.AppThemes
+import apc.appcradle.kotlinjc_friendsactivity_app.features.Destinations
+import apc.appcradle.kotlinjc_friendsactivity_app.core.utils.USER_STEP_DEFAULT
 
 @Stable
 data class AppState(

@@ -1,6 +1,6 @@
 package apc.appcradle.kotlinjc_friendsactivity_app.data.network
 
-import apc.appcradle.kotlinjc_friendsactivity_app.data.configs.TokenRepositoryImpl
+import apc.appcradle.kotlinjc_friendsactivity_app.data.configs.TokenRepository
 import apc.appcradle.kotlinjc_friendsactivity_app.data.network.NetworkConstants.GET_USER_DATA
 import apc.appcradle.kotlinjc_friendsactivity_app.data.network.NetworkConstants.POST_ACTIVITY_HANDLE
 import apc.appcradle.kotlinjc_friendsactivity_app.data.network.NetworkConstants.POST_USER_LOGIN_CHANGE_HANDLE
@@ -14,15 +14,15 @@ import apc.appcradle.kotlinjc_friendsactivity_app.data.network.model.Responses.L
 import apc.appcradle.kotlinjc_friendsactivity_app.data.network.model.Responses.RegisterResponse
 import apc.appcradle.kotlinjc_friendsactivity_app.data.network.model.Responses.UserActivityResponse
 import apc.appcradle.kotlinjc_friendsactivity_app.data.network.model.Responses.UserDataResponse
-import apc.appcradle.kotlinjc_friendsactivity_app.utils.LoggerType
-import apc.appcradle.kotlinjc_friendsactivity_app.utils.logger
+import apc.appcradle.kotlinjc_friendsactivity_app.core.utils.LoggerType
+import apc.appcradle.kotlinjc_friendsactivity_app.core.utils.logger
 
 class NetworkClient(
-    private val tokenRepositoryImpl: TokenRepositoryImpl,
+    private val tokenRepository: TokenRepository,
     private val utils: NetworkUtilsFunctions
 ) {
     private suspend fun saveToken(login: String, token: String) =
-        tokenRepositoryImpl.saveToken(login = login, token = token)
+        tokenRepository.saveToken(login = login, token = token)
 
     suspend fun sendRegistrationInfo(login: String, password: String): DataTransferState {
         val apiRequestResult = utils.safeRequest<RegisterResponse>(

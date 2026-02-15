@@ -9,10 +9,10 @@ import apc.appcradle.kotlinjc_friendsactivity_app.data.network.NetworkClient
 import apc.appcradle.kotlinjc_friendsactivity_app.data.network.model.PlayerActivityData
 import apc.appcradle.kotlinjc_friendsactivity_app.data.network.model.PlayersListSyncData
 import apc.appcradle.kotlinjc_friendsactivity_app.data.network.model.Steps
-import apc.appcradle.kotlinjc_friendsactivity_app.services.workers.trancateStepsRequest
-import apc.appcradle.kotlinjc_friendsactivity_app.utils.TRANCATE_WORKER_TAG
-import apc.appcradle.kotlinjc_friendsactivity_app.utils.USER_STEP_DEFAULT
-import apc.appcradle.kotlinjc_friendsactivity_app.utils.whenNextMonday
+import apc.appcradle.kotlinjc_friendsactivity_app.core.services.workers.trancateStepsRequest
+import apc.appcradle.kotlinjc_friendsactivity_app.core.utils.TRANCATE_WORKER_TAG
+import apc.appcradle.kotlinjc_friendsactivity_app.core.utils.USER_STEP_DEFAULT
+import apc.appcradle.kotlinjc_friendsactivity_app.core.utils.whenNextMonday
 import kotlin.math.max
 
 class StatsRepository(

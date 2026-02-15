@@ -5,10 +5,10 @@ import android.hardware.Sensor
 import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
 import android.hardware.SensorManager
-import apc.appcradle.kotlinjc_friendsactivity_app.data.configs.TokenRepositoryImpl
+import apc.appcradle.kotlinjc_friendsactivity_app.data.configs.TokenRepository
 import apc.appcradle.kotlinjc_friendsactivity_app.data.network.model.Steps
-import apc.appcradle.kotlinjc_friendsactivity_app.utils.LoggerType
-import apc.appcradle.kotlinjc_friendsactivity_app.utils.logger
+import apc.appcradle.kotlinjc_friendsactivity_app.core.utils.LoggerType
+import apc.appcradle.kotlinjc_friendsactivity_app.core.utils.logger
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -26,7 +26,7 @@ import kotlin.time.Duration.Companion.seconds
 class AppSensorsManager(
     context: Context,
     private val statsRepository: StatsRepository,
-    private val tokenRepository: TokenRepositoryImpl
+    private val tokenRepository: TokenRepository
 ) : SensorEventListener {
     private val scopeIO = CoroutineScope(Dispatchers.IO + SupervisorJob())
     private var actualLogin: String? = null
