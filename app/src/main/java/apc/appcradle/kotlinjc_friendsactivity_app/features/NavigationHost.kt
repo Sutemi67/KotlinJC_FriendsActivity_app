@@ -19,42 +19,41 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.work.WorkInfo
-import apc.appcradle.kotlinjc_friendsactivity_app.features.main.MainViewModel
 import apc.appcradle.kotlinjc_friendsactivity_app.core.services.AppSensorsManager
+import apc.appcradle.kotlinjc_friendsactivity_app.core.utils.LoggerType
+import apc.appcradle.kotlinjc_friendsactivity_app.core.utils.formatDeadline
+import apc.appcradle.kotlinjc_friendsactivity_app.core.utils.logger
 import apc.appcradle.kotlinjc_friendsactivity_app.features._common_components.AppBackgroundImage
 import apc.appcradle.kotlinjc_friendsactivity_app.features._common_components.AppBottomNavBar
 import apc.appcradle.kotlinjc_friendsactivity_app.features._common_components.AppTopBar
+import apc.appcradle.kotlinjc_friendsactivity_app.features.auth.UiState
 import apc.appcradle.kotlinjc_friendsactivity_app.features.auth.nav.authScreen
 import apc.appcradle.kotlinjc_friendsactivity_app.features.auth.nav.registerScreen
+import apc.appcradle.kotlinjc_friendsactivity_app.features.auth.nav.toAuthScreen
 import apc.appcradle.kotlinjc_friendsactivity_app.features.auth.nav.toRegisterScreen
 import apc.appcradle.kotlinjc_friendsactivity_app.features.main.nav.mainScreen
 import apc.appcradle.kotlinjc_friendsactivity_app.features.main.nav.toMainScreen
 import apc.appcradle.kotlinjc_friendsactivity_app.features.ratings.nav.ratingsScreen
 import apc.appcradle.kotlinjc_friendsactivity_app.features.settings.nav.settingsScreen
 import apc.appcradle.kotlinjc_friendsactivity_app.features.splash.SplashScreenUi
-import apc.appcradle.kotlinjc_friendsactivity_app.core.utils.LoggerType
-import apc.appcradle.kotlinjc_friendsactivity_app.core.utils.formatDeadline
-import apc.appcradle.kotlinjc_friendsactivity_app.core.utils.logger
 import kotlinx.coroutines.launch
 import org.koin.compose.koinInject
-import org.koin.compose.viewmodel.koinViewModel
 
 val LocalSensorManager =
     compositionLocalOf<AppSensorsManager> { error("No sensor manager provided") }
 
 @Composable
-fun NavigationHost() {
-    val viewModel: MainViewModel = koinViewModel()
-    val state = viewModel.state.collectAsState().value
-    val authState = viewModel.authState.collectAsState().value
+fun NavigationHost(
+    appStateManager: AppStateManager = koinInject()
+) {
+    val appState = appStateManager.appState.collectAsState().value
     val navController = rememberNavController()
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
-    val isAuthScreen =
-        currentRoute == Destinations.AUTH.route || currentRoute == Destinations.REGISTER.route
+    val isAuthScreen = appState.uiState == UiState.LOGGED_OUT
 
-    val bottomDestinations: List<Destinations> = remember(authState.userLogin) {
-        if (authState.userLogin == null) {
+    val bottomDestinations: List<Destinations> = remember(appState.userLogin) {
+        if (appState.userLogin == null) {
             Destinations.offlineDestinations
         } else {
             Destinations.noAuthDestinations
@@ -62,23 +61,22 @@ fun NavigationHost() {
     }
 
     val sensorManager: AppSensorsManager = koinInject<AppSensorsManager>()
-    val transferState = viewModel.transferState.collectAsState().value
 
     val snackHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
 
-    LaunchedEffect(state.trancateWorkerStatus, state.userLogin) {
+    LaunchedEffect(appState.trancateWorkerStatus, appState.userLogin) {
         scope.launch {
-            if (state.userLogin == null) return@launch
-            if (state.trancateWorkerStatus == null || state.trancateWorkerStatus.state.isFinished) {
+            if (appState.userLogin == null) return@launch
+            if (appState.trancateWorkerStatus == null || appState.trancateWorkerStatus.state.isFinished) {
                 snackHostState.showSnackbar(message = "Планируется еженедельное обнуление...\nИзменения вступят в силу после перезапуска.")
             } else {
-                when (state.trancateWorkerStatus.state) {
+                when (appState.trancateWorkerStatus.state) {
                     WorkInfo.State.ENQUEUED -> {
                         snackHostState.showSnackbar(
                             message = "Статус обнуления: Запланировано.\nПодведение итогов через: ${
                                 formatDeadline(
-                                    state.trancateWorkerStatus.nextScheduleTimeMillis
+                                    appState.trancateWorkerStatus.nextScheduleTimeMillis
                                 )
                             }"
                         )
@@ -86,9 +84,9 @@ fun NavigationHost() {
 
                     else -> {
                         snackHostState.showSnackbar(
-                            message = "Статус обнуления: ${state.trancateWorkerStatus.state}\nПодведение итогов через: ${
+                            message = "Статус обнуления: ${appState.trancateWorkerStatus.state}\nПодведение итогов через: ${
                                 formatDeadline(
-                                    state.trancateWorkerStatus.nextScheduleTimeMillis
+                                    appState.trancateWorkerStatus.nextScheduleTimeMillis
                                 )
                             }"
                         )
@@ -97,21 +95,28 @@ fun NavigationHost() {
             }
         }
     }
-    LaunchedEffect(authState.userLogin) { viewModel.refreshSteps() }
 
+    LaunchedEffect(appState.uiState) {
+        when (appState.uiState) {
+            UiState.OFFLINE -> navController.toMainScreen()
+            UiState.SPLASH -> navController.navigate(route = Destinations.SPLASH.route)
+            UiState.LOGGED_OUT -> navController.toAuthScreen()
+            UiState.LOGGED_IT -> navController.toMainScreen()
+        }
+    }
     CompositionLocalProvider(
         LocalSensorManager provides sensorManager,
     ) {
         logger(
-            LoggerType.Info,
-            "nav host recomposed inside -> ${authState.userLogin}, ${authState.isLoggedIn}"
+            LoggerType.Error,
+            "nav host recomposed inside -> ${appState.userLogin}"
         )
         Scaffold(
             snackbarHost = { SnackbarHost(snackHostState) },
             topBar = {
                 if (!isAuthScreen)
                     AppTopBar(
-                        login = authState.userLogin,
+                        login = appState.userLogin,
                         screenRoute = navBackStackEntry?.destination?.route
                     )
             },
@@ -124,66 +129,19 @@ fun NavigationHost() {
                     )
             }
         ) { contentPadding ->
-            val startDestination =
-                if (state.isAppReady && authState.isLoggedIn) {
-                    Destinations.MAIN.route
-                } else if (state.isAppReady) {
-                    Destinations.AUTH.route
-                } else {
-                    Destinations.SPLASH.route
-                }
             Box {
                 AppBackgroundImage()
                 NavHost(
                     modifier = Modifier.padding(contentPadding),
                     navController = navController,
-                    startDestination = startDestination
+                    startDestination = Destinations.SPLASH.route
                 ) {
-                    composable(route = Destinations.SPLASH.route) {
-                        SplashScreenUi()
-                    }
-                    authScreen(
-                        toRegisterScreen = navController::toRegisterScreen,
-                        transferState = transferState,
-                        sendLoginData = { login, password ->
-                            viewModel.sendLoginData(
-                                login,
-                                password
-                            )
-                        },
-                        onOfflineUseClick = viewModel::goOfflineUse
-                    )
-                    registerScreen(
-                        viewModel = viewModel,
-                        transferState = transferState,
-                        toMainScreen = navController::toMainScreen
-                    )
-                    mainScreen(viewModel)
-                    ratingsScreen(
-                        login = authState.userLogin,
-                        syncFun = {
-                            val stepsNow = sensorManager.allSteps.value
-                            val weeklyNow = sensorManager.weeklySteps.value
-                            viewModel.syncData(
-                                login = authState.userLogin!!,
-                                steps = stepsNow,
-                                weeklySteps = weeklyNow
-                            )
-                        }
-                    )
-                    settingsScreen(
-                        state = state,
-                        onLogoutClick = viewModel::logout,
-                        onThemeClick = { viewModel.changeTheme(it) },
-                        onNickNameClick = { login, newLogin ->
-                            viewModel.changeLogin(
-                                login,
-                                newLogin
-                            )
-                        },
-                        onStepLengthClick = { viewModel.changeStepLength(it) },
-                        onScaleClick = { viewModel.changeScale(it) }
-                    )
+                    composable(route = Destinations.SPLASH.route) { SplashScreenUi() }
+                    authScreen(toRegisterScreen = navController::toRegisterScreen)
+                    registerScreen(toMainScreen = navController::toMainScreen)
+                    mainScreen()
+                    ratingsScreen()
+                    settingsScreen()
                 }
             }
         }

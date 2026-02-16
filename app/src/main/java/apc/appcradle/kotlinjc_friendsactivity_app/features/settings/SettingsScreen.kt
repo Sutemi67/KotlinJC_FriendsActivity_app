@@ -17,7 +17,6 @@ import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -26,28 +25,46 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import apc.appcradle.kotlinjc_friendsactivity_app.BuildConfig
-import apc.appcradle.kotlinjc_friendsactivity_app.LocalAppTypography
 import apc.appcradle.kotlinjc_friendsactivity_app.R
-import apc.appcradle.kotlinjc_friendsactivity_app.features.main.model.AppState
 import apc.appcradle.kotlinjc_friendsactivity_app.core.app_theme.AppThemes
 import apc.appcradle.kotlinjc_friendsactivity_app.features._common_components.AppDialogs
 import apc.appcradle.kotlinjc_friendsactivity_app.features._common_components.AppText
-import apc.appcradle.kotlinjc_friendsactivity_app.core.app_theme.CompactText
-import apc.appcradle.kotlinjc_friendsactivity_app.core.app_theme.ExpandedText
-import apc.appcradle.kotlinjc_friendsactivity_app.core.app_theme.KotlinJC_FriendsActivity_appTheme
-import apc.appcradle.kotlinjc_friendsactivity_app.core.app_theme.MediumText
+import apc.appcradle.kotlinjc_friendsactivity_app.features.settings.model.SettingsEvents
+import apc.appcradle.kotlinjc_friendsactivity_app.features.settings.model.SettingsState
+import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun SettingsScreen(
+    vm: SettingsViewModel = koinViewModel()
+) {
+    val state = vm.state.collectAsStateWithLifecycle().value
+    SettingsScreenUi(
+        onLogoutClick = { vm.obtainEvent(SettingsEvents.Logout) },
+        onStepDistanceClick = { vm.obtainEvent(SettingsEvents.ChangeStepLength(it)) },
+        onLoginChange = { newLogin ->
+            vm.obtainEvent(
+                SettingsEvents.ChangeLogin(
+                    newLogin = newLogin
+                )
+            )
+        },
+        onScaleClick = { vm.obtainEvent(SettingsEvents.ChangeScale(it)) },
+        onThemeClick = { vm.obtainEvent(SettingsEvents.ChangeTheme(it)) },
+        state = state
+    )
+}
+
+@Composable
+fun SettingsScreenUi(
     onLogoutClick: () -> Unit,
     onStepDistanceClick: (Double) -> Unit,
-    onNicknameClick: (String, String) -> Unit,
+    onLoginChange: (String) -> Unit,
     onScaleClick: (Float) -> Unit,
     onThemeClick: (AppThemes) -> Unit,
-    state: AppState,
+    state: SettingsState,
 ) {
     val isThemeDialogVisible = remember { mutableStateOf(false) }
     val isStepDialogVisible = remember { mutableStateOf(false) }
@@ -236,70 +253,70 @@ fun SettingsScreen(
 
             else -> {
                 AppDialogs.LoginChangeDialog(
-                    onConfirmClick = { newLogin -> onNicknameClick(state.userLogin, newLogin) },
+                    onConfirmClick = { newLogin -> onLoginChange(newLogin) },
                     onDismiss = { isLoginDialogVisible.value = false }
                 )
             }
         }
 }
 
-@Preview
-@Composable
-private fun Preview() {
-
-    KotlinJC_FriendsActivity_appTheme {
-        CompositionLocalProvider(
-            LocalAppTypography provides CompactText
-        ) {
-            SettingsScreen(
-                onLogoutClick = {},
-                onStepDistanceClick = {},
-                onNicknameClick = { _, _ -> },
-                onScaleClick = {},
-                onThemeClick = {},
-                state = AppState()
-            )
-        }
-    }
-}
-
-@Preview
-@Composable
-private fun Preview2() {
-
-    KotlinJC_FriendsActivity_appTheme {
-        CompositionLocalProvider(
-            LocalAppTypography provides MediumText
-        ) {
-            SettingsScreen(
-                onLogoutClick = {},
-                onStepDistanceClick = {},
-                onNicknameClick = { _, _ -> },
-                onScaleClick = {},
-                onThemeClick = {},
-                state = AppState()
-
-            )
-        }
-    }
-}
-
-@Preview
-@Composable
-private fun Preview3() {
-
-    KotlinJC_FriendsActivity_appTheme {
-        CompositionLocalProvider(
-            LocalAppTypography provides ExpandedText
-        ) {
-            SettingsScreen(
-                onLogoutClick = {},
-                onStepDistanceClick = {},
-                onNicknameClick = { _, _ -> },
-                onScaleClick = {},
-                onThemeClick = {},
-                state = AppState()
-            )
-        }
-    }
-}
+//@Preview
+//@Composable
+//private fun Preview() {
+//
+//    KotlinJC_FriendsActivity_appTheme {
+//        CompositionLocalProvider(
+//            LocalAppTypography provides CompactText
+//        ) {
+//            SettingsScreenUi(
+//                onLogoutClick = {},
+//                onStepDistanceClick = {},
+//                onLoginChange = { _, _ -> },
+//                onScaleClick = {},
+//                onThemeClick = {},
+//                state = AppState()
+//            )
+//        }
+//    }
+//}
+//
+//@Preview
+//@Composable
+//private fun Preview2() {
+//
+//    KotlinJC_FriendsActivity_appTheme {
+//        CompositionLocalProvider(
+//            LocalAppTypography provides MediumText
+//        ) {
+//            SettingsScreenUi(
+//                onLogoutClick = {},
+//                onStepDistanceClick = {},
+//                onLoginChange = { _, _ -> },
+//                onScaleClick = {},
+//                onThemeClick = {},
+//                state = AppState()
+//
+//            )
+//        }
+//    }
+//}
+//
+//@Preview
+//@Composable
+//private fun Preview3() {
+//
+//    KotlinJC_FriendsActivity_appTheme {
+//        CompositionLocalProvider(
+//            LocalAppTypography provides ExpandedText
+//        ) {
+//            SettingsScreenUi(
+//                onLogoutClick = {},
+//                onStepDistanceClick = {},
+//                onLoginChange = { _, _ -> },
+//                onScaleClick = {},
+//                onThemeClick = {},
+//                state = AppState()
+//            )
+//        }
+//    }
+//}

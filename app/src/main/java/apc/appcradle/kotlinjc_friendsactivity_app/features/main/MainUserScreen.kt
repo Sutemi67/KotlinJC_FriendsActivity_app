@@ -10,28 +10,37 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import apc.appcradle.kotlinjc_friendsactivity_app.features.main.model.AppState
 import apc.appcradle.kotlinjc_friendsactivity_app.core.services.PermissionManager
 import apc.appcradle.kotlinjc_friendsactivity_app.features.LocalSensorManager
-import apc.appcradle.kotlinjc_friendsactivity_app.core.utils.LoggerType
-import apc.appcradle.kotlinjc_friendsactivity_app.core.utils.logger
 import apc.appcradle.kotlinjc_friendsactivity_app.features.main.components.PermittedUi
 import apc.appcradle.kotlinjc_friendsactivity_app.features.main.components.UnpermittedUi
+import apc.appcradle.kotlinjc_friendsactivity_app.features.main.model.MainScreenState
+import apc.appcradle.kotlinjc_friendsactivity_app.features.settings.SettingsViewModel
+import apc.appcradle.kotlinjc_friendsactivity_app.features.settings.model.SettingsEvents
+import apc.appcradle.kotlinjc_friendsactivity_app.features.settings.model.SettingsState
 import org.koin.compose.koinInject
+import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun MainUserScreen(
-    vm: MainViewModel
+    mainViewModel: MainViewModel = koinViewModel(),
+    settingsViewModel: SettingsViewModel = koinViewModel()
 ) {
-    val state = vm.state.collectAsState().value
-    logger(LoggerType.Info, "isLoading = ${state.isUserStepsLoading}")
+    val mainState = mainViewModel.state.collectAsState().value
+    val settingsState = settingsViewModel.state.collectAsState().value
+
+    LaunchedEffect(settingsState.userLogin) { mainViewModel.refreshSteps() }
+
     MainUserScreenUi(
-        state = state,
-        startService = { vm.startService(it) },
+        mainState = mainState,
+        settingsState = settingsState,
+        startService = { settingsViewModel.obtainEvent(SettingsEvents.StartService(it)) },
         serviceCheckerCallback = { boolean, context ->
-            vm.userServiceCheckerListener(
-                boolean,
-                context
+            settingsViewModel.obtainEvent(
+                SettingsEvents.OnServiceCheckerClick(
+                    boolean,
+                    context
+                )
             )
         }
     )
@@ -39,7 +48,8 @@ fun MainUserScreen(
 
 @Composable
 fun MainUserScreenUi(
-    state: AppState,
+    mainState: MainScreenState,
+    settingsState: SettingsState,
     startService: (Context) -> Unit,
     serviceCheckerCallback: (Boolean, Context) -> Unit
 ) {
@@ -57,15 +67,15 @@ fun MainUserScreenUi(
     Box(
         modifier = Modifier.fillMaxSize()
     ) {
-        if (!state.isPermissionsGet) {
+        if (!mainState.isPermissionsGet) {
             UnpermittedUi(
                 onGetPermissionsClick = {
                     permissionLauncher.launch(permissionManager.requiredPermissions.toTypedArray())
                 }
             )
         } else {
-            LaunchedEffect(state.isServiceEnabledByUser, state.isServiceRunning) {
-                if (state.isServiceEnabledByUser && !state.isServiceRunning) {
+            LaunchedEffect(settingsState.serviceSavedOption, settingsState.isServiceRunning) {
+                if (settingsState.serviceSavedOption && !settingsState.isServiceRunning) {
                     startService(context)
                 }
             }
@@ -74,10 +84,10 @@ fun MainUserScreenUi(
             isStepSensorsAvailable = sensorsManager.isStepSensorAvailable,
             summarySteps = sensorsManager.allSteps.collectAsState().value,
             weeklySteps = sensorsManager.weeklySteps.collectAsState().value,
-            isServiceRunning = state.isServiceRunning,
+            isServiceRunning = settingsState.isServiceRunning,
             counterCheckerCallback = { serviceCheckerCallback(it, context) },
-            userStepLength = state.userStepLength,
-            isLoading = state.isUserStepsLoading
+            userStepLength = settingsState.userStepLength,
+            isLoading = mainState.isLoading
         )
     }
 }

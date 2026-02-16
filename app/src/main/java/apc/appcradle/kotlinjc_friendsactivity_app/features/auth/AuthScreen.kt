@@ -34,23 +34,38 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.sensitiveContent
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import apc.appcradle.kotlinjc_friendsactivity_app.R
-import apc.appcradle.kotlinjc_friendsactivity_app.core.app_theme.KotlinJC_FriendsActivity_appTheme
-import apc.appcradle.kotlinjc_friendsactivity_app.network.model.DataTransferState
 import apc.appcradle.kotlinjc_friendsactivity_app.features._common_components.AppBackgroundImage
 import apc.appcradle.kotlinjc_friendsactivity_app.features._common_components.AppInputField
 import apc.appcradle.kotlinjc_friendsactivity_app.features._common_components.AppText
 import apc.appcradle.kotlinjc_friendsactivity_app.features.auth.components.AuthButton
 import apc.appcradle.kotlinjc_friendsactivity_app.features.auth.components.AuthErrorText
 import apc.appcradle.kotlinjc_friendsactivity_app.features.auth.components.AuthFieldStates
+import apc.appcradle.kotlinjc_friendsactivity_app.features.auth.model.AuthEvents
+import apc.appcradle.kotlinjc_friendsactivity_app.network.model.DataTransferState
+import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun AuthScreen(
+    vm: AuthViewModel = koinViewModel(),
+    navigateToRegister: () -> Unit,
+) {
+    val authState = vm.state.collectAsStateWithLifecycle().value
+    AuthScreenUi(
+        sendLoginData = { login, pass -> vm.obtainEvent(AuthEvents.Login(login, pass)) },
+        transferState = authState.dataTransferState,
+        navigateToRegister = navigateToRegister,
+        onOfflineUseClick = { vm.obtainEvent(AuthEvents.GoOffline) }
+    )
+}
+
+@Composable
+fun AuthScreenUi(
     sendLoginData: (String, String) -> Unit,
     transferState: DataTransferState,
-    onRegisterClick: () -> Unit,
+    navigateToRegister: () -> Unit,
     onOfflineUseClick: () -> Unit
 ) {
     val passwordFocusRequester = remember { FocusRequester() }
@@ -152,7 +167,7 @@ fun AuthScreen(
                         }
                     }
                 }
-                AuthButton(textResource = R.string.auth_screen_create, onClick = onRegisterClick)
+                AuthButton(textResource = R.string.auth_screen_create, onClick = navigateToRegister)
                 AuthButton(textResource = R.string.auth_screen_offline, onClick = onOfflineUseClick)
                 AuthErrorText(transferResult = transferState)
             }
@@ -160,15 +175,11 @@ fun AuthScreen(
     }
 }
 
-@Preview
-@Composable
-private fun PreviewAuth() {
-    KotlinJC_FriendsActivity_appTheme {
-        AuthScreen(
-            sendLoginData = { _, _ -> },
-            onRegisterClick = {},
-            transferState = DataTransferState(errorMessage = "error 404"),
-            onOfflineUseClick = {}
-        )
-    }
-}
+//@Preview
+//@Composable
+//private fun PreviewAuth() {
+//    KotlinJC_FriendsActivity_appTheme {
+//        AuthScreen(
+//        )
+//    }
+//}

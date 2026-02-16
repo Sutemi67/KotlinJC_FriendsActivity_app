@@ -10,6 +10,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableDoubleStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -19,14 +20,15 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import apc.appcradle.kotlinjc_friendsactivity_app.network.model.PlayerActivityData
-import apc.appcradle.kotlinjc_friendsactivity_app.network.model.PlayersListSyncData
+import apc.appcradle.kotlinjc_friendsactivity_app.features.AppStateManager
 import apc.appcradle.kotlinjc_friendsactivity_app.features._common_components.AppText
-import apc.appcradle.kotlinjc_friendsactivity_app.core.app_theme.KotlinJC_FriendsActivity_appTheme
 import apc.appcradle.kotlinjc_friendsactivity_app.features.ratings.components.PlayerStatsView
 import apc.appcradle.kotlinjc_friendsactivity_app.features.ratings.components.StatsTable
+import apc.appcradle.kotlinjc_friendsactivity_app.features.ratings.models.RatingsEvents
+import apc.appcradle.kotlinjc_friendsactivity_app.network.model.PlayersListSyncData
+import org.koin.androidx.compose.koinViewModel
+import org.koin.compose.koinInject
 
 private enum class ScreenState {
     Loading, Error, Success
@@ -34,25 +36,38 @@ private enum class ScreenState {
 
 @Composable
 fun RatingsScreen(
+    vm: RatingsViewModel = koinViewModel(),
+    appStateManager: AppStateManager = koinInject()
+) {
+    val appState = appStateManager.appState.collectAsState().value
+    val ratingsState = vm.state.collectAsState().value
+    RatingsScreenUi(
+        login = appState.userLogin,
+        list = ratingsState.list,
+        syncFun = { vm.obtainEvent(RatingsEvents.SyncData) }
+    )
+}
+
+@Composable
+fun RatingsScreenUi(
     login: String?,
-    syncFun: suspend () -> PlayersListSyncData,
+    list: PlayersListSyncData,
+    syncFun: suspend () -> Unit,
 ) {
     var errorMessage: String? by remember { mutableStateOf("") }
     var leader: String? by remember { mutableStateOf("") }
     var kmWeekly by remember { mutableDoubleStateOf(0.0) }
     var leaderDifference by remember { mutableDoubleStateOf(0.0) }
-    var list by remember { mutableStateOf<List<PlayerActivityData>>(emptyList()) }
     var screen by remember { mutableStateOf(ScreenState.Loading) }
 
     LaunchedEffect(Unit) {
         if (login != null) {
-            val response = syncFun()
-            errorMessage = response.errorMessage
-            kmWeekly = response.summaryKm
-            leaderDifference = response.leaderDifferenceKm
-            list = response.playersList.filter { it.weeklySteps > 0 }
-            leader = response.leader
-            screen = if (response.errorMessage != null) ScreenState.Error else ScreenState.Success
+            syncFun()
+            errorMessage = list.errorMessage
+            kmWeekly = list.summaryKm
+            leaderDifference = list.leaderDifferenceKm
+            leader = list.leader
+            screen = if (list.errorMessage != null) ScreenState.Error else ScreenState.Success
         } else {
             screen = ScreenState.Success
         }
@@ -94,7 +109,7 @@ fun RatingsScreen(
                             .fillMaxWidth()
                             .padding(top = 10.dp)
                     ) {
-                        items(list) { element ->
+                        items(list.playersList) { element ->
                             PlayerStatsView(
                                 login = login, playerActivityData = element
                             )
@@ -106,37 +121,37 @@ fun RatingsScreen(
     }
 }
 
-@Preview
-@Composable
-private fun Preview2() {
-    KotlinJC_FriendsActivity_appTheme {
-        RatingsScreen(
-            login = "AlexMagnuss",
-            syncFun = {
-                PlayersListSyncData(
-                    playersList = listOf(
-                        PlayerActivityData(
-                            "Alex",
-                            33,
-                            2333,
-                            .4f,
-                        ), PlayerActivityData(
-                            "AlexMagnus",
-                            33333,
-                            23373,
-                            .73f,
-                        ), PlayerActivityData(
-                            "Zero",
-                            33333,
-                            2,
-                            .3f,
-                        )
-                    ).sortedByDescending { it.weeklySteps },
-                    summaryKm = 33.0,
-                    leaderDifferenceKm = 22.3,
-                    errorMessage = null
-                )
-            },
-        )
-    }
-}
+//@Preview
+//@Composable
+//private fun Preview2() {
+//    KotlinJC_FriendsActivity_appTheme {
+//        RatingsScreenUi(
+//            login = "AlexMagnuss",
+//            syncFun = {
+//                PlayersListSyncData(
+//                    playersList = listOf(
+//                        PlayerActivityData(
+//                            "Alex",
+//                            33,
+//                            2333,
+//                            .4f,
+//                        ), PlayerActivityData(
+//                            "AlexMagnus",
+//                            33333,
+//                            23373,
+//                            .73f,
+//                        ), PlayerActivityData(
+//                            "Zero",
+//                            33333,
+//                            2,
+//                            .3f,
+//                        )
+//                    ).sortedByDescending { it.weeklySteps },
+//                    summaryKm = 33.0,
+//                    leaderDifferenceKm = 22.3,
+//                    errorMessage = null
+//                )
+//            },
+//        )
+//    }
+//}

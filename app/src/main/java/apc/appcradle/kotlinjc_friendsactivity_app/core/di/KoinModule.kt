@@ -3,16 +3,20 @@ package apc.appcradle.kotlinjc_friendsactivity_app.core.di
 import android.content.Context
 import android.content.SharedPreferences
 import androidx.work.WorkManager
-import apc.appcradle.kotlinjc_friendsactivity_app.features.main.MainViewModel
 import apc.appcradle.kotlinjc_friendsactivity_app.core.models.ISettingsRepository
-import apc.appcradle.kotlinjc_friendsactivity_app.features.settings.SettingsRepository
+import apc.appcradle.kotlinjc_friendsactivity_app.core.models.ITokenRepository
+import apc.appcradle.kotlinjc_friendsactivity_app.core.services.AppSensorsManager
+import apc.appcradle.kotlinjc_friendsactivity_app.core.services.PermissionManager
+import apc.appcradle.kotlinjc_friendsactivity_app.features.AppStateManager
+import apc.appcradle.kotlinjc_friendsactivity_app.features.auth.AuthViewModel
 import apc.appcradle.kotlinjc_friendsactivity_app.features.auth.TokenRepository
+import apc.appcradle.kotlinjc_friendsactivity_app.features.main.MainViewModel
+import apc.appcradle.kotlinjc_friendsactivity_app.features.main.StatsRepository
+import apc.appcradle.kotlinjc_friendsactivity_app.features.ratings.RatingsViewModel
+import apc.appcradle.kotlinjc_friendsactivity_app.features.settings.SettingsRepository
+import apc.appcradle.kotlinjc_friendsactivity_app.features.settings.SettingsViewModel
 import apc.appcradle.kotlinjc_friendsactivity_app.network.NetworkClient
 import apc.appcradle.kotlinjc_friendsactivity_app.network.NetworkUtilsFunctions
-import apc.appcradle.kotlinjc_friendsactivity_app.core.services.AppSensorsManager
-import apc.appcradle.kotlinjc_friendsactivity_app.features.main.StatsRepository
-import apc.appcradle.kotlinjc_friendsactivity_app.core.models.ITokenRepository
-import apc.appcradle.kotlinjc_friendsactivity_app.core.services.PermissionManager
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.android.Android
 import io.ktor.client.plugins.HttpTimeout
@@ -36,8 +40,12 @@ val koinAppModule = module {
     singleOf(::NetworkClient)
     singleOf(::StatsRepository)
     singleOf(::NetworkUtilsFunctions)
+    singleOf(::AppStateManager)
 
     viewModelOf(::MainViewModel)
+    viewModelOf(::SettingsViewModel)
+    viewModelOf(::AuthViewModel)
+    viewModelOf(::RatingsViewModel)
 
     single<WorkManager> { WorkManager.getInstance(get()) }
 

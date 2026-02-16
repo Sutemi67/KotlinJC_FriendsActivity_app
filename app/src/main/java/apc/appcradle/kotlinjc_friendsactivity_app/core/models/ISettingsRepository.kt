@@ -1,8 +1,10 @@
 package apc.appcradle.kotlinjc_friendsactivity_app.core.models
 
-import apc.appcradle.kotlinjc_friendsactivity_app.features.settings.model.SharedPreferencesData
+import apc.appcradle.kotlinjc_friendsactivity_app.features.settings.model.SettingsState
+import kotlinx.coroutines.flow.StateFlow
 
 interface ISettingsRepository {
-    fun saveSettingsData(currentSettingsData: SharedPreferencesData)
-    fun loadSettingsData(): SharedPreferencesData
+    val settingsState: StateFlow<SettingsState>
+    fun saveSettingsData(state: SettingsState)
+    fun loadSettingsData(): SettingsState
 }

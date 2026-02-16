@@ -7,8 +7,9 @@ import android.hardware.SensorEventListener
 import android.hardware.SensorManager
 import apc.appcradle.kotlinjc_friendsactivity_app.core.utils.LoggerType
 import apc.appcradle.kotlinjc_friendsactivity_app.core.utils.logger
-import apc.appcradle.kotlinjc_friendsactivity_app.features.main.StatsRepository
+import apc.appcradle.kotlinjc_friendsactivity_app.features.AppStateManager
 import apc.appcradle.kotlinjc_friendsactivity_app.features.auth.TokenRepository
+import apc.appcradle.kotlinjc_friendsactivity_app.features.main.StatsRepository
 import apc.appcradle.kotlinjc_friendsactivity_app.network.model.Steps
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -17,7 +18,6 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -27,7 +27,7 @@ import kotlin.time.Duration.Companion.seconds
 class AppSensorsManager(
     context: Context,
     private val statsRepository: StatsRepository,
-    private val tokenRepository: TokenRepository
+    private val appStateManager: AppStateManager
 ) : SensorEventListener {
     private val scopeIO = CoroutineScope(Dispatchers.IO + SupervisorJob())
     private var actualLogin: String? = null
@@ -62,9 +62,9 @@ class AppSensorsManager(
 
     init {
         scopeIO.launch {
-            tokenRepository.loginFlow.collect { login ->
-                actualLogin = login
-                logger(LoggerType.Info, "login updated: $login")
+            appStateManager.appState.collect { state ->
+                actualLogin = state.userLogin
+                logger(LoggerType.Info, "login updated: $actualLogin")
                 loggedLoadingSteps()
             }
         }
@@ -129,7 +129,7 @@ class AppSensorsManager(
     fun truncate() {
         scopeIO.launch {
             // Ждем первое актуальное значение логина, прежде чем чистить
-            val currentLogin = tokenRepository.loginFlow.first()
+            val currentLogin = appStateManager.appState.value.userLogin
             statsRepository.truncate(currentLogin)
             currentSteps.set(0)
             stepsWithoutChecking = 0

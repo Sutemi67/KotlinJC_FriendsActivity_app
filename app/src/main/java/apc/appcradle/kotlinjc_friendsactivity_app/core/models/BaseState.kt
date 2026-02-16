@@ -1,0 +1,3 @@
+package apc.appcradle.kotlinjc_friendsactivity_app.core.models
+
+interface BaseState

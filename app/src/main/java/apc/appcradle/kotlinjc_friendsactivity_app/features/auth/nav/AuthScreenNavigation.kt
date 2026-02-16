@@ -9,16 +9,10 @@ import apc.appcradle.kotlinjc_friendsactivity_app.features.Destinations
 
 fun NavGraphBuilder.authScreen(
     toRegisterScreen: () -> Unit,
-    onOfflineUseClick: () -> Unit,
-    sendLoginData: (String, String) -> Unit,
-    transferState: DataTransferState
 ) {
     composable(Destinations.AUTH.route) {
         AuthScreen(
-            sendLoginData = sendLoginData,
-            transferState = transferState,
-            onRegisterClick = toRegisterScreen,
-            onOfflineUseClick = onOfflineUseClick
+            navigateToRegister = toRegisterScreen,
         )
     }
 }
