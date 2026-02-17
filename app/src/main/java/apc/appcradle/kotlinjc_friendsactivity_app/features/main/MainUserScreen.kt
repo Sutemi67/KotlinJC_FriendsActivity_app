@@ -11,7 +11,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import apc.appcradle.kotlinjc_friendsactivity_app.core.services.PermissionManager
-import apc.appcradle.kotlinjc_friendsactivity_app.features.LocalSensorManager
 import apc.appcradle.kotlinjc_friendsactivity_app.features.main.components.PermittedUi
 import apc.appcradle.kotlinjc_friendsactivity_app.features.main.components.UnpermittedUi
 import apc.appcradle.kotlinjc_friendsactivity_app.features.main.model.MainScreenState
@@ -23,13 +22,11 @@ import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun MainUserScreen(
-    mainViewModel: MainViewModel = koinViewModel(),
+    mainViewModel: MainViewModel ,
     settingsViewModel: SettingsViewModel = koinViewModel()
 ) {
     val mainState = mainViewModel.state.collectAsState().value
     val settingsState = settingsViewModel.state.collectAsState().value
-
-    LaunchedEffect(settingsState.userLogin) { mainViewModel.refreshSteps() }
 
     MainUserScreenUi(
         mainState = mainState,
@@ -53,10 +50,8 @@ fun MainUserScreenUi(
     startService: (Context) -> Unit,
     serviceCheckerCallback: (Boolean, Context) -> Unit
 ) {
-    val sensorsManager = LocalSensorManager.current
     val permissionManager = koinInject<PermissionManager>()
     val context = LocalContext.current
-
     val permissionLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestMultiplePermissions()
     ) { permissions ->
@@ -81,9 +76,9 @@ fun MainUserScreenUi(
             }
         }
         PermittedUi(
-            isStepSensorsAvailable = sensorsManager.isStepSensorAvailable,
-            summarySteps = sensorsManager.allSteps.collectAsState().value,
-            weeklySteps = sensorsManager.weeklySteps.collectAsState().value,
+            isStepSensorsAvailable = mainState.isSensorsAvailable,
+            summarySteps = mainState.userAllSteps,
+            weeklySteps = mainState.userWeeklySteps,
             isServiceRunning = settingsState.isServiceRunning,
             counterCheckerCallback = { serviceCheckerCallback(it, context) },
             userStepLength = settingsState.userStepLength,

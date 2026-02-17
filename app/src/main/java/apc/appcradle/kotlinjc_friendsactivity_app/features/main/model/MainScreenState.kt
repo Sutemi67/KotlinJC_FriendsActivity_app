@@ -12,6 +12,7 @@ data class MainScreenState(
     //UserData
     val userWeeklySteps: Int = 0,
     val userAllSteps: Int = 0,
+    val isSensorsAvailable: Boolean = false,
 
     //LoadingState
     val isLoading: Boolean = false,

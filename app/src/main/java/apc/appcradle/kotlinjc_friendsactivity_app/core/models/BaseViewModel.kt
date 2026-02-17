@@ -17,7 +17,7 @@ abstract class BaseViewModel<State : BaseState, Event : BaseEvents, Action : Bas
     protected val innerAction = MutableStateFlow<Action?>(null)
     val action = innerAction.asStateFlow()
 
-    abstract fun obtainEvent(event: Event)
+    abstract fun obtainEvent(event: Event): Any
 
     protected fun runSafely(
         block: suspend () -> Unit,

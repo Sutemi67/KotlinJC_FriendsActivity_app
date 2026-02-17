@@ -6,57 +6,50 @@ import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.navigation.NavController
 import apc.appcradle.kotlinjc_friendsactivity_app.R
-import apc.appcradle.kotlinjc_friendsactivity_app.features.auth.nav.toAuthScreen
-import apc.appcradle.kotlinjc_friendsactivity_app.features.auth.nav.toRegisterScreen
-import apc.appcradle.kotlinjc_friendsactivity_app.features.main.nav.toMainScreen
-import apc.appcradle.kotlinjc_friendsactivity_app.features.ratings.nav.toRatingsScreen
-import apc.appcradle.kotlinjc_friendsactivity_app.features.settings.nav.toSettingsScreen
 
 enum class Destinations(
     val label: Int,
     val iconUnselected: ImageVector,
     val iconSelected: ImageVector,
     val route: String,
-    val navigateOnClick: (NavController) -> Unit,
 ) {
     AUTH(
         R.string.navigation_buttons_auth,
         Icons.Filled.Lock,
         Icons.Filled.Home,
-        "AuthScreenRoute",
-        { it.toAuthScreen() }),
+        "AuthScreenRoute"
+    ),
     REGISTER(
         R.string.navigation_buttons_register,
         Icons.Filled.Lock,
         Icons.Filled.Home,
-        "RegisterScreenRoute",
-        { it.toRegisterScreen() }),
+        "RegisterScreenRoute"
+    ),
     MAIN(
         R.string.navigation_buttons_home,
         Icons.Filled.Home,
         Icons.Filled.Home,
-        "MainUserScreenRoute",
-        { it.toMainScreen() }),
+        "MainUserScreenRoute"
+    ),
     RATINGS(
         R.string.navigation_buttons_ratings,
         Icons.Filled.DateRange,
         Icons.Filled.DateRange,
-        "RatingsScreenRoute",
-        { it.toRatingsScreen() }),
+        "RatingsScreenRoute"
+    ),
     SETTINGS(
         R.string.navigation_buttons_settings,
         Icons.Filled.Settings,
         Icons.Filled.Settings,
-        "SettingsScreenRoute",
-        { it.toSettingsScreen() }),
+        "SettingsScreenRoute"
+    ),
     SPLASH(
         R.string.navigation_buttons_settings,
         Icons.Filled.Settings,
         Icons.Filled.Settings,
-        "SplashScreenRoute",
-        { it.toSettingsScreen() });
+        "SplashScreenRoute"
+    );
 
     companion object
 }

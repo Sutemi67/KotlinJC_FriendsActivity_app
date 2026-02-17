@@ -1,6 +1,7 @@
-package apc.appcradle.kotlinjc_friendsactivity_app.network.model
+package apc.appcradle.kotlinjc_friendsactivity_app.features.ratings.models
 
 import androidx.compose.runtime.Stable
+import apc.appcradle.kotlinjc_friendsactivity_app.network.model.PlayerActivityData
 
 @Stable
 data class PlayersListSyncData(

@@ -21,6 +21,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Switch
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableDoubleStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -34,9 +35,11 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import apc.appcradle.kotlinjc_friendsactivity_app.R
 import apc.appcradle.kotlinjc_friendsactivity_app.core.app_theme.AppTextStyles
-import apc.appcradle.kotlinjc_friendsactivity_app.features._common_components.AppText
 import apc.appcradle.kotlinjc_friendsactivity_app.core.app_theme.KotlinJC_FriendsActivity_appTheme
+import apc.appcradle.kotlinjc_friendsactivity_app.core.services.AppSensorsManager
 import apc.appcradle.kotlinjc_friendsactivity_app.core.utils.format
+import apc.appcradle.kotlinjc_friendsactivity_app.features._common_components.AppText
+import org.koin.compose.koinInject
 import kotlin.math.roundToInt
 
 @Composable

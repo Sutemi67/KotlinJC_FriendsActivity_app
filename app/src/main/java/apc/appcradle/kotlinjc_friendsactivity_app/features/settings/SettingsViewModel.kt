@@ -79,9 +79,7 @@ class SettingsViewModel(
         val serviceIntent = Intent(context, StepCounterService::class.java)
         try {
             context.startForegroundService(serviceIntent)
-            mutableState.update {
-                it.copy(isServiceRunning = true)
-            }
+            mutableState.update { it.copy(isServiceRunning = true) }
             saveSettings()
         } catch (e: Exception) {
             logger(LoggerType.Error, "Failed to start service: ${e.message}")
@@ -91,9 +89,7 @@ class SettingsViewModel(
     private fun stopService(context: Context) {
         val serviceIntent = Intent(context, StepCounterService::class.java)
         context.stopService(serviceIntent)
-        mutableState.update {
-            it.copy(isServiceRunning = false)
-        }
+        mutableState.update { it.copy(isServiceRunning = false) }
         saveSettings()
     }
 }

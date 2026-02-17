@@ -37,7 +37,7 @@ import apc.appcradle.kotlinjc_friendsactivity_app.core.utils.format
 @Composable
 fun PlayerStatsView(
     modifier: Modifier = Modifier,
-    login: String?,
+    myLogin: String?,
     playerActivityData: PlayerActivityData,
 ) {
     var percentage by remember { mutableFloatStateOf(0f) }
@@ -57,7 +57,7 @@ fun PlayerStatsView(
     )
 
     val userBgColor =
-        if (login == playerActivityData.login) {
+        if (myLogin == playerActivityData.login) {
             MaterialTheme.colorScheme.tertiaryContainer
         } else {
             MaterialTheme.colorScheme.secondaryContainer
@@ -116,7 +116,7 @@ private fun getDistanceByValue(value: Double): Distances =
 private fun PreviewPlayerStats() {
     KotlinJC_FriendsActivity_appTheme {
         PlayerStatsView(
-            login = "Alexander",
+            myLogin = "Alexander",
             playerActivityData = PlayerActivityData(
                 "Alexander",
                 3423,

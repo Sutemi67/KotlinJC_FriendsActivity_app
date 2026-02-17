@@ -13,7 +13,7 @@ import apc.appcradle.kotlinjc_friendsactivity_app.features.auth.TokenRepository
 import apc.appcradle.kotlinjc_friendsactivity_app.features.main.MainViewModel
 import apc.appcradle.kotlinjc_friendsactivity_app.features.main.StatsRepository
 import apc.appcradle.kotlinjc_friendsactivity_app.features.ratings.RatingsViewModel
-import apc.appcradle.kotlinjc_friendsactivity_app.features.settings.SettingsRepository
+import apc.appcradle.kotlinjc_friendsactivity_app.features.settings.data.SettingsRepository
 import apc.appcradle.kotlinjc_friendsactivity_app.features.settings.SettingsViewModel
 import apc.appcradle.kotlinjc_friendsactivity_app.network.NetworkClient
 import apc.appcradle.kotlinjc_friendsactivity_app.network.NetworkUtilsFunctions

@@ -18,7 +18,7 @@ import apc.appcradle.kotlinjc_friendsactivity_app.core.app_theme.MyTypography
 import apc.appcradle.kotlinjc_friendsactivity_app.core.models.ISettingsRepository
 import apc.appcradle.kotlinjc_friendsactivity_app.core.utils.LoggerType
 import apc.appcradle.kotlinjc_friendsactivity_app.core.utils.logger
-import apc.appcradle.kotlinjc_friendsactivity_app.features.NavigationHost
+import apc.appcradle.kotlinjc_friendsactivity_app.features.MainActivityApp
 import org.koin.compose.koinInject
 
 val LocalAppTypography = compositionLocalOf<MyTypography> { error("no typography provided") }
@@ -59,7 +59,7 @@ private fun FriendsActivityApp() {
             LocalAppTypography provides appTypography
         ) {
             logger(LoggerType.Error, "navhost recomposed in activity")
-            NavigationHost()
+            MainActivityApp()
         }
     }
 }

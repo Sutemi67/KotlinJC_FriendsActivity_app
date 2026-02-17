@@ -5,10 +5,10 @@ import android.hardware.Sensor
 import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
 import android.hardware.SensorManager
+import androidx.compose.runtime.Immutable
+import apc.appcradle.kotlinjc_friendsactivity_app.core.models.ITokenRepository
 import apc.appcradle.kotlinjc_friendsactivity_app.core.utils.LoggerType
 import apc.appcradle.kotlinjc_friendsactivity_app.core.utils.logger
-import apc.appcradle.kotlinjc_friendsactivity_app.features.AppStateManager
-import apc.appcradle.kotlinjc_friendsactivity_app.features.auth.TokenRepository
 import apc.appcradle.kotlinjc_friendsactivity_app.features.main.StatsRepository
 import apc.appcradle.kotlinjc_friendsactivity_app.network.model.Steps
 import kotlinx.coroutines.CoroutineScope
@@ -24,21 +24,24 @@ import kotlinx.coroutines.withContext
 import java.util.concurrent.atomic.AtomicInteger
 import kotlin.time.Duration.Companion.seconds
 
+@Immutable
 class AppSensorsManager(
     context: Context,
     private val statsRepository: StatsRepository,
-    private val appStateManager: AppStateManager
+    private val tokenRepository: ITokenRepository,
 ) : SensorEventListener {
     private val scopeIO = CoroutineScope(Dispatchers.IO + SupervisorJob())
+
     private var actualLogin: String? = null
+
     private val sensorManager = context.getSystemService(Context.SENSOR_SERVICE) as SensorManager
     private val stepCounterSensor: Sensor? =
         sensorManager.getDefaultSensor(Sensor.TYPE_STEP_COUNTER)
     private val stepDetectorSensor: Sensor? =
         sensorManager.getDefaultSensor(Sensor.TYPE_STEP_DETECTOR)
 
-    var isStepSensorAvailable: Boolean = (stepCounterSensor != null || stepDetectorSensor != null)
-        private set
+    val isStepSensorAvailable =
+        MutableStateFlow((stepCounterSensor != null || stepDetectorSensor != null)).asStateFlow()
 
     private var _allSteps = MutableStateFlow(0)
     val allSteps = _allSteps.asStateFlow()
@@ -62,8 +65,9 @@ class AppSensorsManager(
 
     init {
         scopeIO.launch {
-            appStateManager.appState.collect { state ->
-                actualLogin = state.userLogin
+            tokenRepository.tokenFlow.collect { state ->
+//            appStateManager.appState.collect { state ->
+                actualLogin = state.login
                 logger(LoggerType.Info, "login updated: $actualLogin")
                 loggedLoadingSteps()
             }
@@ -129,7 +133,7 @@ class AppSensorsManager(
     fun truncate() {
         scopeIO.launch {
             // Ждем первое актуальное значение логина, прежде чем чистить
-            val currentLogin = appStateManager.appState.value.userLogin
+            val currentLogin = tokenRepository.tokenFlow.value.login
             statsRepository.truncate(currentLogin)
             currentSteps.set(0)
             stepsWithoutChecking = 0

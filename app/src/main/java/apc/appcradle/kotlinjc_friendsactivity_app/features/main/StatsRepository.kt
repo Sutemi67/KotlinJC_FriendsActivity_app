@@ -11,7 +11,7 @@ import apc.appcradle.kotlinjc_friendsactivity_app.core.utils.USER_STEP_DEFAULT
 import apc.appcradle.kotlinjc_friendsactivity_app.core.utils.whenNextMonday
 import apc.appcradle.kotlinjc_friendsactivity_app.network.NetworkClient
 import apc.appcradle.kotlinjc_friendsactivity_app.network.model.PlayerActivityData
-import apc.appcradle.kotlinjc_friendsactivity_app.network.model.PlayersListSyncData
+import apc.appcradle.kotlinjc_friendsactivity_app.features.ratings.models.PlayersListSyncData
 import apc.appcradle.kotlinjc_friendsactivity_app.network.model.Steps
 import kotlin.math.max
 

@@ -10,44 +10,51 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 @Immutable
-class AppStateManager(
-    private val tokenRepository: ITokenRepository
-) {
-    val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
-
-    private val _appState = MutableStateFlow(AppState())
-    val appState = _appState.asStateFlow()
-
-    init {
-        scope.launch {
-            tokenRepository.tokenFlow.collect { tokenState ->
-                    logger(LoggerType.Debug, "App state changed -> $tokenState")
-                    _appState.update {
-                        it.copy(
-                            uiState = tokenState.uiState,
-                            userLogin = tokenState.login
-                        )
-                    }
-                }
-        }
-    }
-}
-
 data class AppState(
-    //Navigation
-    val currentDestination: String = Destinations.AUTH.route,
-
     //User
     val uiState: UiState = UiState.SPLASH,
     val userLogin: String? = null,
-    val userWeeklySteps: Int = 0,
-    val userAllSteps: Int = 0,
 
     //Trancate worker status
     val trancateWorkerStatus: WorkInfo? = null
 )
+
+@Immutable
+class AppStateManager(
+    tokenRepository: ITokenRepository,
+) {
+    val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
+
+    private val _appState = MutableStateFlow(AppState())
+
+    val uiState = _appState.map { it.uiState }
+        .distinctUntilChanged()
+        .stateIn(
+            scope = scope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = UiState.SPLASH
+        )
+    val workerStatus = _appState.map { it.trancateWorkerStatus }
+        .distinctUntilChanged()
+        .stateIn(scope = scope, started = SharingStarted.WhileSubscribed(5000), initialValue = null)
+    val userLogin = _appState.map { it.userLogin }
+        .distinctUntilChanged()
+        .stateIn(scope = scope, started = SharingStarted.WhileSubscribed(5000), initialValue = null)
+
+    init {
+        tokenRepository.tokenFlow.onEach { (login, token, uiState) ->
+            logger(LoggerType.Debug, "token state changed")
+            _appState.update { it.copy(uiState = uiState, userLogin = login) }
+        }.launchIn(scope)
+    }
+}

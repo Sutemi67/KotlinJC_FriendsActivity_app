@@ -3,8 +3,6 @@ package apc.appcradle.kotlinjc_friendsactivity_app.features.auth
 import android.content.SharedPreferences
 import androidx.core.content.edit
 import apc.appcradle.kotlinjc_friendsactivity_app.core.models.ITokenRepository
-import apc.appcradle.kotlinjc_friendsactivity_app.core.utils.LoggerType
-import apc.appcradle.kotlinjc_friendsactivity_app.core.utils.logger
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -43,13 +41,12 @@ class TokenRepository(
     private fun setUiState() {
         scope.launch {
             tokenFlow.collect { state ->
-                logger(LoggerType.Debug, "token state changed -> ${tokenFlow.value}")
                 when {
                     state.login != null && state.token != null -> {
                         _tokenFlow.update { it.copy(uiState = UiState.LOGGED_IT) }
                     }
 
-                    state.login == null && state.token != null -> {
+                    state.login == null && state.token == "offline" -> {
                         _tokenFlow.update { it.copy(uiState = UiState.OFFLINE) }
                     }
 

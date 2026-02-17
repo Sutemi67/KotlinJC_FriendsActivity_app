@@ -1,7 +1,6 @@
-package apc.appcradle.kotlinjc_friendsactivity_app.features.settings
+package apc.appcradle.kotlinjc_friendsactivity_app.features.settings.data
 
 import android.content.SharedPreferences
-import android.util.Log
 import androidx.compose.runtime.Immutable
 import androidx.core.content.edit
 import apc.appcradle.kotlinjc_friendsactivity_app.core.models.ISettingsRepository
@@ -24,7 +23,7 @@ class SettingsRepository(
     private val gson = Gson()
     val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
 
-    val mutableState: MutableStateFlow<SettingsState> =
+    private val mutableState: MutableStateFlow<SettingsState> =
         MutableStateFlow(loadSettingsData())
     override val settingsState = mutableState.asStateFlow()
 
