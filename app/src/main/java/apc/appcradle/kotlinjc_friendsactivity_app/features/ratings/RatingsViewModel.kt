@@ -36,9 +36,6 @@ class RatingsViewModel(
         viewModelScope.launch {
             appStateManager.userLogin.collect { login ->
                 mutableState.update { it.copy(userLogin = login) }
-                if (login != null) {
-                    obtainEvent(RatingsEvents.SyncData)
-                }
             }
         }
     }
@@ -51,7 +48,7 @@ class RatingsViewModel(
 
     private fun syncRatingsData() {
         val login = state.value.userLogin ?: return
-        logger(LoggerType.Debug, this,"Sync data in SettingsVM")
+        logger(LoggerType.Info, this, "Sync steps: $allSteps, $weeklySteps")
         viewModelScope.launch {
             try {
                 mutableState.update { it.copy(isLoading = true, errorMessage = null) }

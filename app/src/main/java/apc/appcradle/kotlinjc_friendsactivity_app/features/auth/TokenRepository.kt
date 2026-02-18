@@ -46,7 +46,7 @@ class TokenRepository(
                         _tokenFlow.update { it.copy(uiState = UiState.LOGGED_IT) }
                     }
 
-                    state.login == null && state.token == "offline" -> {
+                    state.login == null && state.token == OFFLINE_TOKEN -> {
                         _tokenFlow.update { it.copy(uiState = UiState.OFFLINE) }
                     }
 
@@ -60,7 +60,7 @@ class TokenRepository(
 
     override suspend fun saveToken(login: String, token: String) = withContext(Dispatchers.IO) {
         sharedPreferences.edit {
-            putString(AUTH_ID, token)
+            putString(TOKEN_ID, token)
             putString(LOGIN_ID, login)
         }
         _tokenFlow.update { it.copy(login = login, token = token) }
@@ -72,29 +72,32 @@ class TokenRepository(
     }
 
     override suspend fun saveOfflineToken() = withContext(Dispatchers.IO) {
-        sharedPreferences.edit { putString(AUTH_ID, "offline") }
-        _tokenFlow.update { it.copy(login = null, token = "offline") }
+        sharedPreferences.edit { putString(TOKEN_ID, OFFLINE_TOKEN) }
+        _tokenFlow.update { it.copy(login = null, token = OFFLINE_TOKEN) }
     }
 
-    override suspend fun getSavedLogin(): String? = withContext(Dispatchers.IO) {
+    override suspend fun getSavedLogin() = withContext(Dispatchers.IO) {
         val login = sharedPreferences.getString(LOGIN_ID, null)
         _tokenFlow.update { it.copy(login = login) }
-        login
     }
 
     override suspend fun getToken(): String? = withContext(Dispatchers.IO) {
-        val token = sharedPreferences.getString(AUTH_ID, null)
+        val token = sharedPreferences.getString(TOKEN_ID, null)
         _tokenFlow.update { it.copy(token = token) }
         token
     }
 
     override suspend fun clearToken() = withContext(Dispatchers.IO) {
-        sharedPreferences.edit { remove(AUTH_ID) }
+        sharedPreferences.edit {
+            remove(TOKEN_ID)
+            remove(LOGIN_ID)
+        }
         _tokenFlow.update { it.copy(login = null, token = null) }
     }
 
     companion object {
-        const val AUTH_ID = "auth_token"
+        const val TOKEN_ID = "auth_token"
         const val LOGIN_ID = "login"
+        const val OFFLINE_TOKEN = "offline"
     }
 }

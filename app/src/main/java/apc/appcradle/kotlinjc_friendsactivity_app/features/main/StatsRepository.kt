@@ -31,6 +31,7 @@ class StatsRepository(
         val maxSteps = playersList.maxOfOrNull { it.weeklySteps } ?: 0
         return playersList
             .toMutableList()
+            .filter { it.weeklySteps > 0 }
             .map { player ->
                 PlayerActivityData(
                     login = player.login,

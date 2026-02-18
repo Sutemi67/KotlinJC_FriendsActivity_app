@@ -72,7 +72,7 @@ class NetworkUtilsFunctions(
         return if (response.status.isSuccess()) {
             onSuccess(response.body<T>())
         } else {
-            ApiRequestResult.Error("Server error: ${response.status.value}")
+            ApiRequestResult.Error("Server error: ${response.status.value}-${response.status.description}")
         }
     }
 

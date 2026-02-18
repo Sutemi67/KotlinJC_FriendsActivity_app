@@ -11,6 +11,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -20,16 +21,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import apc.appcradle.kotlinjc_friendsactivity_app.R
-import apc.appcradle.kotlinjc_friendsactivity_app.core.app_theme.KotlinJC_FriendsActivity_appTheme
 import apc.appcradle.kotlinjc_friendsactivity_app.features._common_components.AppBackgroundImage
 import apc.appcradle.kotlinjc_friendsactivity_app.features._common_components.AppInputField
 import apc.appcradle.kotlinjc_friendsactivity_app.features.auth.components.AuthButton
 import apc.appcradle.kotlinjc_friendsactivity_app.features.auth.components.AuthErrorText
 import apc.appcradle.kotlinjc_friendsactivity_app.features.auth.model.AuthEvents
-import apc.appcradle.kotlinjc_friendsactivity_app.network.model.DataTransferState
+import apc.appcradle.kotlinjc_friendsactivity_app.features.auth.model.AuthState
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
@@ -37,9 +36,9 @@ fun RegistrationScreen(
     toMainScreen: () -> Unit,
 ) {
     val viewModel: AuthViewModel = koinViewModel()
-    val state = viewModel.state.collectAsState().value
+    val state = viewModel.state.collectAsState()
     RegistrationScreenUi(
-        transferResult = state.dataTransferState,
+        authState = state,
         toMainScreen = toMainScreen,
         sendRegisterCallback = { login, pass ->
             viewModel.obtainEvent(AuthEvents.Registration(login, pass))
@@ -49,17 +48,18 @@ fun RegistrationScreen(
 
 @Composable
 fun RegistrationScreenUi(
-    transferResult: DataTransferState,
+    authState: State<AuthState>,
     toMainScreen: () -> Unit,
     sendRegisterCallback: (String, String) -> Unit,
 ) {
+
     var loginText by rememberSaveable { mutableStateOf("") }
     var isLoginError by rememberSaveable { mutableStateOf(false) }
     var isPasswordError by rememberSaveable { mutableStateOf(false) }
     var passText by rememberSaveable { mutableStateOf("") }
 
-    LaunchedEffect(transferResult) {
-        if (transferResult.isSuccessful == true && transferResult.errorMessage == null) {
+    LaunchedEffect(authState.value.dataTransferState) {
+        if (authState.value.dataTransferState.isSuccessful == true && authState.value.dataTransferState.errorMessage == null) {
             toMainScreen()
         }
     }
@@ -98,7 +98,7 @@ fun RegistrationScreenUi(
                 }
             )
             Box(Modifier.height(10.dp)) {
-                if (transferResult.isLoading) {
+                if (authState.value.isLoading) {
                     LinearProgressIndicator(modifier = Modifier.padding(horizontal = 15.dp))
                 }
             }
@@ -117,19 +117,7 @@ fun RegistrationScreenUi(
                     }
                 }
             })
-            AuthErrorText(transferResult = transferResult)
+            AuthErrorText(transferResult = authState.value.dataTransferState)
         }
-    }
-}
-
-@Preview
-@Composable
-private fun PreviewReg() {
-    KotlinJC_FriendsActivity_appTheme {
-        RegistrationScreenUi(
-            DataTransferState(errorMessage = "error 404"),
-            {},
-            { _, _ -> }
-        )
     }
 }

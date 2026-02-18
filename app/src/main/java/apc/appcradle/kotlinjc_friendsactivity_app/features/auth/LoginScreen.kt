@@ -21,6 +21,7 @@ import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.State
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -44,32 +45,32 @@ import apc.appcradle.kotlinjc_friendsactivity_app.features.auth.components.AuthB
 import apc.appcradle.kotlinjc_friendsactivity_app.features.auth.components.AuthErrorText
 import apc.appcradle.kotlinjc_friendsactivity_app.features.auth.components.AuthFieldStates
 import apc.appcradle.kotlinjc_friendsactivity_app.features.auth.model.AuthEvents
-import apc.appcradle.kotlinjc_friendsactivity_app.network.model.DataTransferState
+import apc.appcradle.kotlinjc_friendsactivity_app.features.auth.model.AuthState
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
-fun AuthScreen(
+fun LoginScreen(
     vm: AuthViewModel = koinViewModel(),
     navigateToRegister: () -> Unit,
 ) {
-    val authState = vm.state.collectAsStateWithLifecycle().value
-    AuthScreenUi(
+    val authState = vm.state.collectAsStateWithLifecycle()
+    LoginScreenUi(
         sendLoginData = { login, pass -> vm.obtainEvent(AuthEvents.Login(login, pass)) },
-        transferState = authState.dataTransferState,
+        transferState = authState,
         navigateToRegister = navigateToRegister,
         onOfflineUseClick = { vm.obtainEvent(AuthEvents.GoOffline) }
     )
 }
 
 @Composable
-fun AuthScreenUi(
+fun LoginScreenUi(
     sendLoginData: (String, String) -> Unit,
-    transferState: DataTransferState,
+    transferState: State<AuthState>,
     navigateToRegister: () -> Unit,
     onOfflineUseClick: () -> Unit
 ) {
-    val passwordFocusRequester = remember { FocusRequester() }
 
+    val passwordFocusRequester = remember { FocusRequester() }
     var authFieldState by rememberSaveable { mutableStateOf(AuthFieldStates.Login) }
     var loginText by rememberSaveable { mutableStateOf("") }
     var passwordText by rememberSaveable { mutableStateOf("") }
@@ -77,16 +78,21 @@ fun AuthScreenUi(
     val isLoginValid by remember(loginText) {
         derivedStateOf { loginText.isNotBlank() }
     }
+    val isLoading = transferState.value.isLoading
+    val error = transferState.value.dataTransferState.errorMessage
 
+    // Если пошла загрузка — скрываем фокус. Если пришла ошибка — возвращаем на Login.
+    LaunchedEffect(isLoading, error) {
+        authFieldState = if (error == null && isLoading) {
+            AuthFieldStates.Loading
+        } else {
+            AuthFieldStates.Login
+        }
+    }
     LaunchedEffect(authFieldState) {
         when (authFieldState) {
             AuthFieldStates.Password -> passwordFocusRequester.requestFocus()
             else -> {}
-        }
-    }
-    LaunchedEffect(transferState) {
-        if (transferState.errorMessage != null && !transferState.isLoading) {
-            authFieldState = AuthFieldStates.Login
         }
     }
 
@@ -160,7 +166,7 @@ fun AuthScreenUi(
 
                         AuthFieldStates.Loading -> {
                             AnimatedVisibility(
-                                visible = transferState.isLoading
+                                visible = transferState.value.isLoading
                             ) {
                                 LinearProgressIndicator(modifier = Modifier.padding(horizontal = 15.dp))
                             }
@@ -169,7 +175,7 @@ fun AuthScreenUi(
                 }
                 AuthButton(textResource = R.string.auth_screen_create, onClick = navigateToRegister)
                 AuthButton(textResource = R.string.auth_screen_offline, onClick = onOfflineUseClick)
-                AuthErrorText(transferResult = transferState)
+                AuthErrorText(transferResult = transferState.value.dataTransferState)
             }
         }
     }
@@ -179,7 +185,6 @@ fun AuthScreenUi(
 //@Composable
 //private fun PreviewAuth() {
 //    KotlinJC_FriendsActivity_appTheme {
-//        AuthScreen(
-//        )
+//        AuthScreenUi()
 //    }
 //}

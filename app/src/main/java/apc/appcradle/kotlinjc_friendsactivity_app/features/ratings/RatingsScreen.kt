@@ -9,6 +9,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -19,6 +20,7 @@ import androidx.compose.ui.unit.dp
 import apc.appcradle.kotlinjc_friendsactivity_app.features._common_components.AppText
 import apc.appcradle.kotlinjc_friendsactivity_app.features.ratings.components.PlayerStatsView
 import apc.appcradle.kotlinjc_friendsactivity_app.features.ratings.components.StatsTable
+import apc.appcradle.kotlinjc_friendsactivity_app.features.ratings.models.RatingsEvents
 import apc.appcradle.kotlinjc_friendsactivity_app.features.ratings.models.RatingsState
 import org.koin.androidx.compose.koinViewModel
 
@@ -29,13 +31,18 @@ fun RatingsScreen(
     val ratingsState by vm.state.collectAsState()
     RatingsScreenUi(
         state = ratingsState,
+        retrySync = { vm.obtainEvent(RatingsEvents.SyncData) }
     )
 }
 
 @Composable
 fun RatingsScreenUi(
     state: RatingsState,
+    retrySync: () -> Unit
 ) {
+    LaunchedEffect(Unit) {
+        retrySync()
+    }
     Column(
         modifier = Modifier
             .fillMaxSize()
