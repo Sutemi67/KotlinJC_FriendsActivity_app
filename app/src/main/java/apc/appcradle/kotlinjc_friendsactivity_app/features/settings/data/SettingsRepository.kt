@@ -3,8 +3,8 @@ package apc.appcradle.kotlinjc_friendsactivity_app.features.settings.data
 import android.content.SharedPreferences
 import androidx.compose.runtime.Immutable
 import androidx.core.content.edit
-import apc.appcradle.kotlinjc_friendsactivity_app.core.models.ISettingsRepository
-import apc.appcradle.kotlinjc_friendsactivity_app.core.models.ITokenRepository
+import apc.appcradle.kotlinjc_friendsactivity_app.features.auth.model.ITokenRepository
+import apc.appcradle.kotlinjc_friendsactivity_app.features.settings.model.ISettingsRepository
 import apc.appcradle.kotlinjc_friendsactivity_app.features.settings.model.SettingsState
 import com.google.gson.Gson
 import kotlinx.coroutines.CoroutineScope
@@ -18,7 +18,7 @@ import kotlinx.coroutines.launch
 @Immutable
 class SettingsRepository(
     private val sharedPreferences: SharedPreferences,
-    private val tokenRepository: ITokenRepository
+    private val tokenRepository: ITokenRepository,
 ) : ISettingsRepository {
     private val gson = Gson()
     val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)

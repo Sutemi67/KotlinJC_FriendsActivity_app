@@ -86,7 +86,13 @@ fun MainActivityApp(
                 AppBottomNavBar(
                     navDestinations = bottomDestinations,
                     currentRoute = currentRoute,
-                    onNavigate = { navController.navigate(it.route) }
+                    onNavigate = {
+                        navController.navigate(it.route) {
+                            popUpTo(navController.graph.startDestinationId) { saveState = true }
+                            launchSingleTop = true
+                            restoreState = true
+                        }
+                    }
                 )
             }
         }

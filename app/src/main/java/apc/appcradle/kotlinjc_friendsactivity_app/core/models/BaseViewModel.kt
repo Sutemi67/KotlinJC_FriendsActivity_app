@@ -27,7 +27,7 @@ abstract class BaseViewModel<State : BaseState, Event : BaseEvents, Action : Bas
             runCatching {
                 block()
             }.onFailure { error ->
-                logger(LoggerType.Error, error.message ?: "error is $error")
+                logger(LoggerType.Error, "BaseViewModel",error.message ?: "error is $error")
                 onFailure?.invoke(error)
             }
         }

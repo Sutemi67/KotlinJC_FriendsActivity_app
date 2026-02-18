@@ -19,6 +19,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
 
@@ -37,10 +38,13 @@ class StepCounterService : Service() {
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        startServiceInForeground()
-        sensorManager.registerSensors()
-        startStepCollection()
-        logger(LoggerType.Debug, "Step counter started")
+        if (!isRunning.value) {
+            startServiceInForeground()
+            sensorManager.registerSensors()
+            startStepCollection()
+            logger(LoggerType.Error, this, "Step counter started")
+            isRunning.value = true
+        }
         return START_STICKY
     }
 
@@ -58,7 +62,7 @@ class StepCounterService : Service() {
                 startForeground(NOTIFICATION_ID, createNotification(steps))
             }
         } catch (e: Exception) {
-            logger(LoggerType.Error, "Failed fallback start: ${e.message}")
+            logger(LoggerType.Error, this, "Failed fallback start: ${e.message}")
             stopSelf()
         }
     }
@@ -120,12 +124,15 @@ class StepCounterService : Service() {
         super.onDestroy()
         sensorManager.unregisterSensors()
         collectionJob?.cancel()
-        logger(LoggerType.Error, "Step counter service destroyed")
+        isRunning.value = false
+        logger(LoggerType.Error, this, "Step counter service destroyed")
     }
 
     companion object {
         const val NOTIFICATION_ID: Int = 1
         const val DEBOUNCE_NEW_STEPS_NOTIFIER: Long = 6000L
         const val CHANNEL_ID: String = "StepCounterChannel"
+        var isRunning = MutableStateFlow(false)
+            private set
     }
 }

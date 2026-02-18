@@ -1,4 +1,4 @@
-package apc.appcradle.kotlinjc_friendsactivity_app.core.models
+package apc.appcradle.kotlinjc_friendsactivity_app.features.auth.model
 
 import apc.appcradle.kotlinjc_friendsactivity_app.features.auth.TokenState
 import kotlinx.coroutines.flow.StateFlow

@@ -42,7 +42,7 @@ fun openDonate(context: Context) {
 }
 
 enum class LoggerType {
-    Error, Info, Debug
+    Error, Info, Debug, Recomposition,
 }
 
 fun logger(loggerType: LoggerType, message: String) {
@@ -50,8 +50,27 @@ fun logger(loggerType: LoggerType, message: String) {
         LoggerType.Error -> Log.e("logger_tag", message)
         LoggerType.Info -> Log.i("logger_tag", message)
         LoggerType.Debug -> Log.d("logger_tag", message)
+        LoggerType.Recomposition -> Log.v("logger_tag", message)
     }
 
+}
+
+fun logger(loggerType: LoggerType, clazz: Any, message: String) {
+    when (loggerType) {
+        LoggerType.Error -> Log.e("logger_tag", "${clazz.javaClass.simpleName}: $message")
+        LoggerType.Info -> Log.i("logger_tag", "${clazz.javaClass.simpleName}: $message")
+        LoggerType.Debug -> Log.d("logger_tag", "${clazz.javaClass.simpleName}: $message")
+        LoggerType.Recomposition -> Log.v("logger_tag", "${clazz.javaClass.simpleName}: $message")
+    }
+}
+
+fun logger(loggerType: LoggerType, className: String, message: String) {
+    when (loggerType) {
+        LoggerType.Error -> Log.e("logger_tag", "${className}: $message")
+        LoggerType.Info -> Log.i("logger_tag", "${className}: $message")
+        LoggerType.Debug -> Log.d("logger_tag", "${className}: $message")
+        LoggerType.Recomposition -> Log.v("logger_tag", "${className}: $message")
+    }
 }
 
 fun format(text: Int): String {

@@ -2,7 +2,7 @@ package apc.appcradle.kotlinjc_friendsactivity_app.features
 
 import androidx.compose.runtime.Immutable
 import androidx.work.WorkInfo
-import apc.appcradle.kotlinjc_friendsactivity_app.core.models.ITokenRepository
+import apc.appcradle.kotlinjc_friendsactivity_app.features.auth.model.ITokenRepository
 import apc.appcradle.kotlinjc_friendsactivity_app.core.utils.LoggerType
 import apc.appcradle.kotlinjc_friendsactivity_app.core.utils.logger
 import apc.appcradle.kotlinjc_friendsactivity_app.features.auth.UiState
@@ -17,7 +17,6 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.launch
 
 @Immutable
 data class AppState(
@@ -53,7 +52,7 @@ class AppStateManager(
 
     init {
         tokenRepository.tokenFlow.onEach { (login, token, uiState) ->
-            logger(LoggerType.Debug, "token state changed")
+            logger(LoggerType.Info, this, "appState changed")
             _appState.update { it.copy(uiState = uiState, userLogin = login) }
         }.launchIn(scope)
     }

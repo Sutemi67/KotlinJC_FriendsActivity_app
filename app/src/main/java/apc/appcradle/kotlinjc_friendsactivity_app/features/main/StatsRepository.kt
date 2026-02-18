@@ -1,17 +1,18 @@
 package apc.appcradle.kotlinjc_friendsactivity_app.features.main
 
 import android.content.SharedPreferences
-import android.util.Log
 import androidx.core.content.edit
 import androidx.work.ExistingWorkPolicy
 import androidx.work.WorkManager
 import apc.appcradle.kotlinjc_friendsactivity_app.core.services.trancateStepsRequest
+import apc.appcradle.kotlinjc_friendsactivity_app.core.utils.LoggerType
 import apc.appcradle.kotlinjc_friendsactivity_app.core.utils.TRANCATE_WORKER_TAG
 import apc.appcradle.kotlinjc_friendsactivity_app.core.utils.USER_STEP_DEFAULT
+import apc.appcradle.kotlinjc_friendsactivity_app.core.utils.logger
 import apc.appcradle.kotlinjc_friendsactivity_app.core.utils.whenNextMonday
+import apc.appcradle.kotlinjc_friendsactivity_app.features.ratings.models.PlayersListSyncData
 import apc.appcradle.kotlinjc_friendsactivity_app.network.NetworkClient
 import apc.appcradle.kotlinjc_friendsactivity_app.network.model.PlayerActivityData
-import apc.appcradle.kotlinjc_friendsactivity_app.features.ratings.models.PlayersListSyncData
 import apc.appcradle.kotlinjc_friendsactivity_app.network.model.Steps
 import kotlin.math.max
 
@@ -21,6 +22,10 @@ class StatsRepository(
     private val sharedPreferences: SharedPreferences,
 ) {
     private var isFirstAppStart = true
+
+    init {
+        logger(LoggerType.Debug, this, "initialized")
+    }
 
     private fun setPercentageAndSort(playersList: List<PlayerActivityData>): List<PlayerActivityData> {
         val maxSteps = playersList.maxOfOrNull { it.weeklySteps } ?: 0
@@ -90,7 +95,6 @@ class StatsRepository(
         val leader = sortedList.maxByOrNull { it.weeklySteps } ?: return 0.0
         val player = sortedList.firstOrNull { it.login == login } ?: return 0.0
         val diffKm = (leader.weeklySteps - player.weeklySteps) * USER_STEP_DEFAULT / 1000
-        Log.e("difference", "$leader\n$player\n$diffKm")
         return diffKm
     }
 
@@ -103,6 +107,7 @@ class StatsRepository(
 
     suspend fun fetchSteps(login: String?): Steps {
         if (login != null) {
+            logger(LoggerType.Info, this, "fetch steps for $login")
             val serverSteps = networkClient.getUserStepsData(login)
             val localSteps = getLocalSteps(login)
             return Steps(

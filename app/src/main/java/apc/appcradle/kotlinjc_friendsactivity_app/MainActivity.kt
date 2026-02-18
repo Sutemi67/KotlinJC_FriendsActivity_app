@@ -15,7 +15,7 @@ import apc.appcradle.kotlinjc_friendsactivity_app.core.app_theme.ExpandedText
 import apc.appcradle.kotlinjc_friendsactivity_app.core.app_theme.KotlinJC_FriendsActivity_appTheme
 import apc.appcradle.kotlinjc_friendsactivity_app.core.app_theme.MediumText
 import apc.appcradle.kotlinjc_friendsactivity_app.core.app_theme.MyTypography
-import apc.appcradle.kotlinjc_friendsactivity_app.core.models.ISettingsRepository
+import apc.appcradle.kotlinjc_friendsactivity_app.features.settings.model.ISettingsRepository
 import apc.appcradle.kotlinjc_friendsactivity_app.core.utils.LoggerType
 import apc.appcradle.kotlinjc_friendsactivity_app.core.utils.logger
 import apc.appcradle.kotlinjc_friendsactivity_app.features.MainActivityApp
@@ -58,7 +58,7 @@ private fun FriendsActivityApp() {
         CompositionLocalProvider(
             LocalAppTypography provides appTypography
         ) {
-            logger(LoggerType.Error, "navhost recomposed in activity")
+            logger(LoggerType.Recomposition, "FriendsActivityApp","navhost recomposed in activity")
             MainActivityApp()
         }
     }

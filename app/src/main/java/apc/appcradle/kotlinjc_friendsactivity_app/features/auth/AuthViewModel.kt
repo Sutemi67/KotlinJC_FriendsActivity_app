@@ -3,7 +3,7 @@ package apc.appcradle.kotlinjc_friendsactivity_app.features.auth
 import androidx.compose.runtime.Immutable
 import androidx.lifecycle.viewModelScope
 import apc.appcradle.kotlinjc_friendsactivity_app.core.models.BaseViewModel
-import apc.appcradle.kotlinjc_friendsactivity_app.core.models.ITokenRepository
+import apc.appcradle.kotlinjc_friendsactivity_app.features.auth.model.ITokenRepository
 import apc.appcradle.kotlinjc_friendsactivity_app.features.auth.model.AuthActions
 import apc.appcradle.kotlinjc_friendsactivity_app.features.auth.model.AuthEvents
 import apc.appcradle.kotlinjc_friendsactivity_app.features.auth.model.AuthState

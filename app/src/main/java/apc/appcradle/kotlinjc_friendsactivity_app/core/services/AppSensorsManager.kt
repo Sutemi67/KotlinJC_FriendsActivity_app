@@ -6,7 +6,7 @@ import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
 import android.hardware.SensorManager
 import androidx.compose.runtime.Immutable
-import apc.appcradle.kotlinjc_friendsactivity_app.core.models.ITokenRepository
+import apc.appcradle.kotlinjc_friendsactivity_app.features.auth.model.ITokenRepository
 import apc.appcradle.kotlinjc_friendsactivity_app.core.utils.LoggerType
 import apc.appcradle.kotlinjc_friendsactivity_app.core.utils.logger
 import apc.appcradle.kotlinjc_friendsactivity_app.features.main.StatsRepository
@@ -66,9 +66,8 @@ class AppSensorsManager(
     init {
         scopeIO.launch {
             tokenRepository.tokenFlow.collect { state ->
-//            appStateManager.appState.collect { state ->
                 actualLogin = state.login
-                logger(LoggerType.Info, "login updated: $actualLogin")
+                logger(LoggerType.Info, "AppSensorsManager","login updated: $actualLogin")
                 loggedLoadingSteps()
             }
         }
@@ -82,7 +81,7 @@ class AppSensorsManager(
                 SensorManager.SENSOR_DELAY_NORMAL,
                 SensorManager.SENSOR_DELAY_UI
             )
-            logger(LoggerType.Error, "step counter initialized!")
+            logger(LoggerType.Debug, this,"step counter initialized!")
             return
         } else if (stepDetectorSensor != null) {
             sensorManager.registerListener(
@@ -91,9 +90,9 @@ class AppSensorsManager(
                 SensorManager.SENSOR_DELAY_NORMAL,
                 SensorManager.SENSOR_DELAY_UI
             )
-            logger(LoggerType.Error, "step detector initialized!")
+            logger(LoggerType.Debug, this,"step detector initialized!")
         } else {
-            logger(LoggerType.Error, "No step sensor available on this device!")
+            logger(LoggerType.Error, this,"No step sensor available on this device!")
         }
     }
 

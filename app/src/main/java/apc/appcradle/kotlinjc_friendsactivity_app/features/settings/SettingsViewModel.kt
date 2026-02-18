@@ -4,11 +4,11 @@ import android.content.Context
 import android.content.Intent
 import androidx.compose.runtime.Immutable
 import apc.appcradle.kotlinjc_friendsactivity_app.core.models.BaseViewModel
-import apc.appcradle.kotlinjc_friendsactivity_app.core.models.ISettingsRepository
-import apc.appcradle.kotlinjc_friendsactivity_app.core.models.ITokenRepository
 import apc.appcradle.kotlinjc_friendsactivity_app.core.services.StepCounterService
 import apc.appcradle.kotlinjc_friendsactivity_app.core.utils.LoggerType
 import apc.appcradle.kotlinjc_friendsactivity_app.core.utils.logger
+import apc.appcradle.kotlinjc_friendsactivity_app.features.auth.model.ITokenRepository
+import apc.appcradle.kotlinjc_friendsactivity_app.features.settings.model.ISettingsRepository
 import apc.appcradle.kotlinjc_friendsactivity_app.features.settings.model.SettingsActions
 import apc.appcradle.kotlinjc_friendsactivity_app.features.settings.model.SettingsEvents
 import apc.appcradle.kotlinjc_friendsactivity_app.features.settings.model.SettingsState
@@ -23,7 +23,7 @@ class SettingsViewModel(
 ) : BaseViewModel<SettingsState, SettingsEvents, SettingsActions>(initialState = settingsRepo.settingsState.value) {
 
     init {
-        logger(LoggerType.Debug, "SettingsViewModel INIT: ${this.hashCode()}")
+        logger(LoggerType.Debug, this,"init: ${this.hashCode()}")
     }
 
     override fun obtainEvent(event: SettingsEvents) {
@@ -79,17 +79,19 @@ class SettingsViewModel(
         val serviceIntent = Intent(context, StepCounterService::class.java)
         try {
             context.startForegroundService(serviceIntent)
-            mutableState.update { it.copy(isServiceRunning = true) }
+            mutableState.update { it.copy(serviceSavedOption = true,) }
             saveSettings()
         } catch (e: Exception) {
-            logger(LoggerType.Error, "Failed to start service: ${e.message}")
+            logger(LoggerType.Error, this,"Failed to start service: ${e.message}")
         }
     }
 
     private fun stopService(context: Context) {
         val serviceIntent = Intent(context, StepCounterService::class.java)
         context.stopService(serviceIntent)
-        mutableState.update { it.copy(isServiceRunning = false) }
+        mutableState.update {
+            it.copy(serviceSavedOption = false,)
+        }
         saveSettings()
     }
 }

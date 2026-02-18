@@ -21,7 +21,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Switch
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableDoubleStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -33,13 +32,13 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import apc.appcradle.kotlinjc_friendsactivity_app.R
 import apc.appcradle.kotlinjc_friendsactivity_app.core.app_theme.AppTextStyles
 import apc.appcradle.kotlinjc_friendsactivity_app.core.app_theme.KotlinJC_FriendsActivity_appTheme
-import apc.appcradle.kotlinjc_friendsactivity_app.core.services.AppSensorsManager
+import apc.appcradle.kotlinjc_friendsactivity_app.core.services.StepCounterService
 import apc.appcradle.kotlinjc_friendsactivity_app.core.utils.format
 import apc.appcradle.kotlinjc_friendsactivity_app.features._common_components.AppText
-import org.koin.compose.koinInject
 import kotlin.math.roundToInt
 
 @Composable
@@ -48,10 +47,11 @@ fun PermittedUi(
     summarySteps: Int,
     weeklySteps: Int = 0,
     userStepLength: Double,
-    isServiceRunning: Boolean,
     isLoading: Boolean,
     counterCheckerCallback: (Boolean) -> Unit,
 ) {
+    val isServiceRunning by StepCounterService.isRunning.collectAsStateWithLifecycle()
+
     var kmWeekly by remember { mutableDoubleStateOf(0.0) }
     var kmAll by remember { mutableDoubleStateOf(0.0) }
     var kkal by remember { mutableStateOf(IntRange(1, 2)) }
@@ -188,7 +188,6 @@ private fun PreviewUi() {
             true,
             summarySteps = 454345,
             weeklySteps = 4433,
-            isServiceRunning = true,
             userStepLength = 33.2,
             isLoading = true,
             counterCheckerCallback = {}

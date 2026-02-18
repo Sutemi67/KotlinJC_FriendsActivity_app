@@ -3,8 +3,8 @@ package apc.appcradle.kotlinjc_friendsactivity_app.core.di
 import android.content.Context
 import android.content.SharedPreferences
 import androidx.work.WorkManager
-import apc.appcradle.kotlinjc_friendsactivity_app.core.models.ISettingsRepository
-import apc.appcradle.kotlinjc_friendsactivity_app.core.models.ITokenRepository
+import apc.appcradle.kotlinjc_friendsactivity_app.features.settings.model.ISettingsRepository
+import apc.appcradle.kotlinjc_friendsactivity_app.features.auth.model.ITokenRepository
 import apc.appcradle.kotlinjc_friendsactivity_app.core.services.AppSensorsManager
 import apc.appcradle.kotlinjc_friendsactivity_app.core.services.PermissionManager
 import apc.appcradle.kotlinjc_friendsactivity_app.features.AppStateManager

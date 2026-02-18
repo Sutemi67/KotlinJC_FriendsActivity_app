@@ -31,16 +31,22 @@ class MainViewModel(
 ) : ViewModel() {
     private var _state = MutableStateFlow(MainScreenState())
     val state: StateFlow<MainScreenState> = _state.asStateFlow()
+    private var isRefreshed: Boolean = false
 
     private val work: List<WorkInfo>? =
         workManager.getWorkInfosForUniqueWork(TRANCATE_WORKER_TAG).get()
 
     init {
-        logger(LoggerType.Debug, "MainViewModel INIT: ${this.hashCode()}")
+        logger(LoggerType.Debug, this, "init: ${this.hashCode()}")
         planNextTrancate()
         checkPermissions()
         tokenRepository.tokenFlow
-            .onEach { refreshSteps() }
+            .onEach {
+                if (!isRefreshed) {
+                    refreshSteps()
+                    isRefreshed = true
+                }
+            }
             .launchIn(viewModelScope)
         sensorsManager.allSteps
             .onEach { all -> _state.update { it.copy(userAllSteps = all) } }
@@ -71,16 +77,16 @@ class MainViewModel(
     }
 
     private fun planNextTrancate() {
-        logger(LoggerType.Info, "$work")
+        logger(LoggerType.Info, this, "trancate work state: ${work?.firstOrNull()?.state}")
         if (work.isNullOrEmpty() || work.any { it.state == WorkInfo.State.SUCCEEDED }) {
             statsRepository.planNextTrancateSteps()
-            logger(LoggerType.Info, "trancate work not found. creating a new...")
+            logger(LoggerType.Info, this, "trancate work not found. creating a new...")
         } else {
             work.forEach { work ->
                 _state.update { it.copy(trancateWorkerStatus = work) }
                 logger(
-                    LoggerType.Debug,
-                    "work status updated: ${work.state}, next trancate in: ${
+                    LoggerType.Debug, this,
+                    "work status updated: ${work.state}, next trancate: ${
                         formatDeadline(work.nextScheduleTimeMillis)
                     }"
                 )

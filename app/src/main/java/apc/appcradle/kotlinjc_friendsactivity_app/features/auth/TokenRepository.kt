@@ -2,7 +2,7 @@ package apc.appcradle.kotlinjc_friendsactivity_app.features.auth
 
 import android.content.SharedPreferences
 import androidx.core.content.edit
-import apc.appcradle.kotlinjc_friendsactivity_app.core.models.ITokenRepository
+import apc.appcradle.kotlinjc_friendsactivity_app.features.auth.model.ITokenRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob

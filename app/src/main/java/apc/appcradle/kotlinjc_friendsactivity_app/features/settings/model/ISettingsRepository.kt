@@ -1,6 +1,5 @@
-package apc.appcradle.kotlinjc_friendsactivity_app.core.models
+package apc.appcradle.kotlinjc_friendsactivity_app.features.settings.model
 
-import apc.appcradle.kotlinjc_friendsactivity_app.features.settings.model.SettingsState
 import kotlinx.coroutines.flow.StateFlow
 
 interface ISettingsRepository {
