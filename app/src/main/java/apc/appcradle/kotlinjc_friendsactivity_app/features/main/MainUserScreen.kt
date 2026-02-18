@@ -66,7 +66,7 @@ fun MainUserScreenUi(
     Box(
         modifier = Modifier.fillMaxSize()
     ) {
-        val serviceOption = settingsState.value.serviceSavedOption
+        val savedServiceOption = settingsState.value.serviceSavedOption
         val isRunning = isRunningState.value
 
         if (!mainState.value.isPermissionsGet) {
@@ -76,11 +76,12 @@ fun MainUserScreenUi(
                 }
             )
         } else {
-            LaunchedEffect(serviceOption, isRunning) {
-                if (serviceOption && !isRunning) startService(context)
+            LaunchedEffect(savedServiceOption, isRunning) {
+                if (savedServiceOption && !isRunning) startService(context)
             }
         }
         PermittedUi(
+            serviceState = settingsState,
             isStepSensorsAvailable = mainState.value.isSensorsAvailable,
             summarySteps = mainState.value.userAllSteps,
             weeklySteps = mainState.value.userWeeklySteps,

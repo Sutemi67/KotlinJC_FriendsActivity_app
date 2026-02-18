@@ -5,26 +5,28 @@ import android.hardware.Sensor
 import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
 import android.hardware.SensorManager
-import androidx.compose.runtime.Immutable
-import apc.appcradle.kotlinjc_friendsactivity_app.features.auth.model.ITokenRepository
 import apc.appcradle.kotlinjc_friendsactivity_app.core.utils.LoggerType
 import apc.appcradle.kotlinjc_friendsactivity_app.core.utils.logger
+import apc.appcradle.kotlinjc_friendsactivity_app.features.auth.model.ITokenRepository
 import apc.appcradle.kotlinjc_friendsactivity_app.features.main.StatsRepository
 import apc.appcradle.kotlinjc_friendsactivity_app.network.model.Steps
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.util.concurrent.atomic.AtomicInteger
 import kotlin.time.Duration.Companion.seconds
 
-@Immutable
 class AppSensorsManager(
     context: Context,
     private val statsRepository: StatsRepository,
@@ -49,13 +51,14 @@ class AppSensorsManager(
     private var _weeklySteps = MutableStateFlow(0)
     val weeklySteps = _weeklySteps.asStateFlow()
 
+    private var _isLoading = MutableStateFlow(false)
+    val isLoading = _isLoading.asStateFlow()
+
     private var stepsInitialWeekly: Int = 0
     private var currentSteps = AtomicInteger(0)
     private var stepsWithoutChecking = 0
     private var isFirstStart = true
     private var lastTotalCounterSteps: Int? = null
-
-    private var refreshJob: Job? = null
 
     @Volatile
     private var isSavingInProgress = false
@@ -64,13 +67,20 @@ class AppSensorsManager(
     private var isDataLoaded = false
 
     init {
-        scopeIO.launch {
-            tokenRepository.tokenFlow.collect { state ->
-                actualLogin = state.login
-                logger(LoggerType.Info, "AppSensorsManager","login updated: $actualLogin")
+        logger(LoggerType.Debug, this, "init: ${this.hashCode()}")
+        tokenRepository.tokenFlow
+            .map { it.login }
+            .distinctUntilChanged()
+            .onEach { login ->
+                logger(LoggerType.Info, "AppSensorsManager", "login updated: $login")
+                actualLogin = login
                 loggedLoadingSteps()
             }
-        }
+            .distinctUntilChanged()
+            .catch { e ->
+                logger(LoggerType.Error, "AppSensorsManager", "Flow error: ${e.message}")
+            }
+            .launchIn(scopeIO)
     }
 
     fun registerSensors() {
@@ -81,7 +91,7 @@ class AppSensorsManager(
                 SensorManager.SENSOR_DELAY_NORMAL,
                 SensorManager.SENSOR_DELAY_UI
             )
-            logger(LoggerType.Debug, this,"step counter initialized!")
+            logger(LoggerType.Debug, this, "step counter initialized!")
             return
         } else if (stepDetectorSensor != null) {
             sensorManager.registerListener(
@@ -90,9 +100,9 @@ class AppSensorsManager(
                 SensorManager.SENSOR_DELAY_NORMAL,
                 SensorManager.SENSOR_DELAY_UI
             )
-            logger(LoggerType.Debug, this,"step detector initialized!")
+            logger(LoggerType.Debug, this, "step detector initialized!")
         } else {
-            logger(LoggerType.Error, this,"No step sensor available on this device!")
+            logger(LoggerType.Error, this, "No step sensor available on this device!")
         }
     }
 
@@ -115,7 +125,9 @@ class AppSensorsManager(
     private fun periodicalSaving() {
         if (!isSavingInProgress) {
             isSavingInProgress = true
+            logger(LoggerType.Debug, this, "periodical saving...")
             scopeIO.launch {
+                delay(10.seconds)
                 statsRepository.saveAllSteps(
                     steps = Steps(
                         allSteps = allSteps.value,
@@ -123,7 +135,6 @@ class AppSensorsManager(
                     ),
                     login = actualLogin
                 )
-                delay(30.seconds)
                 isSavingInProgress = false
             }
         }
@@ -143,22 +154,21 @@ class AppSensorsManager(
     }
 
     private suspend fun loggedLoadingSteps() = withContext(Dispatchers.IO) {
+        _isLoading.value = true
         isDataLoaded = false
+        try {
+            val loadedSteps = statsRepository.fetchSteps(actualLogin)
+            _allSteps.value = loadedSteps.allSteps
+            _weeklySteps.value = loadedSteps.weeklySteps
+            stepsInitialWeekly = loadedSteps.weeklySteps
+            currentSteps.set(loadedSteps.weeklySteps)
 
-        val loadedSteps = statsRepository.fetchSteps(actualLogin)
-        _allSteps.value = loadedSteps.allSteps
-        _weeklySteps.value = loadedSteps.weeklySteps
-        stepsInitialWeekly = loadedSteps.weeklySteps
-        currentSteps.set(loadedSteps.weeklySteps)
+            isFirstStart = true
 
-        isFirstStart = true
-
-        isDataLoaded = true
-    }
-
-    suspend fun refreshSteps() {
-        refreshJob?.cancel()
-        loggedLoadingSteps()
+            isDataLoaded = true
+        } finally {
+            _isLoading.value = false
+        }
     }
 
     private fun truncateLoadingSteps() {

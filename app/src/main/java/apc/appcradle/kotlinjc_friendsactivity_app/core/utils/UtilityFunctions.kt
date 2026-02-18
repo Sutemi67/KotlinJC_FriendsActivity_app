@@ -89,7 +89,7 @@ fun formatDeadline(milliseconds: Long): String {
 
     return if (deadline.isAfter(now)) {
         val duration = Duration.between(now, deadline)
-        "через ${formatDuration(duration)}"
+        formatDuration(duration)
     } else {
         val duration = Duration.between(deadline, now)
         "${formatDuration(duration)} назад"

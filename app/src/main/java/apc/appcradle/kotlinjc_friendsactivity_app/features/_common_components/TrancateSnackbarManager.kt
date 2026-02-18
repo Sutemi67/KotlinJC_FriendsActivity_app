@@ -18,29 +18,28 @@ fun TrancateSnackBarManager(
     val login by appStateManager.userLogin.collectAsStateWithLifecycle()
 
     LaunchedEffect(workerStatus, login) {
-        if (workerStatus == null || workerStatus!!.state.isFinished) {
-            snackbarHostState.showSnackbar(message = "Планируется еженедельное обнуление...\nИзменения вступят в силу после перезапуска.")
-        } else {
-            when (workerStatus!!.state) {
-                WorkInfo.State.ENQUEUED -> {
-                    snackbarHostState.showSnackbar(
-                        message = "Статус обнуления: Запланировано.\nПодведение итогов через: ${
-                            formatDeadline(
-                                workerStatus!!.nextScheduleTimeMillis
-                            )
-                        }"
-                    )
-                }
+        if (login == null) return@LaunchedEffect
+        when {
+            workerStatus == null || workerStatus?.state?.isFinished == true -> {
+                snackbarHostState.showSnackbar(
+                    message = "Участие в подведении итогов запланировано на следующее воскресенье!\n"
+                )
+            }
 
-                else -> {
-                    snackbarHostState.showSnackbar(
-                        message = "Статус обнуления: ${workerStatus!!.state}\nПодведение итогов через: ${
-                            formatDeadline(
-                                workerStatus!!.nextScheduleTimeMillis
-                            )
-                        }"
-                    )
-                }
+            workerStatus!!.state == WorkInfo.State.ENQUEUED -> {
+                snackbarHostState.showSnackbar(
+                    message = "Статус подведения итогов: Запланировано.\nОсталось: ${
+                        formatDeadline(
+                            workerStatus!!.nextScheduleTimeMillis
+                        )
+                    }"
+                )
+            }
+
+            else -> {
+                snackbarHostState.showSnackbar(
+                    message = "Статус обнуления: ${workerStatus!!.state}}"
+                )
             }
         }
     }

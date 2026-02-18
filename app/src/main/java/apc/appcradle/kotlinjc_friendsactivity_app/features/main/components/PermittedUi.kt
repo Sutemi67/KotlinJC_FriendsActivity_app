@@ -21,6 +21,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Switch
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableDoubleStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -39,6 +40,8 @@ import apc.appcradle.kotlinjc_friendsactivity_app.core.app_theme.KotlinJC_Friend
 import apc.appcradle.kotlinjc_friendsactivity_app.core.services.StepCounterService
 import apc.appcradle.kotlinjc_friendsactivity_app.core.utils.format
 import apc.appcradle.kotlinjc_friendsactivity_app.features._common_components.AppText
+import apc.appcradle.kotlinjc_friendsactivity_app.features._common_components.ServiceRestartingFunc
+import apc.appcradle.kotlinjc_friendsactivity_app.features.settings.model.SettingsState
 import kotlin.math.roundToInt
 
 @Composable
@@ -49,6 +52,7 @@ fun PermittedUi(
     userStepLength: Double,
     isLoading: Boolean,
     counterCheckerCallback: (Boolean) -> Unit,
+    serviceState: State<SettingsState>,
 ) {
     val isServiceRunning by StepCounterService.isRunning.collectAsStateWithLifecycle()
 
@@ -77,6 +81,8 @@ fun PermittedUi(
         }
         return
     }
+    ServiceRestartingFunc(serviceState)
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -178,19 +184,4 @@ private fun kkalCalc(userStepLength: Double, stepCount: Int): IntRange {
     val firstValue = (50 * (stepCount * userStepLength / 2500)).roundToInt()
     val secondValue = (75 * (stepCount * userStepLength / 2500)).roundToInt()
     return IntRange(firstValue, secondValue)
-}
-
-@Preview
-@Composable
-private fun PreviewUi() {
-    KotlinJC_FriendsActivity_appTheme {
-        PermittedUi(
-            true,
-            summarySteps = 454345,
-            weeklySteps = 4433,
-            userStepLength = 33.2,
-            isLoading = true,
-            counterCheckerCallback = {}
-        )
-    }
 }

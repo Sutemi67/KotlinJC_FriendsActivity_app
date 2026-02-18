@@ -8,7 +8,6 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -97,86 +96,83 @@ fun LoginScreenUi(
     }
 
     Scaffold { paddingValues ->
-        Box(
+        AppBackgroundImage()
+        Column(
             modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues),
-            contentAlignment = Alignment.Center,
+                .padding(paddingValues)
+                .padding(horizontal = 15.dp)
+                .fillMaxSize(),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            AppBackgroundImage()
-            Column(
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                AppText(
-                    modifier = Modifier.padding(15.dp),
-                    text = stringResource(R.string.auth_screen_greeting),
-                    textAlign = TextAlign.Center,
-                )
-                AnimatedContent(
-                    modifier = Modifier.padding(vertical = 15.dp),
-                    targetState = authFieldState,
-                    transitionSpec = {
-                        fadeIn() + expandVertically() togetherWith fadeOut() + shrinkVertically()
-                    },
-                    label = "AuthFieldTransition"
-                ) { state ->
-                    when (state) {
-                        AuthFieldStates.Login -> {
-                            AppInputField(
-                                modifier = Modifier
-                                    .padding(vertical = 5.dp, horizontal = 35.dp)
-                                    .sensitiveContent(),
-                                label = stringResource(R.string.auth_screen_login_placeholder),
-                                value = loginText,
-                                onValueChange = { loginText = it },
-                                trailingIcon = {
-                                    if (isLoginValid) IconButton(onClick = {
-                                        authFieldState = AuthFieldStates.Password
-                                    }) {
-                                        Icon(Icons.AutoMirrored.Filled.ArrowForward, null)
-                                    }
-                                },
-                            )
-                        }
+            AppText(
+                modifier = Modifier.padding(15.dp),
+                text = stringResource(R.string.auth_screen_greeting),
+                textAlign = TextAlign.Center,
+            )
+            AnimatedContent(
+                modifier = Modifier.padding(vertical = 15.dp),
+                targetState = authFieldState,
+                transitionSpec = {
+                    fadeIn() + expandVertically() togetherWith fadeOut() + shrinkVertically()
+                },
+                label = "AuthFieldTransition"
+            ) { state ->
+                when (state) {
+                    AuthFieldStates.Login -> {
+                        AppInputField(
+                            modifier = Modifier
+                                .padding(vertical = 5.dp, horizontal = 35.dp)
+                                .sensitiveContent(),
+                            label = stringResource(R.string.auth_screen_login_placeholder),
+                            value = loginText,
+                            onValueChange = { loginText = it },
+                            trailingIcon = {
+                                if (isLoginValid) IconButton(onClick = {
+                                    authFieldState = AuthFieldStates.Password
+                                }) {
+                                    Icon(Icons.AutoMirrored.Filled.ArrowForward, null)
+                                }
+                            },
+                        )
+                    }
 
-                        AuthFieldStates.Password -> {
-                            AppInputField(
-                                modifier = Modifier
-                                    .padding(vertical = 5.dp, horizontal = 35.dp)
-                                    .focusRequester(passwordFocusRequester)
-                                    .sensitiveContent(),
-                                label = stringResource(R.string.auth_screen_password_placeholder),
-                                value = passwordText,
-                                isPassword = true,
-                                onValueChange = { passwordText = it },
-                                trailingIcon = {
-                                    if (loginText.isNotBlank()) IconButton(onClick = {
-                                        authFieldState = AuthFieldStates.Loading
-                                        sendLoginData(loginText, passwordText)
-                                    }) { Icon(Icons.AutoMirrored.Filled.ArrowForward, null) }
-                                },
-                                leadingIcon = {
-                                    IconButton(onClick = {
-                                        authFieldState = AuthFieldStates.Login
-                                    }) { Icon(Icons.AutoMirrored.Filled.ArrowBack, null) }
-                                },
-                            )
-                        }
+                    AuthFieldStates.Password -> {
+                        AppInputField(
+                            modifier = Modifier
+                                .padding(vertical = 5.dp, horizontal = 35.dp)
+                                .focusRequester(passwordFocusRequester)
+                                .sensitiveContent(),
+                            label = stringResource(R.string.auth_screen_password_placeholder),
+                            value = passwordText,
+                            isPassword = true,
+                            onValueChange = { passwordText = it },
+                            trailingIcon = {
+                                if (loginText.isNotBlank()) IconButton(onClick = {
+                                    authFieldState = AuthFieldStates.Loading
+                                    sendLoginData(loginText, passwordText)
+                                }) { Icon(Icons.AutoMirrored.Filled.ArrowForward, null) }
+                            },
+                            leadingIcon = {
+                                IconButton(onClick = {
+                                    authFieldState = AuthFieldStates.Login
+                                }) { Icon(Icons.AutoMirrored.Filled.ArrowBack, null) }
+                            },
+                        )
+                    }
 
-                        AuthFieldStates.Loading -> {
-                            AnimatedVisibility(
-                                visible = transferState.value.isLoading
-                            ) {
-                                LinearProgressIndicator(modifier = Modifier.padding(horizontal = 15.dp))
-                            }
+                    AuthFieldStates.Loading -> {
+                        AnimatedVisibility(
+                            visible = transferState.value.isLoading
+                        ) {
+                            LinearProgressIndicator(modifier = Modifier.padding(horizontal = 15.dp))
                         }
                     }
                 }
-                AuthButton(textResource = R.string.auth_screen_create, onClick = navigateToRegister)
-                AuthButton(textResource = R.string.auth_screen_offline, onClick = onOfflineUseClick)
-                AuthErrorText(transferResult = transferState.value.dataTransferState)
             }
+            AuthButton(textResource = R.string.auth_screen_create, onClick = navigateToRegister)
+            AuthButton(textResource = R.string.auth_screen_offline, onClick = onOfflineUseClick)
+            AuthErrorText(transferResult = transferState.value.dataTransferState)
         }
     }
 }

@@ -6,12 +6,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import apc.appcradle.kotlinjc_friendsactivity_app.core.app_theme.AppTextStyles
 import apc.appcradle.kotlinjc_friendsactivity_app.core.app_theme.KotlinJC_FriendsActivity_appTheme
-import apc.appcradle.kotlinjc_friendsactivity_app.network.model.DataTransferState
 import apc.appcradle.kotlinjc_friendsactivity_app.features._common_components.AppText
+import apc.appcradle.kotlinjc_friendsactivity_app.network.model.DataTransferState
 
 @Composable
 fun AuthErrorText(
@@ -23,7 +24,8 @@ fun AuthErrorText(
             AppText(
                 text = transferResult.errorMessage,
                 color = Color.Red,
-                appTextStyle = AppTextStyles.Body
+                appTextStyle = AppTextStyles.Body,
+                textAlign = TextAlign.Center
             )
         }
     }

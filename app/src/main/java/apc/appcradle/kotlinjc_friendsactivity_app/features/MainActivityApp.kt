@@ -19,7 +19,6 @@ import androidx.navigation.compose.rememberNavController
 import apc.appcradle.kotlinjc_friendsactivity_app.features._common_components.AppBackgroundImage
 import apc.appcradle.kotlinjc_friendsactivity_app.features._common_components.AppBottomNavBar
 import apc.appcradle.kotlinjc_friendsactivity_app.features._common_components.AppTopBar
-import apc.appcradle.kotlinjc_friendsactivity_app.features._common_components.ServiceRestartingFunc
 import apc.appcradle.kotlinjc_friendsactivity_app.features._common_components.TrancateSnackBarManager
 import apc.appcradle.kotlinjc_friendsactivity_app.features.auth.UiState
 import apc.appcradle.kotlinjc_friendsactivity_app.features.auth.nav.authScreen
@@ -48,7 +47,6 @@ fun MainActivityApp(
 
     val snackHostState = remember { SnackbarHostState() }
 
-    ServiceRestartingFunc(settingsState)
     TrancateSnackBarManager(appStateManager = appStateManager, snackbarHostState = snackHostState)
 
     LaunchedEffect(uiState.value) {
@@ -56,7 +54,7 @@ fun MainActivityApp(
             UiState.OFFLINE -> navController.toMainScreen()
             UiState.SPLASH -> navController.navigate(route = Destinations.SPLASH.route)
             UiState.LOGGED_OUT -> navController.toAuthScreen()
-            UiState.LOGGED_IT -> navController.toMainScreen()
+            UiState.LOGGED_IN -> navController.toMainScreen()
         }
     }
     Scaffold(
@@ -88,7 +86,9 @@ fun MainActivityApp(
                     currentRoute = currentRoute,
                     onNavigate = {
                         navController.navigate(it.route) {
-                            popUpTo(navController.graph.startDestinationId) { saveState = true }
+                            popUpTo(Destinations.MAIN.route) {
+                                saveState = true
+                            }
                             launchSingleTop = true
                             restoreState = true
                         }

@@ -20,7 +20,7 @@ fun ServiceRestartingFunc(settingsState: State<SettingsState>) {
 
     LaunchedEffect(Unit) {
         when {
-            !isServiceRunning && serviceSavedOption -> {
+            !isServiceRunning && serviceSavedOption && settingsState.value.userLogin != null -> {
                 val serviceIntent = Intent(context, StepCounterService::class.java)
                 context.startForegroundService(serviceIntent)
                 logger(LoggerType.Error, "ServiceRestartingFunc", "service started")

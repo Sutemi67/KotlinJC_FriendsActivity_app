@@ -25,6 +25,7 @@ import androidx.compose.ui.unit.dp
 import apc.appcradle.kotlinjc_friendsactivity_app.R
 import apc.appcradle.kotlinjc_friendsactivity_app.features._common_components.AppBackgroundImage
 import apc.appcradle.kotlinjc_friendsactivity_app.features._common_components.AppInputField
+import apc.appcradle.kotlinjc_friendsactivity_app.features._common_components.AppText
 import apc.appcradle.kotlinjc_friendsactivity_app.features.auth.components.AuthButton
 import apc.appcradle.kotlinjc_friendsactivity_app.features.auth.components.AuthErrorText
 import apc.appcradle.kotlinjc_friendsactivity_app.features.auth.model.AuthEvents
@@ -74,7 +75,7 @@ fun RegistrationScreenUi(
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Text(
+            AppText(
                 modifier = Modifier.padding(horizontal = 20.dp, vertical = 15.dp),
                 text = stringResource(R.string.register_screen_greeting),
                 textAlign = TextAlign.Center

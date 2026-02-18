@@ -14,7 +14,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 enum class UiState {
-    OFFLINE, LOGGED_IT, LOGGED_OUT, SPLASH
+    OFFLINE, LOGGED_IN, LOGGED_OUT, SPLASH
 }
 
 data class TokenState(
@@ -43,7 +43,7 @@ class TokenRepository(
             tokenFlow.collect { state ->
                 when {
                     state.login != null && state.token != null -> {
-                        _tokenFlow.update { it.copy(uiState = UiState.LOGGED_IT) }
+                        _tokenFlow.update { it.copy(uiState = UiState.LOGGED_IN) }
                     }
 
                     state.login == null && state.token == OFFLINE_TOKEN -> {
