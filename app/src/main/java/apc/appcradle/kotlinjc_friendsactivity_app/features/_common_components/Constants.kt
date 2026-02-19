@@ -1,2 +1,0 @@
-package apc.appcradle.kotlinjc_friendsactivity_app.features._common_components
-

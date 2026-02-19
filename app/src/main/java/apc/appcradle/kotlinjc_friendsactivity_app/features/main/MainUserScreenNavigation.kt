@@ -8,8 +8,8 @@ import apc.appcradle.kotlinjc_friendsactivity_app.features.Destinations
 fun NavController.toMainScreen() {
     navigate(route = Destinations.MAIN.route) {
         // Очищаем всё ДО главного экрана, но сам MAIN не удаляем
-        popUpTo(Destinations.MAIN.route) {
-            inclusive = false // Важно: false
+        popUpTo(0) {
+            inclusive = true
         }
         launchSingleTop = true // Не создаем новую копию, если MAIN уже наверху
     }

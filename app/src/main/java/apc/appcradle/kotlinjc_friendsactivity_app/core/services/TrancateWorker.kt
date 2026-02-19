@@ -38,8 +38,8 @@ class TrancateWorker(
 
 fun trancateStepsRequest(delay: Long, login: String?): OneTimeWorkRequest {
     return OneTimeWorkRequestBuilder<TrancateWorker>()
-        .setInitialDelay(duration = 3, timeUnit = TimeUnit.MINUTES)
-//        .setInitialDelay(duration = delay, timeUnit = TimeUnit.MILLISECONDS)
+//        .setInitialDelay(duration = 3, timeUnit = TimeUnit.MINUTES)
+        .setInitialDelay(duration = delay, timeUnit = TimeUnit.MILLISECONDS)
         .setInputData(workDataOf(KEY_TO_WORKER_BY_LOGIN to login))
         .build()
 }

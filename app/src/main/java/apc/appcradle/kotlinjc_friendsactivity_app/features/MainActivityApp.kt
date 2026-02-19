@@ -71,7 +71,7 @@ fun MainActivityApp(
         },
         bottomBar = {
             val isBottomBarShow =
-                uiState.value != UiState.LOGGED_OUT && uiState.value != UiState.LOGGED_OUT
+                uiState.value != UiState.LOGGED_OUT && uiState.value != UiState.SPLASH
 
             if (isBottomBarShow) {
                 val bottomDestinations: List<Destinations> by remember {
