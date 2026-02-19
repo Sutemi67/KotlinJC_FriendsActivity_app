@@ -18,15 +18,14 @@ fun TrancateSnackBarManager(
     val login by appStateManager.userLogin.collectAsStateWithLifecycle()
 
     LaunchedEffect(workerStatus, login) {
-        if (login == null) return@LaunchedEffect
         when {
-            workerStatus == null || workerStatus?.state?.isFinished == true -> {
+            workerStatus == null || workerStatus?.state == WorkInfo.State.SUCCEEDED -> {
                 snackbarHostState.showSnackbar(
                     message = "Участие в подведении итогов запланировано на следующее воскресенье!\n"
                 )
             }
 
-            workerStatus!!.state == WorkInfo.State.ENQUEUED -> {
+            workerStatus?.state == WorkInfo.State.ENQUEUED -> {
                 snackbarHostState.showSnackbar(
                     message = "Статус подведения итогов: Запланировано.\nОсталось: ${
                         formatDeadline(
@@ -38,7 +37,7 @@ fun TrancateSnackBarManager(
 
             else -> {
                 snackbarHostState.showSnackbar(
-                    message = "Статус обнуления: ${workerStatus!!.state}}"
+                    message = "Статус обнуления: ${workerStatus?.state}}"
                 )
             }
         }

@@ -34,8 +34,12 @@ fun ServiceRestartingFunc(settingsState: State<SettingsState>) {
                 logger(LoggerType.Error, "ServiceRestartingFunc", "all service settings is off")
             }
 
-            else -> {
-                logger(LoggerType.Error, "ServiceRestartingFunc", "service restarting error")
+            isServiceRunning && !serviceSavedOption -> {
+                logger(
+                    LoggerType.Error,
+                    "ServiceRestartingFunc",
+                    "service running but not saved in preferences as option"
+                )
             }
         }
     }

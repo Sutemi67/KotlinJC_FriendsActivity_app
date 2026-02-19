@@ -42,8 +42,8 @@ class StepCounterService : Service() {
             startServiceInForeground()
             sensorManager.registerSensors()
             startStepCollection()
-            logger(LoggerType.Error, this, "Step counter started")
             isRunning.value = true
+            logger(LoggerType.Error, this, "Step counter started")
         }
         return START_STICKY
     }

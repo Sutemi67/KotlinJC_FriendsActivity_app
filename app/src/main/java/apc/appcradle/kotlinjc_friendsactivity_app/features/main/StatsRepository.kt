@@ -6,7 +6,6 @@ import androidx.work.ExistingWorkPolicy
 import androidx.work.WorkManager
 import apc.appcradle.kotlinjc_friendsactivity_app.core.services.trancateStepsRequest
 import apc.appcradle.kotlinjc_friendsactivity_app.core.utils.LoggerType
-import apc.appcradle.kotlinjc_friendsactivity_app.core.utils.TRANCATE_WORKER_TAG
 import apc.appcradle.kotlinjc_friendsactivity_app.core.utils.USER_STEP_DEFAULT
 import apc.appcradle.kotlinjc_friendsactivity_app.core.utils.logger
 import apc.appcradle.kotlinjc_friendsactivity_app.core.utils.whenNextMonday
@@ -82,13 +81,14 @@ class StatsRepository(
     }
 
     private fun calcSumKm(sortedList: List<PlayerActivityData>): Double {
-        var stepsSum = 0
-        if (sortedList.isNotEmpty()) {
-            sortedList.forEach { player ->
-                stepsSum += player.weeklySteps
-            }
-        }
-        return stepsSum * USER_STEP_DEFAULT / 1000
+//        var stepsSum = 0
+//        if (sortedList.isNotEmpty()) {
+//            sortedList.forEach { player ->
+//                stepsSum += player.weeklySteps
+//            }
+//        }
+        val totalKm = sortedList.sumOf { it.weeklySteps }
+        return totalKm * USER_STEP_DEFAULT / 1000
     }
 
     private fun calcLeaderDiff(login: String?, sortedList: List<PlayerActivityData>): Double {
@@ -129,12 +129,14 @@ class StatsRepository(
         )
     }
 
-    fun planNextTrancateSteps() {
+    fun planNextTrancateSteps(login: String?) {
+        val uniqueWorkName = "truncate_work_$login"
         workManager.enqueueUniqueWork(
-            uniqueWorkName = TRANCATE_WORKER_TAG,
-            existingWorkPolicy = ExistingWorkPolicy.REPLACE,
-            request = trancateStepsRequest(delay = whenNextMonday())
+            uniqueWorkName = uniqueWorkName,
+            existingWorkPolicy = ExistingWorkPolicy.KEEP,
+            request = trancateStepsRequest(delay = whenNextMonday(), login)
         )
+        logger(LoggerType.Debug, this, "Planned truncate for user: $login")
     }
 
     fun truncate(login: String?) {
@@ -146,7 +148,7 @@ class StatsRepository(
     }
 
     private fun generateStepsIdByLogin(login: String?): String? {
-        return if (login == null) {
+        return if (login.isNullOrBlank()) {
             "offline_user_steps"
         } else {
             "${login}_user_steps"
@@ -154,7 +156,7 @@ class StatsRepository(
     }
 
     private fun generateWeeklyStepsIdByLogin(login: String?): String? {
-        return if (login == null) {
+        return if (login.isNullOrBlank()) {
             "offline_user__weekly_steps"
         } else {
             "${login}_user_weekly_steps"

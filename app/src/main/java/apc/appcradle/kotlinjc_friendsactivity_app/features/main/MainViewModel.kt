@@ -1,6 +1,6 @@
 package apc.appcradle.kotlinjc_friendsactivity_app.features.main
 
-import androidx.compose.runtime.Immutable
+import androidx.compose.runtime.Stable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import apc.appcradle.kotlinjc_friendsactivity_app.core.services.AppSensorsManager
@@ -16,10 +16,10 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-@Immutable
+@Stable
 class MainViewModel(
     private val permissionManager: PermissionManager,
-    private val sensorsManager: AppSensorsManager,
+    sensorsManager: AppSensorsManager,
 ) : ViewModel() {
     private var _state = MutableStateFlow(MainScreenState())
     val state: StateFlow<MainScreenState> = _state.asStateFlow()

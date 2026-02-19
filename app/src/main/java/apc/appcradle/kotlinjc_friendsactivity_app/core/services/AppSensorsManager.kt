@@ -140,16 +140,37 @@ class AppSensorsManager(
         }
     }
 
-    fun truncate() {
-        scopeIO.launch {
-            // Ждем первое актуальное значение логина, прежде чем чистить
-            val currentLogin = tokenRepository.tokenFlow.value.login
-            statsRepository.truncate(currentLogin)
+    suspend fun truncate(targetLogin: String?) = withContext(Dispatchers.IO) {
+        logger(LoggerType.Info, this, "all steps before: ${allSteps.value}")
+
+        // Блокируем обработку сенсоров на время сброса
+        isDataLoaded = false
+
+        try {
+            //  Чистим БД
+            statsRepository.truncate(targetLogin)
+
+            // Обнуляем локальные счетчики
             currentSteps.set(0)
             stepsWithoutChecking = 0
             isFirstStart = true
             lastTotalCounterSteps = null
-            truncateLoadingSteps()
+
+            //Загружаем свежие (уже обнуленные) данные, используя тот же targetLogin
+            val loadedSteps = statsRepository.getLocalSteps(targetLogin)
+
+            _allSteps.value = loadedSteps.allSteps
+            _weeklySteps.value = loadedSteps.weeklySteps
+            stepsInitialWeekly = loadedSteps.weeklySteps
+            currentSteps.set(loadedSteps.weeklySteps)
+
+            // Обновляем глобальный actualLogin, чтобы другие методы были в курсе
+            actualLogin = targetLogin
+
+        } finally {
+            // Разрешаем работу сенсоров
+            isDataLoaded = true
+            logger(LoggerType.Info, this, "all steps after truncate: ${allSteps.value}")
         }
     }
 
@@ -168,16 +189,6 @@ class AppSensorsManager(
             isDataLoaded = true
         } finally {
             _isLoading.value = false
-        }
-    }
-
-    private fun truncateLoadingSteps() {
-        scopeIO.launch {
-            val loadedSteps = statsRepository.getLocalSteps(actualLogin)
-            _allSteps.value = loadedSteps.allSteps
-            _weeklySteps.value = loadedSteps.weeklySteps
-            stepsInitialWeekly = loadedSteps.weeklySteps
-            currentSteps.set(loadedSteps.weeklySteps)
         }
     }
 

@@ -8,7 +8,7 @@ const val USER_STEP_DEFAULT = 0.65
 
 //Workers tags
 const val TRANCATE_WORKER_TAG = "trancate"
-const val RESTART_WORKER_TAG = "Restart worker"
+const val TRANCATE_WORKER_TAG_TEST = "trancate"
 
 //URL's
 const val TELEGRAM_URL = "https://t.me/appcradle"
