@@ -49,8 +49,9 @@ import apc.appcradle.kotlinjc_friendsactivity_app.core.app_theme.AppTextStyles
 import apc.appcradle.kotlinjc_friendsactivity_app.core.app_theme.KotlinJC_FriendsActivity_appTheme
 import apc.appcradle.kotlinjc_friendsactivity_app.core.utils.APP_ROUNDED_SHAPE
 import apc.appcradle.kotlinjc_friendsactivity_app.core.utils.TELEGRAM_URL
-import apc.appcradle.kotlinjc_friendsactivity_app.features._common_components.AppDialogs.AppDonationDialog
 import apc.appcradle.kotlinjc_friendsactivity_app.features.Destinations
+import apc.appcradle.kotlinjc_friendsactivity_app.features._common_components.AppDialogs.AppDonationDialog
+import apc.appcradle.kotlinjc_friendsactivity_app.features.auth.TokenRepository
 import apc.appcradle.kotlinjc_friendsactivity_app.features.noAuthDestinations
 
 @Composable
@@ -93,7 +94,7 @@ fun AppInputField(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AppTopBar(
-    login: String?,
+    login: String,
     screenRoute: String?,
 ) {
     val iconsPadding = 6.dp
@@ -101,7 +102,10 @@ fun AppTopBar(
 
     val titleText = when (screenRoute) {
         Destinations.MAIN.route -> {
-            if (login != null) stringResource(R.string.appbar_greeting_logged, login)
+            if (login != TokenRepository.OFFLINE_USER_NICKNAME) stringResource(
+                R.string.appbar_greeting_logged,
+                login
+            )
             else stringResource(R.string.appbar_greeting_offline)
         }
 

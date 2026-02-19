@@ -7,6 +7,7 @@ import android.hardware.SensorEventListener
 import android.hardware.SensorManager
 import apc.appcradle.kotlinjc_friendsactivity_app.core.utils.LoggerType
 import apc.appcradle.kotlinjc_friendsactivity_app.core.utils.logger
+import apc.appcradle.kotlinjc_friendsactivity_app.features.auth.TokenRepository
 import apc.appcradle.kotlinjc_friendsactivity_app.features.auth.model.ITokenRepository
 import apc.appcradle.kotlinjc_friendsactivity_app.features.main.StatsRepository
 import apc.appcradle.kotlinjc_friendsactivity_app.network.model.Steps
@@ -18,6 +19,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
@@ -30,7 +32,7 @@ import kotlin.time.Duration.Companion.seconds
 class AppSensorsManager(
     context: Context,
     private val statsRepository: StatsRepository,
-    private val tokenRepository: ITokenRepository,
+    tokenRepository: ITokenRepository,
 ) : SensorEventListener {
     private val scopeIO = CoroutineScope(Dispatchers.IO + SupervisorJob())
 
@@ -69,6 +71,7 @@ class AppSensorsManager(
     init {
         logger(LoggerType.Debug, this, "init: ${this.hashCode()}")
         tokenRepository.tokenFlow
+            .filter { it.login != TokenRepository.OFFLINE_USER_NICKNAME }
             .map { it.login }
             .distinctUntilChanged()
             .onEach { login ->
@@ -76,7 +79,6 @@ class AppSensorsManager(
                 actualLogin = login
                 loggedLoadingSteps()
             }
-            .distinctUntilChanged()
             .catch { e ->
                 logger(LoggerType.Error, "AppSensorsManager", "Flow error: ${e.message}")
             }
@@ -159,13 +161,13 @@ class AppSensorsManager(
             //Загружаем свежие (уже обнуленные) данные, используя тот же targetLogin
             val loadedSteps = statsRepository.getLocalSteps(targetLogin)
 
-            _allSteps.value = loadedSteps.allSteps
+            if (actualLogin != null) _allSteps.value = loadedSteps.allSteps
             _weeklySteps.value = loadedSteps.weeklySteps
             stepsInitialWeekly = loadedSteps.weeklySteps
             currentSteps.set(loadedSteps.weeklySteps)
 
             // Обновляем глобальный actualLogin, чтобы другие методы были в курсе
-            actualLogin = targetLogin
+//            actualLogin = targetLogin
 
         } finally {
             // Разрешаем работу сенсоров
@@ -174,7 +176,7 @@ class AppSensorsManager(
         }
     }
 
-    private suspend fun loggedLoadingSteps() = withContext(Dispatchers.IO) {
+    fun loggedLoadingSteps() = scopeIO.launch {
         _isLoading.value = true
         isDataLoaded = false
         try {
@@ -185,7 +187,6 @@ class AppSensorsManager(
             currentSteps.set(loadedSteps.weeklySteps)
 
             isFirstStart = true
-
             isDataLoaded = true
         } finally {
             _isLoading.value = false

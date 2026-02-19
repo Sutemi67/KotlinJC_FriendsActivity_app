@@ -16,7 +16,6 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
@@ -57,33 +56,23 @@ class AppStateManager(
         .stateIn(scope = scope, started = SharingStarted.WhileSubscribed(5000), initialValue = null)
 
     init {
-        tokenRepository.tokenFlow.onEach { (login, token, uiState) ->
-            logger(LoggerType.Info, this, "appState changed: $login, $token, $uiState")
-            _appState.update { it.copy(uiState = uiState, userLogin = login) }
-        }
-            .launchIn(scope)
-//        userLogin
-//            .onEach { login ->
-//                statsRepository.planNextTrancateSteps(login)
-//                observeWorkerStatus(login)
-//            }
-//            .launchIn(scope)
-        _appState
-            .map { it.userLogin to it.uiState }
-            .distinctUntilChanged()
-            .onEach { (login, uiState) ->
-                // УСЛОВИЕ:
-                // - Игнорируем, если мы всё еще на заставке (SPLASH)
-                // - Игнорируем, если логин null и мы НЕ в режиме OFFLINE
+        tokenRepository.tokenFlow
+            .onEach { (login, token, uiState) ->
+                logger(LoggerType.Info, this, "New auth event: $login, $uiState")
+
+                // 1. Сначала всегда обновляем состояние для UI
+                _appState.update { it.copy(uiState = uiState, userLogin = login) }
+
+                // 2. Сразу проверяем условия для воркера
                 if (uiState == UiState.SPLASH) return@onEach
 
-                if (login == null && uiState != UiState.OFFLINE) {
-                    logger(LoggerType.Debug, this, "Skip worker: login is null and state is $uiState")
+                if (login == null) {
+                    logger(LoggerType.Debug, this, "Worker skipped: not logged in and not offline")
                     return@onEach
                 }
 
-                // Если прошли проверки — планируем
-//                statsRepository.planNextTrancateSteps(login)
+                // 3. Если всё ок — запускаем логику воркеров
+                statsRepository.planNextTrancateSteps(login)
                 observeWorkerStatus(login)
             }
             .launchIn(scope)
@@ -95,7 +84,7 @@ class AppStateManager(
         observerJob = workManager.getWorkInfosForUniqueWorkFlow(workName)
             .map { it.firstOrNull() }
             .onEach { info ->
-                logger(LoggerType.Debug, this,"workers info status: $info")
+                logger(LoggerType.Debug, this, "workers info status: $info")
                 _appState.update { it.copy(trancateWorkerStatus = info) }
                 if (info?.state == WorkInfo.State.SUCCEEDED) {
                     statsRepository.planNextTrancateSteps(login)

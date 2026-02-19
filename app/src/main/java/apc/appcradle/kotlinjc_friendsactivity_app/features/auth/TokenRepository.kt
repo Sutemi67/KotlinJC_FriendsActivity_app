@@ -7,10 +7,11 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 enum class UiState {
@@ -28,33 +29,38 @@ class TokenRepository(
 ) : ITokenRepository {
     val scope = CoroutineScope(Dispatchers.IO + SupervisorJob())
     private val _tokenFlow = MutableStateFlow(TokenState())
-    override val tokenFlow: StateFlow<TokenState> = _tokenFlow.asStateFlow()
+
+    //    override val tokenFlow: StateFlow<TokenState> = _tokenFlow.asStateFlow()
+    override val tokenFlow: StateFlow<TokenState> = _tokenFlow
+        .map { data ->
+            TokenState(
+                login = data.login,
+                token = data.token,
+                uiState = calculateUiState(data.login, data.token)
+            )
+        }
+        .stateIn(
+            scope = scope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = TokenState()
+        )
 
     init {
-        scope.launch {
-            getToken()
-            getSavedLogin()
-            setUiState()
-        }
+        loadInitialData()
     }
 
-    private fun setUiState() {
-        scope.launch {
-            tokenFlow.collect { state ->
-                when {
-                    state.login != null && state.token != null -> {
-                        _tokenFlow.update { it.copy(uiState = UiState.LOGGED_IN) }
-                    }
+    private fun loadInitialData() {
+        val token = sharedPreferences.getString(TOKEN_ID, null)
+        val login = sharedPreferences.getString(LOGIN_ID, null)
+        _tokenFlow.update { it.copy(login = login, token = token) }
+    }
 
-                    state.login == null && state.token == OFFLINE_TOKEN -> {
-                        _tokenFlow.update { it.copy(uiState = UiState.OFFLINE) }
-                    }
-
-                    state.login == null && state.token == null -> {
-                        _tokenFlow.update { it.copy(uiState = UiState.LOGGED_OUT) }
-                    }
-                }
-            }
+    private fun calculateUiState(login: String?, token: String?): UiState {
+        return when {
+            token == OFFLINE_TOKEN -> UiState.OFFLINE
+            login != null && token != null -> UiState.LOGGED_IN
+            login == null && token == null -> UiState.LOGGED_OUT
+            else -> UiState.SPLASH
         }
     }
 
@@ -73,12 +79,8 @@ class TokenRepository(
 
     override suspend fun saveOfflineToken() = withContext(Dispatchers.IO) {
         sharedPreferences.edit { putString(TOKEN_ID, OFFLINE_TOKEN) }
-        _tokenFlow.update { it.copy(login = null, token = OFFLINE_TOKEN) }
-    }
-
-    override suspend fun getSavedLogin() = withContext(Dispatchers.IO) {
-        val login = sharedPreferences.getString(LOGIN_ID, null)
-        _tokenFlow.update { it.copy(login = login) }
+        sharedPreferences.edit { putString(LOGIN_ID, OFFLINE_USER_NICKNAME) }
+        _tokenFlow.update { it.copy(login = OFFLINE_USER_NICKNAME, token = OFFLINE_TOKEN) }
     }
 
     override suspend fun getToken(): String? = withContext(Dispatchers.IO) {
@@ -99,5 +101,6 @@ class TokenRepository(
         const val TOKEN_ID = "auth_token"
         const val LOGIN_ID = "login"
         const val OFFLINE_TOKEN = "offline"
+        const val OFFLINE_USER_NICKNAME = "__Offline_user_nickname__"
     }
 }

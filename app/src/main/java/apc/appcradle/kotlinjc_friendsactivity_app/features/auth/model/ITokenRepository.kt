@@ -6,7 +6,7 @@ import kotlinx.coroutines.flow.StateFlow
 interface ITokenRepository {
     suspend fun saveToken(login: String, token: String)
     suspend fun saveOfflineToken()
-    suspend fun getSavedLogin()
+//    suspend fun getSavedLogin()
     suspend fun getToken(): String?
     suspend fun clearToken()
     suspend fun saveNewLogin(newLogin: String)

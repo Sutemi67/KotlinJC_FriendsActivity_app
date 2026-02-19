@@ -7,11 +7,12 @@ import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkerParameters
 import androidx.work.workDataOf
 import apc.appcradle.kotlinjc_friendsactivity_app.core.utils.LoggerType
-import apc.appcradle.kotlinjc_friendsactivity_app.core.utils.TRANCATE_WORKER_TAG_TEST
 import apc.appcradle.kotlinjc_friendsactivity_app.core.utils.logger
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import java.util.concurrent.TimeUnit
+
+private const val KEY_TO_WORKER_BY_LOGIN = "KEY_LOGIN"
 
 class TrancateWorker(
     context: Context,
@@ -22,7 +23,7 @@ class TrancateWorker(
     private val appSensorsManager: AppSensorsManager by inject()
 
     override suspend fun doWork(): Result {
-        val login = inputData.getString("KEY_LOGIN")
+        val login = inputData.getString(KEY_TO_WORKER_BY_LOGIN)
 
         return try {
             appSensorsManager.truncate(login)
@@ -37,9 +38,8 @@ class TrancateWorker(
 
 fun trancateStepsRequest(delay: Long, login: String?): OneTimeWorkRequest {
     return OneTimeWorkRequestBuilder<TrancateWorker>()
-        .setInitialDelay(duration = 5, timeUnit = TimeUnit.MINUTES)
+        .setInitialDelay(duration = 3, timeUnit = TimeUnit.MINUTES)
 //        .setInitialDelay(duration = delay, timeUnit = TimeUnit.MILLISECONDS)
-        .addTag(TRANCATE_WORKER_TAG_TEST)
-        .setInputData(workDataOf("KEY_LOGIN" to login))
+        .setInputData(workDataOf(KEY_TO_WORKER_BY_LOGIN to login))
         .build()
 }

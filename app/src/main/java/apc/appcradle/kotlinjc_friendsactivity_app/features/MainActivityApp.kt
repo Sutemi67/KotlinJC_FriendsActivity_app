@@ -20,6 +20,7 @@ import apc.appcradle.kotlinjc_friendsactivity_app.features._common_components.Ap
 import apc.appcradle.kotlinjc_friendsactivity_app.features._common_components.AppBottomNavBar
 import apc.appcradle.kotlinjc_friendsactivity_app.features._common_components.AppTopBar
 import apc.appcradle.kotlinjc_friendsactivity_app.features._common_components.TrancateSnackBarManager
+import apc.appcradle.kotlinjc_friendsactivity_app.features.auth.TokenRepository
 import apc.appcradle.kotlinjc_friendsactivity_app.features.auth.UiState
 import apc.appcradle.kotlinjc_friendsactivity_app.features.auth.nav.authScreen
 import apc.appcradle.kotlinjc_friendsactivity_app.features.auth.nav.registerScreen
@@ -62,19 +63,20 @@ fun MainActivityApp(
         topBar = {
             val userLogin = settingsState.value.userLogin
             val isAuthScreen = uiState.value == UiState.LOGGED_OUT
-            if (!isAuthScreen)
+            if (!isAuthScreen && userLogin != null)
                 AppTopBar(
                     login = userLogin,
                     screenRoute = navBackStackEntry?.destination?.route
                 )
         },
         bottomBar = {
-            val isAuthScreen = uiState.value == UiState.LOGGED_OUT
+            val isBottomBarShow =
+                uiState.value != UiState.LOGGED_OUT && uiState.value != UiState.LOGGED_OUT
 
-            if (!isAuthScreen) {
+            if (isBottomBarShow) {
                 val bottomDestinations: List<Destinations> by remember {
                     derivedStateOf {
-                        if (settingsState.value.userLogin == null) {
+                        if (settingsState.value.userLogin == TokenRepository.OFFLINE_USER_NICKNAME) {
                             Destinations.offlineDestinations
                         } else {
                             Destinations.noAuthDestinations

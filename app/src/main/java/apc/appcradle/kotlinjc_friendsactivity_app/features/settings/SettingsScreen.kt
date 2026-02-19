@@ -37,6 +37,7 @@ import apc.appcradle.kotlinjc_friendsactivity_app.core.app_theme.KotlinJC_Friend
 import apc.appcradle.kotlinjc_friendsactivity_app.core.app_theme.MediumText
 import apc.appcradle.kotlinjc_friendsactivity_app.features._common_components.AppDialogs
 import apc.appcradle.kotlinjc_friendsactivity_app.features._common_components.AppText
+import apc.appcradle.kotlinjc_friendsactivity_app.features.auth.TokenRepository
 import apc.appcradle.kotlinjc_friendsactivity_app.features.settings.model.SettingsEvents
 import apc.appcradle.kotlinjc_friendsactivity_app.features.settings.model.SettingsState
 import org.koin.compose.viewmodel.koinViewModel
@@ -75,7 +76,14 @@ fun SettingsScreenUi(
     val isStepDialogVisible = remember { mutableStateOf(false) }
     val isScaleDialogVisible = remember { mutableStateOf(false) }
     val isLoginDialogVisible = remember { mutableStateOf(false) }
-
+    val userLogin =
+        if (state.userLogin == null ||
+            state.userLogin == TokenRepository.OFFLINE_USER_NICKNAME
+        ) {
+            "-"
+        } else {
+            state.userLogin
+        }
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -102,7 +110,7 @@ fun SettingsScreenUi(
                 ) {
                     AppText(
                         modifier = Modifier.padding(vertical = 10.dp, horizontal = 20.dp),
-                        text = state.userLogin ?: "-",
+                        text = userLogin,
                     )
                 }
             }
@@ -275,7 +283,7 @@ private fun Preview3() {
             SettingsScreenUi(
                 onLogoutClick = {},
                 onStepDistanceClick = {},
-                onLoginChange = { _, -> },
+                onLoginChange = { _ -> },
                 onScaleClick = {},
                 onThemeClick = {},
                 state = SettingsState()

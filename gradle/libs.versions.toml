@@ -1,5 +1,6 @@
 [versions]
 agp = "9.0.1"
+coreSplashscreen = "1.2.0"
 gson = "2.13.1"
 koinAndroidxCompose = "4.1.0"
 koinAndroidxComposeNavigation = "4.1.0"
@@ -26,6 +27,7 @@ workmanager = "2.10.2"
 [libraries]
 androidx-compose-material3-window-size-class1 = { module = "androidx.compose.material3:material3-window-size-class" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
+androidx-core-splashscreen = { module = "androidx.core:core-splashscreen", version.ref = "coreSplashscreen" }
 androidx-navigation-compose = { module = "androidx.navigation:navigation-compose", version.ref = "navigationCompose" }
 gson = { module = "com.google.code.gson:gson", version.ref = "gson" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
