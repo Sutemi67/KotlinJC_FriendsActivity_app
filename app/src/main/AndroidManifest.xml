@@ -20,7 +20,7 @@
         android:theme="@style/Theme.KotlinJC_FriendsActivity_app">
 
         <service
-            android:name=".services.StepCounterService"
+            android:name=".core.services.StepCounterService"
             android:enabled="true"
             android:exported="false"
             android:foregroundServiceType="health" />

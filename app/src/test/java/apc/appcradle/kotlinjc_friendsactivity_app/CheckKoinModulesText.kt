@@ -1,6 +1,6 @@
 package apc.appcradle.kotlinjc_friendsactivity_app
 
-import apc.appcradle.kotlinjc_friendsactivity_app.utils.koinAppModule
+import apc.appcradle.kotlinjc_friendsactivity_app.core.di.koinAppModule
 import org.junit.Test
 import org.koin.core.annotation.KoinExperimentalAPI
 import org.koin.test.KoinTest

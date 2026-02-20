@@ -1,7 +1,7 @@
 package apc.appcradle.kotlinjc_friendsactivity_app
 
 import android.app.Application
-import apc.appcradle.kotlinjc_friendsactivity_app.utils.koinAppModule
+import apc.appcradle.kotlinjc_friendsactivity_app.core.di.koinAppModule
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
 import org.koin.core.context.startKoin
