@@ -28,9 +28,22 @@ class SettingsRepository(
     override val settingsState = mutableState.asStateFlow()
 
     init {
+        checkFirstRun()
         scope.launch {
             tokenRepository.tokenFlow.collect { token ->
                 mutableState.update { it.copy(userLogin = token.login) }
+            }
+        }
+    }
+
+    private fun checkFirstRun() {
+        val currentVersion = 1
+        val savedVersion = sharedPreferences.getInt(PREFS_VERSION, -1)
+
+        if (savedVersion < currentVersion) {
+            sharedPreferences.edit {
+                clear()
+                putInt(PREFS_VERSION, currentVersion)
             }
         }
     }
@@ -51,5 +64,6 @@ class SettingsRepository(
 
     companion object {
         const val SETTINGS_PREFS_ID = "settings_id"
+        const val PREFS_VERSION = "shared_preferences_version"
     }
 }
