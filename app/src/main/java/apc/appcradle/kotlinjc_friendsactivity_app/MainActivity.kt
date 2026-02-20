@@ -8,7 +8,6 @@ import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.compositionLocalOf
-import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import apc.appcradle.kotlinjc_friendsactivity_app.core.app_theme.AppThemes
 import apc.appcradle.kotlinjc_friendsactivity_app.core.app_theme.CompactText
@@ -27,7 +26,6 @@ val LocalAppTypography = compositionLocalOf<MyTypography> { error("no typography
 class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        installSplashScreen()
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {

@@ -92,6 +92,4 @@ dependencies {
     implementation(libs.ktor.client.auth)
     //Gson
     implementation(libs.gson)
-    //SplashScreen
-    implementation(libs.androidx.core.splashscreen)
 }
