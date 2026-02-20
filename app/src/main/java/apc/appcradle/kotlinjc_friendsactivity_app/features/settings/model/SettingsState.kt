@@ -12,5 +12,4 @@ data class SettingsState(
     val userScale: Float = 1.0f,
     val userStepLength: Double = USER_STEP_DEFAULT,
     val serviceSavedOption: Boolean = false,
-    val isServiceRunning: Boolean = false
 ) : BaseState

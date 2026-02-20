@@ -29,8 +29,6 @@ class TokenRepository(
 ) : ITokenRepository {
     val scope = CoroutineScope(Dispatchers.IO + SupervisorJob())
     private val _tokenFlow = MutableStateFlow(TokenState())
-
-    //    override val tokenFlow: StateFlow<TokenState> = _tokenFlow.asStateFlow()
     override val tokenFlow: StateFlow<TokenState> = _tokenFlow
         .map { data ->
             TokenState(
