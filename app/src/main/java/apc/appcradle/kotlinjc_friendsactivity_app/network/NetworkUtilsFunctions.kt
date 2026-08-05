@@ -1,6 +1,5 @@
 package apc.appcradle.kotlinjc_friendsactivity_app.network
 
-import apc.appcradle.kotlinjc_friendsactivity_app.network.NetworkConstants.HOME_URL
 import apc.appcradle.kotlinjc_friendsactivity_app.network.NetworkConstants.SERVER_URL
 import apc.appcradle.kotlinjc_friendsactivity_app.network.model.ApiRequestResult
 import apc.appcradle.kotlinjc_friendsactivity_app.network.model.Requests
@@ -27,7 +26,7 @@ class NetworkUtilsFunctions(
         crossinline onSuccess: suspend (T) -> ApiRequestResult
     ): ApiRequestResult {
 
-        val urls = listOf(SERVER_URL, HOME_URL)
+        val urls = listOf(SERVER_URL)
         var lastException: Exception? = null
 
         for (baseUrl in urls) {

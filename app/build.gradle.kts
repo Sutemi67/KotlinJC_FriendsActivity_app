@@ -22,8 +22,8 @@ android {
         targetSdk = 36
 
         // изменение от 15 февраля 2026
-        versionCode = 14
-        versionName = "2.1.1"
+        versionCode = 15
+        versionName = "2.2.1"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }

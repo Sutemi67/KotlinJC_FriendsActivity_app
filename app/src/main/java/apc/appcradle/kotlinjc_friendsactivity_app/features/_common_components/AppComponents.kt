@@ -20,6 +20,7 @@ import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -45,6 +46,7 @@ import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
 import apc.appcradle.kotlinjc_friendsactivity_app.LocalAppTypography
 import apc.appcradle.kotlinjc_friendsactivity_app.R
+import apc.appcradle.kotlinjc_friendsactivity_app.core.app_theme.AppBarContainerColor
 import apc.appcradle.kotlinjc_friendsactivity_app.core.app_theme.AppTextStyles
 import apc.appcradle.kotlinjc_friendsactivity_app.core.app_theme.KotlinJC_FriendsActivity_appTheme
 import apc.appcradle.kotlinjc_friendsactivity_app.core.utils.APP_ROUNDED_SHAPE
@@ -125,6 +127,9 @@ fun AppTopBar(
                 AppText(text = text, appTextStyle = AppTextStyles.AppBarTitle)
             }
         },
+        colors = TopAppBarDefaults.topAppBarColors(
+            containerColor = AppBarContainerColor
+        ),
         actions = {
             IconButton(onClick = {
                 val intent = Intent(Intent.ACTION_VIEW, TELEGRAM_URL.toUri())
@@ -176,7 +181,7 @@ fun AppBottomNavBar(
 
     NavigationBar(
         modifier = modifier,
-        containerColor = Color.Transparent.copy(alpha = 0.05f)
+        containerColor = AppBarContainerColor
     ) {
 
         navDestinations.forEach { item ->

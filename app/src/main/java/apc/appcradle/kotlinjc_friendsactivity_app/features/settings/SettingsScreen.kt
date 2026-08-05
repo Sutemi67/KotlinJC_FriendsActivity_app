@@ -22,7 +22,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -224,8 +223,7 @@ fun SettingsScreenUi(
         ElevatedButton(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 70.dp)
-                .alpha(0.6f),
+                .padding(horizontal = 70.dp),
             onClick = onLogoutClick
         ) {
             AppText(text = stringResource(R.string.settings_screen_logout))
